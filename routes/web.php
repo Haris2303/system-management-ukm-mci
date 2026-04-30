@@ -1,7 +1,8 @@
 <?php
 
+use App\Http\Controllers\LandingController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+// ── Landing Page ──────────────────────────────────────────────
+Route::get('/', [LandingController::class, 'index'])->name('landing');
+Route::post('/daftar', [LandingController::class, 'daftar'])->name('daftar');
