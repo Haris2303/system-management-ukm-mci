@@ -307,6 +307,8 @@
     {{-- ── FOOTER ────────────────────────────────────────────── --}}
     @include('landing._footer')
 
+    @include('components.chatbot')
+
     {{-- ── BACK TO TOP ────────────────────────────────────────── --}}
     <button id="back-top"
         class="fixed bottom-8 right-8 z-40 w-11 h-11 rounded-xl bg-brand-600 text-white shadow-lg shadow-brand-200 flex items-center justify-center opacity-0 translate-y-4 transition-all duration-300 hover:bg-brand-700 hover:-translate-y-1"

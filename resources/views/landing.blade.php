@@ -1,4 +1,3 @@
-{{-- resources/views/landing.blade.php --}}
 @extends('layouts.app')
 
 @section('title', 'UKM MCI — Mahasiswa Creative & Innovation')
