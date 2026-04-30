@@ -249,7 +249,7 @@
 
                 {{-- Desktop Nav Links --}}
                 <div class="hidden lg:flex items-center gap-1">
-                    @foreach ([['#tentang', 'Tentang'], ['#program', 'Program'], ['#galeri', 'Galeri'], ['#pengurus', 'Pengurus'], ['#daftar', 'Daftar']] as [$href, $label])
+                    @foreach ([['#tentang', 'Tentang'], ['#program', 'Program'], ['/berita', 'Berita', 'berita'], ['#galeri', 'Galeri'], ['#pengurus', 'Pengurus'], ['#daftar', 'Daftar']] as [$href, $label])
                         <a href="{{ $href }}"
                             class="px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:text-brand-600 hover:bg-brand-50 transition-all duration-200">
                             {{ $label }}

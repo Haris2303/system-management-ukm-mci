@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Gallery;
 use App\Models\Member;
 use App\Models\Pengurusmen;
+use App\Models\Post;
 use App\Models\Program;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -19,7 +20,14 @@ class LandingController extends Controller
         $galleries = Gallery::where('is_featured', true)->orderBy('urut')->take(9)->get();
         $pengurus  = Pengurusmen::where('is_active', true)->orderBy('urut')->get();
 
-        return view('landing', compact('programs', 'galleries', 'pengurus'));
+        // Berita terbaru untuk section landing page (maks 6)
+        $posts = Post::published()
+            ->with('author:id,name')
+            ->latest('published_at')
+            ->take(6)
+            ->get();
+
+        return view('landing', compact('programs', 'galleries', 'pengurus', 'posts'));
     }
 
     /** Proses formulir pendaftaran anggota */

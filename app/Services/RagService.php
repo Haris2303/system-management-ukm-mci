@@ -56,7 +56,6 @@ class RagService
 
         $scored = $chunks
             ->map(function (RagChunk $chunk) use ($queryVector) {
-
                 return [
                     'chunk' => $chunk,
                     'score' => $chunk->cosineSimilarity($queryVector),
@@ -73,16 +72,12 @@ class RagService
                             150
                         ),
                     ]);
-
                     return $item['score'] > 0;
                 }
                 // fn($item) =>
                 // $item['score'] > 0
-
             )
-
             ->sortByDesc('score')
-
             ->take($this->topK);
 
         Log::info('RAG retrieve', [
@@ -197,7 +192,7 @@ class RagService
                     }
                 )
                 ->post(
-                    'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key='
+                    'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key='
                         . config('rag.gemini_api_key'),
                     [
                         'contents' => [

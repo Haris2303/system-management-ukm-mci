@@ -2,11 +2,16 @@
 
 use App\Http\Controllers\ChatbotController;
 use App\Http\Controllers\LandingController;
+use App\Http\Controllers\PostController;
 use Illuminate\Support\Facades\Route;
 
 // ── Landing Page ──────────────────────────────────────────────
 Route::get('/', [LandingController::class, 'index'])->name('landing');
 Route::post('/daftar', [LandingController::class, 'daftar'])->name('daftar');
+
+// ── Berita & Kegiatan ─────────────────────────────────────────
+Route::get('/berita',        [PostController::class, 'index'])->name('berita.index');
+Route::get('/berita/{slug}', [PostController::class, 'show'])->name('berita.show');
 
 // ── Chatbot RAG ────────────────────────────────────────────────
 Route::prefix('chatbot')->name('chatbot.')->group(function () {
