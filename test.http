@@ -1,0 +1,14 @@
+POST http://10.10.10.188:8000/api/auth/login HTTP/1.1
+content-type: application/json
+Accept: application/json
+
+{
+    "email": "user@test.com",
+    "password": "user"
+}
+
+###
+
+GET http://10.10.10.188:8000/api/kas/saldo-transparansi HTTP/1.1
+Accept: application/json
+Authorization: Bearer 8|VaD9u3Vrcpee1ga54IBmjiP6Qu13SznYVjHDub7ye9f45f5b
