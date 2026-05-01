@@ -9,6 +9,9 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [LandingController::class, 'index'])->name('landing');
 Route::post('/daftar', [LandingController::class, 'daftar'])->name('daftar');
 
+// POST /daftar — sekarang menangani Pendaftar + JawabanPendaftar
+Route::post('/daftar', [LandingController::class, 'daftar'])->name('daftar');
+
 // ── Berita & Kegiatan ─────────────────────────────────────────
 Route::get('/berita',        [PostController::class, 'index'])->name('berita.index');
 Route::get('/berita/{slug}', [PostController::class, 'show'])->name('berita.show');

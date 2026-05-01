@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Divisi;
 use App\Models\Gallery;
+use App\Models\JawabanPendaftar;
 use App\Models\Member;
+use App\Models\Pendaftar;
 use App\Models\Pengurusmen;
 use App\Models\Post;
 use App\Models\Program;
@@ -27,35 +30,82 @@ class LandingController extends Controller
             ->take(6)
             ->get();
 
-        return view('landing', compact('programs', 'galleries', 'pengurus', 'posts'));
+        $divisis = Divisi::aktif()
+            ->with(['pertanyaanSeleksis' => fn($q) => $q->aktif()->orderBy('urut')])->get();
+
+        return view('landing', compact('programs', 'galleries', 'pengurus', 'posts', 'divisis'));
     }
 
     /** Proses formulir pendaftaran anggota */
     public function daftar(Request $request): RedirectResponse
     {
+        // ── Validasi data utama ────────────────────────────────
         $validated = $request->validate([
-            'nama_lengkap' => ['required', 'string', 'max:255'],
-            'nim'          => ['required', 'string', 'unique:members,nim'],
-            'email'        => ['required', 'email', 'unique:members,email'],
-            'no_hp'        => ['required', 'string', 'max:20'],
-            'jurusan'      => ['required', 'string', 'max:100'],
-            'angkatan'     => ['required', 'string', 'max:10'],
-            'motivasi'     => ['nullable', 'string', 'max:1000'],
+            'nama'      => ['required', 'string', 'max:255'],
+            'nim'       => ['required', 'string', 'max:20'],
+            'email'     => ['required', 'email', 'max:255'],
+            'no_hp'     => ['required', 'string', 'max:20'],
+            'angkatan'  => ['required', 'string', 'max:10'],
+            'divisi_id' => ['required', 'exists:divisis,id'],
+            'jawaban'   => ['nullable', 'array'],
+            'jawaban.*' => ['nullable', 'string', 'max:2000'],
         ], [
-            'nama_lengkap.required' => 'Nama lengkap wajib diisi.',
-            'nim.required'          => 'NIM wajib diisi.',
-            'nim.unique'            => 'NIM ini sudah terdaftar.',
-            'email.required'        => 'Email wajib diisi.',
-            'email.unique'          => 'Email ini sudah terdaftar.',
-            'no_hp.required'        => 'Nomor HP wajib diisi.',
-            'jurusan.required'      => 'Jurusan wajib diisi.',
-            'angkatan.required'     => 'Angkatan wajib diisi.',
+            'nama.required'      => 'Nama lengkap wajib diisi.',
+            'nim.required'       => 'NIM wajib diisi.',
+            'email.required'     => 'Email wajib diisi.',
+            'email.email'        => 'Format email tidak valid.',
+            'no_hp.required'     => 'Nomor HP wajib diisi.',
+            'angkatan.required'  => 'Angkatan wajib dipilih.',
+            'divisi_id.required' => 'Pilih divisi yang ingin Anda masuki.',
+            'divisi_id.exists'   => 'Divisi yang dipilih tidak valid.',
         ]);
 
-        Member::create($validated);
+        // ── Cek duplikasi NIM di divisi yang sama ──────────────
+        $sudahDaftar = Pendaftar::where('nim', $validated['nim'])
+            ->where('divisi_id', $validated['divisi_id'])
+            ->exists();
+
+        if ($sudahDaftar) {
+            return back()
+                ->withInput()
+                ->withErrors(['nim' => 'NIM Anda sudah terdaftar di divisi ini.']);
+        }
+
+        // ── Cek divisi masih menerima pendaftar ────────────────
+        $divisi = Divisi::findOrFail($validated['divisi_id']);
+        if (! $divisi->is_active) {
+            return back()
+                ->withInput()
+                ->withErrors(['divisi_id' => 'Divisi ini sedang tidak membuka pendaftaran.']);
+        }
+
+        // ── Simpan pendaftar ───────────────────────────────────
+        $pendaftar = Pendaftar::create([
+            'nama'      => $validated['nama'],
+            'nim'       => $validated['nim'],
+            'email'     => $validated['email'],
+            'no_hp'     => $validated['no_hp'],
+            'angkatan'  => $validated['angkatan'],
+            'divisi_id' => $validated['divisi_id'],
+            'status'    => 'menunggu',
+        ]);
+
+        // ── Simpan jawaban (jika ada pertanyaan seleksi) ───────
+        if (! empty($validated['jawaban'])) {
+            foreach ($validated['jawaban'] as $pertanyaanId => $jawabanTeks) {
+                if (! empty(trim((string) $jawabanTeks))) {
+                    JawabanPendaftar::create([
+                        'pendaftar_id'  => $pendaftar->id,
+                        'pertanyaan_id' => (int) $pertanyaanId,
+                        'jawaban_teks'  => $jawabanTeks,
+                        'nilai_skor'    => null,     // Diisi Ketua Divisi nanti
+                    ]);
+                }
+            }
+        }
 
         return redirect()
             ->to('/#daftar')
-            ->with('sukses', 'Pendaftaran berhasil! Kami akan menghubungi Anda segera. 🎉');
+            ->with('sukses', "Pendaftaran berhasil dikirim, {$pendaftar->nama}! Kami akan segera menghubungi Anda. 🎉");
     }
 }
