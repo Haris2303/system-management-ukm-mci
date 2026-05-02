@@ -33,6 +33,18 @@ class AuthController extends Controller
             ]);
         }
 
+        if ($user->hasRole('demisioner')) {
+            // Hapus token lama jika masih ada (defensive cleanup)
+            $user->tokens()->delete();
+
+            return response()->json([
+                'pesan' => 'Akun Anda telah dinonaktifkan (demisioner). '
+                    . 'Anda tidak dapat login ke aplikasi UKM MCI. '
+                    . 'Hubungi admin jika menurut Anda ini adalah kesalahan.',
+                'kode'  => 'AKUN_DEMISIONER',
+            ], 403);
+        }
+
         // Hapus token lama, buat yang baru
         $user->tokens()->delete();
         $token = $user->createToken('ukm-mci-mobile')->plainTextToken;
@@ -85,6 +97,27 @@ class AuthController extends Controller
 
         return response()->json([
             'pesan' => 'Anda berhasil keluar. Sampai jumpa!',
+        ]);
+    }
+
+    // ═════════════════════════════════════════════════════════════
+    // GET /api/me
+    // ═════════════════════════════════════════════════════════════
+    public function me(Request $request): JsonResponse
+    {
+        $user = $request->user()->load('divisi');
+
+        return response()->json([
+            'data' => [
+                'id'        => $user->id,
+                'name'      => $user->name,
+                'email'     => $user->email,
+                'no_hp'     => $user->no_hp,
+                'avatar'    => $user->avatar,
+                'divisi_id' => $user->divisi_id,
+                'divisi'    => $user->divisi?->only(['id', 'nama', 'icon']),
+                'roles'     => $user->roles->pluck('name'),
+            ],
         ]);
     }
 }

@@ -67,6 +67,7 @@ class UserForm
                                 'bendahara'    => '💰 Bendahara',
                                 'ketua_divisi' => '🏆 Ketua Divisi',
                                 'anggota'      => '👥 Anggota (Mobile Only)',
+                                'demisioner'   => '🏛️ Demisioner (Akun Nonaktif)',
                                 default        => $record->name,
                             })
                             ->required()

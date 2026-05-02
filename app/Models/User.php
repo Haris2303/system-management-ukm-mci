@@ -50,10 +50,25 @@ class User extends Authenticatable
     /**
      * Tentukan siapa yang boleh masuk ke panel admin.
      * Anggota biasa TIDAK BOLEH masuk panel — hanya akses via mobile app.
+     * Demisioner DIBLOKIR TOTAL — tidak bisa login di mana pun.
      */
     public function canAccessPanel(Panel $panel): bool
     {
+        // Demisioner langsung ditolak
+        if ($this->hasRole('demisioner')) {
+            return false;
+        }
+
         return $this->hasPermissionTo('akses_panel_admin');
+    }
+
+    /**
+     * Cek apakah akun ini boleh login di mana pun (panel atau mobile).
+     * Dipakai oleh AuthController untuk blokir demisioner saat login API.
+     */
+    public function isAccountActive(): bool
+    {
+        return !$this->hasRole('demisioner');
     }
 
     // ═══════════════════════════════════════════════════════════
@@ -70,6 +85,12 @@ class User extends Authenticatable
     public function isKetuaDivisi(): bool
     {
         return $this->hasRole('ketua_divisi');
+    }
+
+    /** Apakah user adalah demisioner (akun nonaktif) */
+    public function isDemisioner(): bool
+    {
+        return $this->hasRole('demisioner');
     }
 
     /** Label role utama yang ramah dibaca */

@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Route;
 
 // ── Public Routes ──────────────────────────────────────────────────────
 Route::prefix('auth')->group(function () {
-    Route::post('/login',  [AuthController::class, 'login']);
+    Route::post('/login',  [AuthController::class, 'login'])->middleware('cek.demisioner');
     Route::post('/register', [AuthController::class, 'register']);
     Route::post('/logout', [AuthController::class, 'logout']);
 });
@@ -17,7 +17,7 @@ Route::prefix('auth')->group(function () {
 // ═════════════════════════════════════════════════════════════
 // E-KAS — semua endpoint WAJIB autentikasi sanctum
 // ═════════════════════════════════════════════════════════════
-Route::middleware('auth:sanctum')->prefix('kas')->name('api.kas')->group(function () {
+Route::middleware(['auth:sanctum', 'cek.demisioner'])->prefix('kas')->name('api.kas')->group(function () {
     Route::get('/user', function (Request $request) {
         return $request->user();
     });
@@ -41,6 +41,6 @@ Route::middleware('auth:sanctum')->prefix('kas')->name('api.kas')->group(functio
 // MATERI — Distribusi Materi
 // Wajib autentikasi sanctum agar query bisa pakai auth()->user()->divisi_id
 // ═════════════════════════════════════════════════════════════
-Route::middleware('auth:sanctum')->prefix('materi')->name('api.materi.')->group(function () {
+Route::middleware(['auth:sanctum', 'cek.demisioner'])->prefix('materi')->name('api.materi.')->group(function () {
     Route::get('/', [MateriController::class, 'index'])->name('index');
 });

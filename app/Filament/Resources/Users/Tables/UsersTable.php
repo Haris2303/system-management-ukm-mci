@@ -15,6 +15,7 @@ use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
 
@@ -53,6 +54,7 @@ class UsersTable
                         'bendahara'    => '💰 Bendahara',
                         'ketua_divisi' => '🏆 Ketua Divisi',
                         'anggota'      => '👥 Anggota',
+                        'demisioner'   => '🏛️ Demisioner',
                         default        => $state,
                     })
                     ->color(fn(string $state) => match ($state) {
@@ -61,6 +63,7 @@ class UsersTable
                         'sekretaris'   => 'info',
                         'bendahara'    => 'warning',
                         'ketua_divisi' => 'primary',
+                        'demisioner'        => 'gray',
                         default        => 'gray',
                     }),
 
@@ -118,6 +121,44 @@ class UsersTable
                             ->body('Password baru: password123')
                             ->warning()
                             ->duration(5000)
+                            ->send();
+                    }),
+
+                // ── Demisionerkan (Pensiunkan akun) ─────────────
+                Action::make('demisionerkan')
+                    ->label('Demisionerkan')
+                    ->icon('heroicon-o-archive-box')
+                    ->color('gray')
+                    ->visible(
+                        fn(User $r): bool =>
+                        ! $r->hasRole('demisioner') && auth()->id() !== $r->id
+                    )
+                    ->requiresConfirmation()
+                    ->modalHeading('Pensiunkan Akun Pengguna?')
+                    ->modalDescription(
+                        fn(User $r) =>
+                        "Akun {$r->name} akan diubah ke status DEMISIONER. "
+                            . "Akun tetap tersimpan sebagai arsip historis, tapi tidak bisa "
+                            . "login ke panel admin maupun mobile app. "
+                            . "Tindakan ini bisa dibatalkan kapan saja dengan mengubah role."
+                    )
+                    ->modalSubmitActionLabel('Ya, Pensiunkan')
+                    ->modalIcon('heroicon-o-archive-box')
+                    ->action(function (User $record): void {
+                        // Hapus semua role lama, lalu assign demisioner saja
+                        $record->syncRoles(['demisioner']);
+
+                        // Hapus semua token Sanctum (kick out dari mobile)
+                        $record->tokens()->delete();
+
+                        // Hapus semua sesi web (kick out dari panel admin)
+                        DB::table('sessions')->where('user_id', $record->id)->delete();
+
+                        Notification::make()
+                            ->title("🏛️ {$record->name} berhasil dipensiunkan.")
+                            ->body('Akun sekarang berstatus demisioner dan tidak dapat login.')
+                            ->success()
+                            ->duration(4000)
                             ->send();
                     }),
 

@@ -135,6 +135,14 @@ class RolePermissionSeeder extends Seeder
             // Tidak punya akses_panel_admin — hanya untuk login mobile API
         ]);
 
+        // ✅ DEMISIONER — Akun nonaktif (alumni / mantan pengurus)
+        // Tidak punya permission apa pun. Akun tetap ada untuk arsip historis,
+        // tapi tidak bisa login ke panel admin maupun mobile app.
+        $demisioner = Role::firstOrCreate(['name' => 'demisioner', 'guard_name' => 'web']);
+        $demisioner->syncPermissions([
+            // Sengaja kosong — akun nonaktif total
+        ]);
+
         $this->command->info('✅ 6 role berhasil dibuat dengan permission masing-masing.');
         $this->command->newLine();
         $this->command->info('   👑 super_admin   — Akses semua fitur');
@@ -143,5 +151,6 @@ class RolePermissionSeeder extends Seeder
         $this->command->info('   💰 bendahara     — Keuangan (e-kas)');
         $this->command->info('   🏆 ketua_divisi  — Rekrutmen & materi divisinya');
         $this->command->info('   👥 anggota       — Hanya mobile app');
+        $this->command->info('   🏛️  demisioner    — Akun nonaktif (alumni)');
     }
 }
