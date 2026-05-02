@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\KasController;
+use App\Http\Controllers\Api\MateriController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -34,4 +35,12 @@ Route::middleware('auth:sanctum')->prefix('kas')->name('api.kas')->group(functio
 
     // Saldo total organisasi (untuk transparansi)
     Route::get('/saldo-transparansi', [KasController::class, 'saldoTransparansi'])->name('saldo');
+});
+
+// ═════════════════════════════════════════════════════════════
+// MATERI — Distribusi Materi
+// Wajib autentikasi sanctum agar query bisa pakai auth()->user()->divisi_id
+// ═════════════════════════════════════════════════════════════
+Route::middleware('auth:sanctum')->prefix('materi')->name('api.materi.')->group(function () {
+    Route::get('/', [MateriController::class, 'index'])->name('index');
 });
