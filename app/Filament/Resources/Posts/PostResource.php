@@ -58,4 +58,9 @@ class PostResource extends Resource
             'edit' => EditPost::route('/{record}/edit'),
         ];
     }
+
+    public static function canViewAny(): bool
+    {
+        return auth()->user()?->can('kelola_berita') ?? false;
+    }
 }

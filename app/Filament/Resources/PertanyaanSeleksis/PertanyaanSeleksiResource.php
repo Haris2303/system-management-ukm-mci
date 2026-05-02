@@ -57,4 +57,22 @@ class PertanyaanSeleksiResource extends Resource
             'edit' => EditPertanyaanSeleksi::route('/{record}/edit'),
         ];
     }
+
+    public static function canViewAny(): bool
+    {
+        return auth()->user()?->can('kelola_pertanyaan_seleksi') ?? false;
+    }
+
+    public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
+    {
+        $query = parent::getEloquentQuery();
+        $user  = auth()->user();
+
+        // Ketua Divisi hanya lihat pertanyaan di divisinya
+        if ($user?->isKetuaDivisi() && $user->divisi_id) {
+            return $query->where('divisi_id', $user->divisi_id);
+        }
+
+        return $query;
+    }
 }

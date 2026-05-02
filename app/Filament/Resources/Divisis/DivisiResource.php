@@ -69,4 +69,9 @@ class DivisiResource extends Resource
             'edit' => EditDivisi::route('/{record}/edit'),
         ];
     }
+
+    public static function canViewAny(): bool
+    {
+        return auth()->user()?->can('kelola_divisi') ?? false;
+    }
 }

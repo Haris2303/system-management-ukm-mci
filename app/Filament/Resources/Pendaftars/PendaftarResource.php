@@ -77,4 +77,39 @@ class PendaftarResource extends Resource
     {
         return 'warning';
     }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    // ACCESS CONTROL — siapa saja yang boleh akses Resource ini
+    // ═══════════════════════════════════════════════════════════════════════
+
+    public static function canViewAny(): bool
+    {
+        return auth()->user()?->canAny([
+            'kelola_pendaftar',
+            'kelola_pendaftar_divisi',
+        ]) ?? false;
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    // QUERY SCOPING — Ketua Divisi hanya lihat pendaftar di divisinya
+    // ═══════════════════════════════════════════════════════════════════════
+
+    public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
+    {
+        $query = parent::getEloquentQuery();
+        $user  = auth()->user();
+
+        // Super admin / ketua UKM punya 'kelola_pendaftar' (semua)
+        if ($user?->can('kelola_pendaftar')) {
+            return $query;
+        }
+
+        // Ketua Divisi hanya lihat pendaftar di divisinya saja
+        if ($user?->can('kelola_pendaftar_divisi') && $user->divisi_id) {
+            return $query->where('divisi_id', $user->divisi_id);
+        }
+
+        // Fallback: tidak punya akses sama sekali
+        return $query->whereRaw('1 = 0');
+    }
 }

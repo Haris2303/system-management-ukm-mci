@@ -57,4 +57,9 @@ class RagDocumentResource extends Resource
             'create' => CreateRagDocument::route('/create'),
         ];
     }
+
+    public static function canViewAny(): bool
+    {
+        return auth()->user()?->can('kelola_rag_documents') ?? false;
+    }
 }

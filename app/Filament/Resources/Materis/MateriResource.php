@@ -57,4 +57,30 @@ class MateriResource extends Resource
             'edit' => EditMateri::route('/{record}/edit'),
         ];
     }
+
+    public static function canViewAny(): bool
+    {
+        return auth()->user()?->can('kelola_materi') ?? false;
+    }
+
+    public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
+    {
+        $query = parent::getEloquentQuery();
+        $user  = auth()->user();
+
+        // Super admin / ketua UKM / sekretaris lihat semua
+        if ($user?->hasAnyRole(['super_admin', 'ketua_ukm', 'sekretaris'])) {
+            return $query;
+        }
+
+        // Ketua Divisi hanya lihat materi divisinya + materi umum
+        if ($user?->isKetuaDivisi() && $user->divisi_id) {
+            return $query->where(function ($q) use ($user) {
+                $q->whereNull('divisi_id')
+                    ->orWhere('divisi_id', $user->divisi_id);
+            });
+        }
+
+        return $query;
+    }
 }

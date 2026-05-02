@@ -57,4 +57,9 @@ class TransaksiKasResource extends Resource
             'edit' => EditTransaksiKas::route('/{record}/edit'),
         ];
     }
+
+    public static function canViewAny(): bool
+    {
+        return auth()->user()?->can('kelola_tagihan_kas') ?? false;
+    }
 }
