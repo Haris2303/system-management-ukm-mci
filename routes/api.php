@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\KasController;
 use App\Http\Controllers\Api\MateriController;
+use App\Http\Controllers\Api\ProkerController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -17,7 +18,7 @@ Route::prefix('auth')->group(function () {
 // ═════════════════════════════════════════════════════════════
 // E-KAS — semua endpoint WAJIB autentikasi sanctum
 // ═════════════════════════════════════════════════════════════
-Route::middleware(['auth:sanctum', 'cek.demisioner'])->prefix('kas')->name('api.kas')->group(function () {
+Route::middleware(['auth:sanctum', 'cek.demisioner'])->prefix('kas')->name('api.kas.')->group(function () {
     Route::get('/user', function (Request $request) {
         return $request->user();
     });
@@ -43,4 +44,13 @@ Route::middleware(['auth:sanctum', 'cek.demisioner'])->prefix('kas')->name('api.
 // ═════════════════════════════════════════════════════════════
 Route::middleware(['auth:sanctum', 'cek.demisioner'])->prefix('materi')->name('api.materi.')->group(function () {
     Route::get('/', [MateriController::class, 'index'])->name('index');
+});
+
+// ═════════════════════════════════════════════════════════════
+// PROGRAM KERJA — Tracking proker untuk anggota
+// ═════════════════════════════════════════════════════════════
+Route::middleware(['auth:sanctum', 'cek.demisioner'])->prefix('proker')->name('api.proker.')->group(function () {
+
+    Route::get('/',     [ProkerController::class, 'index'])->name('index');
+    Route::get('/{id}', [ProkerController::class, 'show'])->name('show');
 });
