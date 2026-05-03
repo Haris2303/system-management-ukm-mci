@@ -14,100 +14,132 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
+/**
+ * Job: Process PDF setelah upload.
+ *
+ * Pipeline:
+ *   1. Parse PDF → text
+ *   2. Chunk text per ~500 char (dengan overlap 50)
+ *   3. Generate embedding per chunk (Gemini embedding-001)
+ *   4. Simpan ke tabel rag_chunks
+ *   5. Update status di rag_documents
+ */
 class ProcessPdfJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public int $timeout = 300;  // 5 menit max
+    public const CHUNK_SIZE    = 500;
+    public const CHUNK_OVERLAP = 50;
+
+    public int $timeout = 600;
     public int $tries   = 2;
 
-    /**
-     * Create a new job instance.
-     */
-    public function __construct(private readonly int $documentId) {}
+    public function __construct(
+        public int $documentId,
+    ) {}
 
-    /**
-     * Execute the job.
-     */
-    public function handle(PdfParserService $parser, EmbeddingService $embedding): void
-    {
-        $document = RagDocument::findOrFail($this->documentId);
+    public function handle(
+        PdfParserService $parser,
+        EmbeddingService $embedding,
+    ): void {
+        $document = RagDocument::find($this->documentId);
+
+        if (! $document) {
+            Log::warning("ProcessPdfJob: Document #{$this->documentId} tidak ditemukan.");
+            return;
+        }
 
         try {
-            Log::info("RAG: Mulai proses PDF #{$document->id} — {$document->nama_file}");
+            $document->update(['status' => 'processing']);
 
-            // 1. Parse PDF → chunks teks
-            $filePath = Storage::disk('local')->path($document->path_file);
-            $chunks   = $parser->parse($filePath);
+            // 1. Parse PDF jadi text
+            //    Pakai disk 'local' karena upload ke storage/app/rag-docs/
+            $absolutePath = Storage::disk('local')->path($document->path_file);
+            $text = $parser->extract($absolutePath);
 
-            if (empty($chunks)) {
-                $document->update(['status' => 'error']);
-                Log::error("RAG: Tidak ada teks yang berhasil diekstrak dari PDF #{$document->id}");
-                return;
+            if (empty(trim($text))) {
+                throw new \RuntimeException('PDF tidak mengandung teks (mungkin scan/image).');
             }
 
-            Log::info("RAG: PDF #{$document->id} — {$document->nama_file} menghasilkan " . count($chunks) . " chunks");
+            // 2. Hapus chunks lama (jika reprocess)
+            $document->chunks()->delete();
 
-            // 2. Batch embed chunks (maks 10 per request untuk hemat quota)
-            $batchSize  = 10;
-            $allChunks  = array_chunk($chunks, $batchSize);
-            $chunkIndex = 0;
+            // 3. Split text → chunks dengan overlap
+            $chunks = $this->splitIntoChunks($text);
+            Log::info("Document #{$document->id} dipecah jadi " . count($chunks) . " chunks.");
 
-            foreach ($allChunks as $batch) {
-                // Generate embedding untuk batch ini
-                $embeddings = $embedding->embed($batch);
-
-                foreach ($batch as $i => $content) {
-                    $vector = $embeddings[$i] ?? null;
-                    // validasi embedding
-                    if (
-                        empty($vector)
-                        || !is_array($vector)
-                    ) {
-                        Log::warning('Embedding gagal untuk chunk', [
-                            'chunk_index' => $chunkIndex,
-                            'content' => substr($content, 0, 100),
-                        ]);
-                        continue;
-                    }
-
-                    // cek apakah vector isinya semua 0
-                    $sum = array_sum(array_map('abs', $vector));
-
-                    if ($sum == 0) {
-                        Log::warning('Embedding kosong (all zero)', [
-                            'chunk_index' => $chunkIndex,
-                        ]);
-                        continue;
-                    }
+            // 4. Embed & save tiap chunk ke tabel rag_chunks
+            foreach ($chunks as $i => $chunkText) {
+                try {
+                    $vector = $embedding->embed($chunkText, 'RETRIEVAL_DOCUMENT');
 
                     RagChunk::create([
                         'document_id' => $document->id,
-                        'chunk_index' => $chunkIndex++,
-                        'content' => $content,
-                        'embedding' => $vector,
-                        'token_count' => (int)(mb_strlen($content) / 4),
+                        'chunk_index' => $i + 1,
+                        'content'     => $chunkText,
+                        'embedding'   => $vector,
+                        'token_count' => (int) (mb_strlen($chunkText) / 4),  // estimasi kasar
                     ]);
-                }
 
-                // Jeda kecil agar tidak hit rate limit
-                usleep(200_000); // 200ms
+                    // Delay kecil untuk hindari rate limit Gemini
+                    usleep(150_000); // 150ms
+
+                } catch (\Throwable $e) {
+                    Log::error("Chunk #{$i} dari Document #{$document->id} gagal: " . $e->getMessage());
+                }
             }
 
-            // 3. Update status dokumen
+            // 5. Update status sukses
+            $totalChunks = $document->chunks()->count();
             $document->update([
                 'status'       => 'ready',
-                'total_chunks' => $chunkIndex,
+                'total_chunks' => $totalChunks,
             ]);
 
-            Log::info("RAG: PDF #{$document->id} selesai diproses. Total chunks: {$chunkIndex}");
+            Log::info("✅ Document #{$document->id} berhasil diproses ({$totalChunks} chunks).");
         } catch (\Throwable $e) {
             $document->update(['status' => 'error']);
-            Log::error("RAG: Error proses PDF #{$document->id}", [
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
-            ]);
+            Log::error("❌ Document #{$document->id} gagal diproses: " . $e->getMessage());
             throw $e;
         }
+    }
+
+    /**
+     * Split text jadi chunks dengan overlap antar chunk.
+     */
+    private function splitIntoChunks(string $text): array
+    {
+        $text = preg_replace('/\s+/', ' ', $text);
+        $text = trim($text);
+
+        $chunks = [];
+        $start  = 0;
+        $length = mb_strlen($text);
+
+        while ($start < $length) {
+            $chunk = mb_substr($text, $start, self::CHUNK_SIZE);
+
+            // Coba potong di akhir kalimat terdekat
+            if ($start + self::CHUNK_SIZE < $length) {
+                $lastPeriod = max(
+                    mb_strrpos($chunk, '. '),
+                    mb_strrpos($chunk, '? '),
+                    mb_strrpos($chunk, '! ')
+                );
+
+                if ($lastPeriod !== false && $lastPeriod > self::CHUNK_SIZE * 0.5) {
+                    $chunk = mb_substr($chunk, 0, $lastPeriod + 1);
+                }
+            }
+
+            $chunks[] = trim($chunk);
+            $start   += mb_strlen($chunk) - self::CHUNK_OVERLAP;
+
+            if (mb_strlen($chunk) <= self::CHUNK_OVERLAP) {
+                $start += self::CHUNK_SIZE;
+            }
+        }
+
+        return array_filter($chunks, fn($c) => mb_strlen(trim($c)) > 50);
     }
 }

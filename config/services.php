@@ -35,4 +35,14 @@ return [
         ],
     ],
 
+    // ─── Google Gemini (untuk embedding) ──────────────────────────────
+    'gemini' => [
+        'api_key' => env('GEMINI_API_KEY'),
+    ],
+
+    // ─── OpenRouter (untuk LLM Llama 3.3 70B) ─────────────────────────
+    'openrouter' => [
+        'api_key' => env('OPENROUTER_API_KEY'),
+    ],
+
 ];

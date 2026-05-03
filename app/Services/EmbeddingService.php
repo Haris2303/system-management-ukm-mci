@@ -4,175 +4,130 @@ namespace App\Services;
 
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use RuntimeException;
 
+/**
+ * EmbeddingService — menggunakan Google Gemini embedding-001
+ *
+ * Endpoint:
+ *   https://generativelanguage.googleapis.com/v1beta/models/embedding-001:embedContent
+ *
+ * Output:
+ *   Array float dengan 768 dimensi
+ *
+ * Daftar API key:
+ *   https://aistudio.google.com/app/apikey
+ *
+ * Free tier:
+ *   1500 requests/menit, gratis untuk pemakaian wajar.
+ */
 class EmbeddingService
 {
+    /** Dimensi embedding yang dihasilkan Gemini embedding-001 */
+    public const DIMENSION = 768;
+
+    /** Maksimal karakter per chunk (Gemini batas ~2048 token = ~8000 char) */
+    public const MAX_CHARS = 6000;
+
     private string $apiKey;
+    private string $baseUrl;
     private string $model;
-    private string $provider;
 
     public function __construct()
     {
-        // Pilih provider dari .env
-        // EMBEDDING_PROVIDER=voyage  (default, gratis tier tersedia)
-        // EMBEDDING_PROVIDER=openai  (alternatif)
-        // EMBEDDING_PROVIDER=tfidf   (tanpa API, fallback lokal)
-        $this->provider = config('rag.embedding_provider', 'gemini');
-        $this->apiKey   = config('rag.embedding_api_key', 'gemini');
-        $this->model    = config('rag.embedding_model', 'gemini-embedding-001');
-    }
+        $this->apiKey  = config('services.gemini.api_key');
+        $this->baseUrl = 'https://generativelanguage.googleapis.com/v1beta';
+        $this->model   = 'models/embedding-001';
 
-    /**
-     * Generate embedding vector dari teks.
-     * Return array float[] atau null jika gagal.
-     *
-     * @param  string|string[]  $text
-     * @return float[]|float[][]|null
-     */
-    public function embed(string|array $text): array|null
-    {
-        $texts = is_array($text) ? $text : [$text];
-
-        return match ($this->provider) {
-            'voyage' => $this->embedWithVoyage($texts),
-            'openai' => $this->embedWithOpenAI($texts),
-            'tfidf'  => $this->embedWithTFIDF($texts),
-            'gemini' => $this->embedWithGemini($texts),
-            default  => $this->embedWithVoyage($texts),
-        };
-    }
-
-    // ── Voyage AI ─────────────────────────────────────────────
-    private function embedWithVoyage(array $texts): array|null
-    {
-        try {
-            $response = Http::withHeaders([
-                'Authorization' => 'Bearer ' . $this->apiKey,
-                'Content-Type'  => 'application/json',
-            ])->post('https://api.voyageai.com/v1/embeddings', [
-                'model' => $this->model,
-                'input' => $texts,
-            ]);
-
-            if ($response->failed()) {
-                Log::error('Voyage embedding error', ['body' => $response->body()]);
-                return null;
-            }
-
-            $data = $response->json();
-            return array_map(fn($item) => $item['embedding'], $data['data']);
-        } catch (\Throwable $e) {
-            Log::error('Voyage embedding exception', ['error' => $e->getMessage()]);
-            return null;
-        }
-    }
-
-    // ── OpenAI ────────────────────────────────────────────────
-    private function embedWithOpenAI(array $texts): array|null
-    {
-        try {
-            $response = Http::withHeaders([
-                'Authorization' => 'Bearer ' . $this->apiKey,
-                'Content-Type'  => 'application/json',
-            ])->post('https://api.openai.com/v1/embeddings', [
-                'model' => 'text-embedding-3-small',
-                'input' => $texts,
-            ]);
-
-            if ($response->failed()) {
-                Log::error('OpenAI embedding error', ['body' => $response->body()]);
-                return null;
-            }
-
-            $data = $response->json();
-            return array_map(fn($item) => $item['embedding'], $data['data']);
-        } catch (\Throwable $e) {
-            Log::error('OpenAI embedding exception', ['error' => $e->getMessage()]);
-            return null;
-        }
-    }
-
-    /**
-     * Fallback TF-IDF sederhana (tanpa API key).
-     * Kurang akurat tapi tetap fungsional untuk demo.
-     */
-    private function embedWithTFIDF(array $texts): array
-    {
-        return array_map(function (string $text): array {
-
-            $text = mb_strtolower(trim($text));
-            // ambil kata
-            preg_match_all('/\b[\p{L}\p{N}]+\b/u', $text, $matches);
-
-            $tokens = $matches[0] ?? [];
-
-            if (empty($tokens)) {
-                return array_fill(0, 256, 0.0);
-            }
-
-            $freq = array_count_values($tokens);
-            $vector = array_fill(0, 256, 0.0);
-
-            foreach ($freq as $token => $count) {
-                $index = abs(crc32($token)) % 256;
-                $vector[$index] += $count;
-            }
-
-            // normalize
-            $magnitude = sqrt(array_sum(
-                array_map(
-                    fn($v) => $v * $v,
-                    $vector
-                )
-            ));
-
-            if ($magnitude == 0) {
-                return $vector;
-            }
-            return array_map(
-                fn($v) => $v / $magnitude,
-                $vector
+        if (empty($this->apiKey)) {
+            throw new RuntimeException(
+                'GEMINI_API_KEY belum diset di .env. '
+                    . 'Dapatkan di: https://aistudio.google.com/app/apikey'
             );
-        }, $texts);
+        }
     }
 
-    private function embedWithGemini(array $texts): array|null
+    /**
+     * Generate embedding untuk single text.
+     *
+     * @param string $text Teks yang akan di-embed
+     * @param string $taskType RETRIEVAL_DOCUMENT (untuk indexing)
+     *                         atau RETRIEVAL_QUERY (untuk pencarian user)
+     * @return array<float> Vector 768 dimensi
+     */
+    public function embed(string $text, string $taskType = 'RETRIEVAL_DOCUMENT'): array
     {
-        try {
-            $vectors = [];
-            foreach ($texts as $text) {
-                $response = Http::timeout(60)
-                    ->post(
-                        'https://generativelanguage.googleapis.com/v1beta/models/gemini-embedding-001:embedContent?key='
-                            . config('rag.gemini_api_key'),
-                        [
-                            'model' => 'models/gemini-embedding-004',
-                            'content' => [
-                                'parts' => [
-                                    [
-                                        'text' => $text
-                                    ]
-                                ]
-                            ]
-                        ]
-                    );
-                if ($response->failed()) {
-                    Log::error('Gemini embedding error', [
-                        'body' => $response->body()
-                    ]);
-                    return null;
-                }
-                $data = $response->json();
-                $vectors[] =
-                    $data['embedding']['values']
-                    ?? [];
-            }
-            return $vectors;
-        } catch (\Throwable $e) {
-            Log::error('Gemini embedding exception', [
-                'message' => $e->getMessage()
-            ]);
-            return null;
+        // Truncate jika terlalu panjang
+        if (mb_strlen($text) > self::MAX_CHARS) {
+            $text = mb_substr($text, 0, self::MAX_CHARS);
         }
+
+        $url = "{$this->baseUrl}/{$this->model}:embedContent?key={$this->apiKey}";
+
+        $response = Http::timeout(30)
+            ->retry(3, 1000)
+            ->post($url, [
+                'model' => $this->model,
+                'content' => [
+                    'parts' => [
+                        ['text' => $text],
+                    ],
+                ],
+                'taskType' => $taskType,
+            ]);
+
+        if ($response->failed()) {
+            $errorMsg = $response->json('error.message', 'Unknown error');
+            Log::error('Gemini embedding failed', [
+                'status' => $response->status(),
+                'error'  => $errorMsg,
+            ]);
+            throw new RuntimeException("Embedding gagal: {$errorMsg}");
+        }
+
+        $embedding = $response->json('embedding.values');
+
+        if (! is_array($embedding) || count($embedding) !== self::DIMENSION) {
+            throw new RuntimeException(
+                'Embedding response tidak valid. Expected ' . self::DIMENSION . ' dimensi, got ' . count($embedding ?? [])
+            );
+        }
+
+        return $embedding;
+    }
+
+    /**
+     * Generate embedding khusus untuk query pencarian (lebih akurat untuk RAG).
+     */
+    public function embedQuery(string $query): array
+    {
+        return $this->embed($query, 'RETRIEVAL_QUERY');
+    }
+
+    /**
+     * Hitung cosine similarity antara dua embedding vector.
+     * Dipakai untuk ranking hasil pencarian.
+     *
+     * @return float Nilai antara -1 dan 1 (semakin tinggi semakin mirip)
+     */
+    public static function cosineSimilarity(array $vec1, array $vec2): float
+    {
+        if (count($vec1) !== count($vec2)) {
+            throw new RuntimeException('Vector dimensions must match');
+        }
+
+        $dotProduct = 0.0;
+        $norm1      = 0.0;
+        $norm2      = 0.0;
+
+        foreach ($vec1 as $i => $val) {
+            $dotProduct += $val * $vec2[$i];
+            $norm1      += $val * $val;
+            $norm2      += $vec2[$i] * $vec2[$i];
+        }
+
+        if ($norm1 == 0 || $norm2 == 0) return 0.0;
+
+        return $dotProduct / (sqrt($norm1) * sqrt($norm2));
     }
 }

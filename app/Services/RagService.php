@@ -1,352 +1,236 @@
 <?php
-// ── app/Services/RagService.php ───────────────────────────────
-// Pipeline RAG utama:
-// 1. Embed query user
-// 2. Cari top-K chunks paling relevan (cosine similarity)
-// 3. Bangun prompt dengan konteks
-// 4. Panggil Claude API → stream jawaban
 
 namespace App\Services;
 
-// use App\Models\ChatHistory;
 use App\Models\RagChunk;
-use Illuminate\Http\Client\Response;
+use Generator;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use RuntimeException;
 
 class RagService
 {
-    private int    $topK           = 4;      // Jumlah chunks yang diambil
-    private float  $similarityThreshold = 0.1; // Min similarity agar chunk dipakai
-    // private int    $maxHistoryTurns = 1;     // Berapa turn percakapan yang disertakan
+    private const MODEL          = 'meta-llama/llama-3.3-70b-instruct:free';
+    private const ENDPOINT       = 'https://openrouter.ai/api/v1/chat/completions';
+    private const TOP_K          = 5;
+    private const MIN_SIMILARITY = 0.3;
 
-    public function __construct(
-        private readonly EmbeddingService $embedding,
-    ) {}
+    private string $apiKey;
+    private EmbeddingService $embedding;
 
-    // ─────────────────────────────────────────────────────────
-    // RETRIEVE: Cari chunks paling relevan untuk query
-    // ─────────────────────────────────────────────────────────
-
-    /**
-     * @return Collection<RagChunk>
-     */
-    public function retrieve(string $query): Collection
+    public function __construct(EmbeddingService $embedding)
     {
-        // Embed query
-        $query = mb_strtolower(trim($query));
-        $queryVectors = $this->embedding->embed($query);
+        $this->embedding = $embedding;
+        $this->apiKey    = config('services.openrouter.api_key');
 
-        if (empty($queryVectors)) {
-            Log::warning('RAG: Gagal generate embedding untuk query', ['query' => $query]);
-            return collect();
+        if (empty($this->apiKey)) {
+            throw new RuntimeException(
+                'OPENROUTER_API_KEY belum diset di .env. '
+                    . 'Daftar gratis di: https://openrouter.ai/keys'
+            );
         }
-
-        $queryVector = $queryVectors[0];
-
-        // Ambil semua chunks yang punya embedding
-        $chunks = RagChunk::whereNotNull('embedding')->get();
-
-        if ($chunks->isEmpty()) {
-            Log::warning('RAG: tidak ada chunks');
-            return collect();
-        }
-
-        $scored = $chunks
-            ->map(function (RagChunk $chunk) use ($queryVector) {
-                return [
-                    'chunk' => $chunk,
-                    'score' => $chunk->cosineSimilarity($queryVector),
-                ];
-            })
-
-            ->filter(
-                function ($item) {
-                    Log::info('Chunk selected', [
-                        'score' => $item['score'],
-                        'content' => substr(
-                            $item['chunk']->content,
-                            0,
-                            150
-                        ),
-                    ]);
-                    return $item['score'] > 0;
-                }
-                // fn($item) =>
-                // $item['score'] > 0
-            )
-            ->sortByDesc('score')
-            ->take($this->topK);
-
-        Log::info('RAG retrieve', [
-            'query' => $query,
-            'found' => $scored->count(),
-        ]);
-
-        return $scored->pluck('chunk');
     }
 
-    // ─────────────────────────────────────────────────────────
-    // GENERATE: Panggil Claude API dengan konteks RAG
-    // ─────────────────────────────────────────────────────────
+    // ═══════════════════════════════════════════════════════════
+    // PUBLIC API
+    // ═══════════════════════════════════════════════════════════
+
+    public function ask(string $question): array
+    {
+        $chunks = $this->retrieve($question);
+
+        $answer = '';
+        foreach ($this->generate($question, $chunks) as $piece) {
+            $answer .= $piece;
+        }
+
+        return [
+            'answer'      => trim($answer),
+            'sources'     => $this->formatSources($chunks),
+            'has_context' => $chunks->isNotEmpty(),
+        ];
+    }
 
     /**
-     * Generate jawaban dari Claude berdasarkan konteks RAG.
-     * Return generator untuk streaming (Server-Sent Events).
-     *
-     * @param  string              $query
-     * @param  string              $sessionId
-     * @param  Collection<RagChunk> $relevantChunks
+     * Retrieve top-K chunks dari tabel rag_chunks (bukan rag_documents!).
      */
-    public function generate(
-        string     $query,
-        // string     $sessionId,
-        Collection $relevantChunks
-    ): \Generator {
-        // Simpan pesan user ke history
-        // ChatHistory::create([
-        //     'session_id' => $sessionId,
-        //     'role'       => 'user',
-        //     'content'    => $query,
-        // ]);
+    public function retrieve(string $question): Collection
+    {
+        $queryEmbedding = $this->embedding->embedQuery($question);
 
-        // Bangun konteks dari chunks
-        $context = $relevantChunks->isEmpty()
-            ? 'Tidak ada konteks ditemukan.'
-            : $relevantChunks
-            ->map(function ($chunk) {
-                return "
-                === CONTEXT ===
-                " . mb_substr($chunk->content, 0, 300) . "";
-            })->join("\n");
+        // ⭐ Query ke tabel rag_chunks, bukan rag_documents
+        $allChunks = RagChunk::with('document')
+            ->whereNotNull('embedding')
+            ->get();
 
-        if ($relevantChunks->isEmpty()) {
-            yield "Maaf, aku belum punya informasi tentang itu 🙏";
+        $scored = $allChunks->map(function (RagChunk $chunk) use ($queryEmbedding) {
+            // Karena $casts['embedding'] = 'array', otomatis array — tidak perlu json_decode
+            $vec = $chunk->embedding;
+
+            if (! is_array($vec) || count($vec) !== EmbeddingService::DIMENSION) {
+                return null;
+            }
+
+            $chunk->similarity = EmbeddingService::cosineSimilarity($queryEmbedding, $vec);
+            return $chunk;
+        })->filter();
+
+        return $scored
+            ->sortByDesc('similarity')
+            ->filter(fn($c) => $c->similarity >= self::MIN_SIMILARITY)
+            ->take(self::TOP_K)
+            ->values();
+    }
+
+    /**
+     * Generate jawaban streaming via OpenRouter.
+     * @return Generator<string>
+     */
+    public function generate(string $question, Collection $chunks): Generator
+    {
+        $hasContext   = $chunks->isNotEmpty();
+        $context      = $this->buildContext($chunks);
+        $systemPrompt = $this->buildSystemPrompt($hasContext);
+        $userPrompt   = $this->buildUserPrompt($question, $context, $hasContext);
+
+        $ch = curl_init(self::ENDPOINT);
+        curl_setopt_array($ch, [
+            CURLOPT_POST           => true,
+            CURLOPT_HTTPHEADER     => [
+                "Authorization: Bearer {$this->apiKey}",
+                'Content-Type: application/json',
+                'HTTP-Referer: ' . config('app.url', 'http://localhost'),
+                'X-Title: UKM MCI Chatbot',
+            ],
+            CURLOPT_POSTFIELDS     => json_encode([
+                'model'       => self::MODEL,
+                'messages'    => [
+                    ['role' => 'system', 'content' => $systemPrompt],
+                    ['role' => 'user',   'content' => $userPrompt],
+                ],
+                'temperature' => 0.3,
+                'max_tokens'  => 1024,
+                'top_p'       => 0.9,
+                'stream'      => true,
+            ]),
+            CURLOPT_TIMEOUT        => 120,
+            CURLOPT_RETURNTRANSFER => true,
+        ]);
+
+        $rawResponse = curl_exec($ch);
+        $httpCode    = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+        if (curl_errno($ch)) {
+            $err = curl_error($ch);
+            curl_close($ch);
+            yield "Maaf, terjadi gangguan koneksi: {$err}";
+            return;
+        }
+        curl_close($ch);
+
+        if ($httpCode !== 200) {
+            $errData = json_decode($rawResponse, true);
+            $errMsg  = $errData['error']['message'] ?? 'Unknown error';
+            Log::error('OpenRouter streaming failed', [
+                'status' => $httpCode,
+                'error'  => $errMsg,
+            ]);
+            yield "Maaf, AI sedang sibuk. Silakan coba lagi sebentar lagi.";
             return;
         }
 
-        // Ambil history percakapan sebelumnya
-        // $history = ChatHistory::where('session_id', $sessionId)
-        //     ->orderBy('id', 'desc')
-        //     ->take($this->maxHistoryTurns * 2)
-        //     ->get()
-        //     ->reverse()
-        //     ->values();
+        // Parse SSE response
+        $hasYielded = false;
+        foreach (explode("\n", $rawResponse) as $line) {
+            $line = trim($line);
+            if (empty($line) || ! str_starts_with($line, 'data: ')) continue;
 
-        // format history
-        // $conversationHistory = $history
+            $data = substr($line, 6);
+            if ($data === '[DONE]') break;
 
-        //     ->map(function ($chat) {
-        //         return strtoupper($chat->role)
-        //             . ': '
-        //             . $chat->content;
-        //     })->join("\n");
+            $json = json_decode($data, true);
+            if (! is_array($json)) continue;
 
-        // // Bangun messages array untuk Claude
-        // $messages = $history->map(fn(ChatHistory $h) => [
-        //     'role'    => $h->role,
-        //     'content' => $h->content,
-        // ])->toArray();
-
-        // System prompt
-        // system prompt
-        $systemPrompt = $this->buildSystemPrompt();
-
-        // gabungkan prompt
-        $prompt = "
-            {$systemPrompt}
-
-            ========================
-            KONTEKS DOKUMEN
-            ========================
-
-            {$context}
-
-            ========================
-            PERTANYAAN USER
-            ========================
-
-            {$query}
-
-            ";
-
-        // Panggil Claude API dengan streaming
-        $fullResponse = '';
-
-        try {
-            $normalizedQuery = strtolower(trim($query));
-            $cacheKey = 'rag:' . md5($normalizedQuery);
-            if (Cache::has($cacheKey)) {
-                yield Cache::get($cacheKey);
-                return;
+            $piece = $json['choices'][0]['delta']['content'] ?? '';
+            if ($piece !== '') {
+                $hasYielded = true;
+                yield $piece;
             }
-
-            $response = Http::timeout(60)
-                ->retry(
-                    1,
-                    1000,
-                    function ($exception, $request) {
-                        return true;
-                    }
-                )
-                ->post(
-                    'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key='
-                        . config('rag.gemini_api_key'),
-                    [
-                        'contents' => [
-                            [
-                                'parts' => [
-                                    [
-                                        'text' => $prompt
-                                    ]
-                                ]
-                            ]
-                        ],
-                        'generationConfig' => [
-                            'temperature' => 0.3,
-                            'maxOutputTokens' => 200,
-                        ],
-                    ]
-                );
-
-            // debug jika gagal
-            if ($response->failed()) {
-                $status = $response->status();
-
-                Log::error('Gemini API Error', [
-                    'status' => $status,
-                    'body' => $response->body(),
-                ]);
-                $fallback = match ($status) {
-                    503 =>
-                    'Server AI sedang sibuk 😅 coba beberapa detik lagi.',
-                    429 =>
-                    'Limit AI tercapai 🙏 coba lagi nanti.',
-                    default =>
-                    'Terjadi gangguan AI 🙏',
-                };
-                yield $fallback;
-                return;
-            }
-            $data = $response->json();
-            Log::info('Gemini response', [
-                'response' => $data
-            ]);
-            $text =
-                $data['candidates'][0]['content']['parts'][0]['text']
-                ??
-                'Maaf, saya tidak menemukan jawaban.';
-
-            $fullResponse = $text;
-
-            Cache::put(
-                $cacheKey,
-                $text,
-                now()->addHours(6)
-            );
-
-            // kirim ke frontend
-            yield $fullResponse;
-        } catch (\Throwable $e) {
-            $message = $e->getMessage();
-            Log::error('Gemini Exception', [
-                'message' => $message
-            ]);
-
-            if (str_contains($message, '429')) {
-                yield 'AI sedang mencapai limit 😅 coba lagi sebentar ya.';
-                return;
-            }
-
-            if (str_contains($message, '503')) {
-                yield 'AI sedang sibuk 😭 coba lagi beberapa detik ya.';
-                return;
-            }
-
-            yield 'Terjadi gangguan sistem 🙏';
         }
 
-        // Simpan respons assistant ke history
-        // if (!empty($fullResponse)) {
-        //     // simpan jawaban AI
-        //     ChatHistory::create([
-        //         'session_id' => $sessionId,
-        //         'role' => 'assistant',
-        //         'content' => $fullResponse,
-        //         'sources' => $relevantChunks
-        //             ->map(fn($c) => [
-        //                 'chunk_id' => $c->id,
-        //                 'document_id' => $c->document_id,
-        //             ])
-        //             ->toArray(),
-        //     ]);
-        // }
+        if (! $hasYielded) {
+            yield 'Maaf, saya belum bisa menjawab pertanyaan ini. Silakan coba pertanyaan lain.';
+        }
     }
-    // ─────────────────────────────────────────────
-    // SYSTEM PROMPT
-    // ─────────────────────────────────────────────
 
-    private function buildSystemPrompt(): string
+    // ═══════════════════════════════════════════════════════════
+    // PRIVATE HELPERS
+    // ═══════════════════════════════════════════════════════════
+
+    private function buildContext(Collection $chunks): string
     {
-        return "
+        if ($chunks->isEmpty()) return '';
 
-        Kamu adalah AI Assistant UKM MCI Universitas Muhammadiyah Sorong.
+        $parts = [];
+        foreach ($chunks as $i => $chunk) {
+            $no      = $i + 1;
+            $source  = $chunk->document->nama_file ?? 'Dokumen';
+            $content = trim($chunk->content);
+            $parts[] = "[Sumber {$no}: {$source}]\n{$content}";
+        }
 
-        Tugasmu: membantu menjawab pertanyaan tentang UKM MCI
+        return implode("\n\n---\n\n", $parts);
+    }
 
-        Jawab pertanyaan hanya berdasarkan konteks yang diberikan.
+    private function buildSystemPrompt(bool $hasContext): string
+    {
+        $base = <<<'PROMPT'
+Kamu adalah asisten virtual UKM MCI (Mahasiswa Creative & Innovation),
+sebuah organisasi mahasiswa di bidang teknologi informasi.
 
-        Jika informasi tidak tersedia,
-        katakan dengan jujur bahwa informasi tidak ditemukan.
+ATURAN PENTING:
+1. Selalu jawab dalam Bahasa Indonesia yang ramah dan profesional.
+2. Jangan mengarang informasi. Jika tidak tahu, katakan dengan jujur.
+3. Jika konteks tersedia, prioritaskan informasi dari konteks tersebut.
+4. Jawaban singkat, jelas, langsung ke poin (maksimal 3 paragraf).
+5. Gunakan emoji secukupnya untuk memperjelas (jangan berlebihan).
+6. Jika user bertanya hal di luar topik UKM MCI, arahkan kembali dengan sopan.
+PROMPT;
 
-        Gaya bicara:
+        if (! $hasContext) {
+            $base .= "\n\nCATATAN: Tidak ada konteks dokumen yang relevan. "
+                . "Jawablah berdasarkan pengetahuan umum tentang UKM teknologi mahasiswa, "
+                . "atau sarankan user menghubungi pengurus untuk info detail.";
+        }
 
-        - ramah
-        - natural
-        - seperti kakak tingkat
-        - gunakan bahasa indonesia santai profesional
-        - boleh gunakan emoji secukupnya
+        return $base;
+    }
 
-        ";
-        // return "
-        //     Kamu adalah MCI AI Assistant.
+    private function buildUserPrompt(string $question, string $context, bool $hasContext): string
+    {
+        if (! $hasContext) {
+            return "Pertanyaan: {$question}";
+        }
 
-        //     Kamu adalah asisten virtual resmi UKM MCI
-        //     (Media Creative Informations)
-        //     Universitas Muhammadiyah Sorong.
+        return <<<PROMPT
+Berikut konteks dari dokumen UKM MCI yang relevan:
 
-        //     Tugasmu:
+{$context}
 
-        //     - membantu menjawab pertanyaan tentang UKM MCI
-        //     - menjelaskan divisi
-        //     - menjelaskan kegiatan
-        //     - membantu informasi pendaftaran
-        //     - menjelaskan manfaat bergabung
+---
 
-        //     Gaya bicara:
+Berdasarkan konteks di atas, jawab pertanyaan berikut:
 
-        //     - ramah
-        //     - natural
-        //     - seperti kakak tingkat
-        //     - gunakan bahasa indonesia santai profesional
-        //     - boleh gunakan emoji secukupnya
+Pertanyaan: {$question}
+PROMPT;
+    }
 
-        //     ATURAN PENTING:
-
-        //     - jangan mengarang jawaban
-        //     - gunakan konteks dokumen sebagai sumber utama
-        //     - jika jawaban tidak ditemukan di konteks,
-        //     katakan dengan jujur bahwa kamu tidak mempunya informasi mengenai itu
-        //     - jangan menjawab di luar topik UKM MCI
-
-        //     FORMAT:
-
-        //     - gunakan bullet point jika perlu
-        //     - jawaban singkat dan jelas
-        //     - maksimal 3 paragraf
-
-        //     ";
+    private function formatSources(Collection $chunks): array
+    {
+        return $chunks->map(fn($c) => [
+            'document'   => $c->document->nama_file ?? '—',
+            'similarity' => round($c->similarity ?? 0, 3),
+            'preview'    => mb_substr($c->content, 0, 150) . '...',
+        ])->values()->toArray();
     }
 }

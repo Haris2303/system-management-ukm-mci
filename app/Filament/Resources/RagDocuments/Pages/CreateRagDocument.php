@@ -10,9 +10,21 @@ class CreateRagDocument extends CreateRecord
 {
     protected static string $resource = RagDocumentResource::class;
 
+    /**
+     * Force status awal ke 'processing' agar admin tahu PDF sedang diolah.
+     */
+    protected function mutateFormDataBeforeCreate(array $data): array
+    {
+        $data['status']       = 'processing';
+        $data['total_chunks'] = 0;
+        return $data;
+    }
+
+    /**
+     * ⭐ Setelah record disimpan, dispatch job otomatis.
+     */
     protected function afterCreate(): void
     {
-        // Otomatis dispatch job setelah save
         ProcessPdfJob::dispatch($this->getRecord()->id);
     }
 
