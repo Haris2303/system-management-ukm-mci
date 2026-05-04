@@ -78,7 +78,7 @@ class ReembedAllChunks extends Command
         $gagal  = 0;
         $errors = [];
 
-        RagDocument::with('document')
+        RagChunk::with('document')
             ->chunk($chunkSize, function ($chunks) use (
                 $embeddingService,
                 $bar,

@@ -31,7 +31,7 @@ class ChatbotController extends Controller
         ]);
 
         $query     = trim($request->input('message'));
-        $sessionId = $request->input('session_id');
+        // $sessionId = $request->input('session_id');
 
         // Ambil chunks paling relevan
         $relevantChunks = $this->rag->retrieve($query);

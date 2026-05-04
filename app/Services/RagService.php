@@ -10,7 +10,7 @@ use RuntimeException;
 
 class RagService
 {
-    private const MODEL          = 'meta-llama/llama-3.3-70b-instruct:free';
+    private const MODEL          = 'openai/gpt-oss-120b:free';
     private const ENDPOINT       = 'https://openrouter.ai/api/v1/chat/completions';
     private const TOP_K          = 5;
     private const MIN_SIMILARITY = 0.3;
@@ -189,7 +189,7 @@ Kamu adalah asisten virtual UKM MCI (Mahasiswa Creative & Innovation),
 sebuah organisasi mahasiswa di bidang teknologi informasi.
 
 ATURAN PENTING:
-1. Selalu jawab dalam Bahasa Indonesia yang ramah dan profesional.
+1. Selalu jawab dalam Bahasa Indonesia yang ramah dan profesional seperti kakak tingkat.
 2. Jangan mengarang informasi. Jika tidak tahu, katakan dengan jujur.
 3. Jika konteks tersedia, prioritaskan informasi dari konteks tersebut.
 4. Jawaban singkat, jelas, langsung ke poin (maksimal 3 paragraf).
