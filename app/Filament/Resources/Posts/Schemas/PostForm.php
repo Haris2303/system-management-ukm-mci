@@ -70,6 +70,7 @@ class PostForm
                         RichEditor::make('konten')
                             ->label('Isi Artikel')
                             ->required()
+                            ->extraInputAttributes(['style' => 'min-height: 100px'])
                             ->toolbarButtons([
                                 'h1',
                                 'h2',

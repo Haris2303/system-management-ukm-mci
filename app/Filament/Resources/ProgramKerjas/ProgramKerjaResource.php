@@ -2,11 +2,13 @@
 
 namespace App\Filament\Resources\ProgramKerjas;
 
-use App\Fialment\Resources\ProgramKerjas\Pages\ViewProgramKerja;
 use App\Filament\Resources\ProgramKerjas\Pages\CreateProgramKerja;
 use App\Filament\Resources\ProgramKerjas\Pages\EditProgramKerja;
 use App\Filament\Resources\ProgramKerjas\Pages\ListProgramKerjas;
+use App\Filament\Resources\ProgramKerjas\Pages\ViewProgramKerja;
+use App\Filament\Resources\ProgramKerjas\RelationManagers\TugasProkersRelationManager;
 use App\Filament\Resources\ProgramKerjas\Schemas\ProgramKerjaForm;
+use App\Filament\Resources\ProgramKerjas\Schemas\ProgramKerjaInfolist;
 use App\Filament\Resources\ProgramKerjas\Tables\ProgramKerjasTable;
 use App\Models\ProgramKerja;
 use BackedEnum;
@@ -39,6 +41,11 @@ class ProgramKerjaResource extends Resource
         return ProgramKerjaForm::configure($schema);
     }
 
+    public static function infolist(Schema $schema): Schema
+    {
+        return ProgramKerjaInfolist::configure($schema);
+    }
+
     public static function table(Table $table): Table
     {
         return ProgramKerjasTable::configure($table);
@@ -47,7 +54,7 @@ class ProgramKerjaResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            TugasProkersRelationManager::class,
         ];
     }
 

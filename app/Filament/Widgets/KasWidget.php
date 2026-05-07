@@ -2,6 +2,7 @@
 
 namespace App\Filament\Widgets;
 
+use App\Models\User;
 use App\Services\KasService;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
@@ -29,6 +30,7 @@ class KasWidget extends BaseWidget
 
         $totalSaldo     = $kas->totalSaldo();
         $totalTunggakan = $kas->totalTunggakan();
+        $penggunaAktif  = User::whereDoesntHave('roles', fn($q) => $q->whereIn('name', ['super_admin', 'demisioner']))->count();
 
         // Tentukan warna saldo berdasarkan kondisi
         $warnaSaldo = match (true) {
@@ -44,14 +46,14 @@ class KasWidget extends BaseWidget
         return [
 
             // ── 💰 SALDO TOTAL (KARTU UTAMA) ──────────────────────
-            Stat::make('💰 Saldo Kas Saat Ini', $kas->formatRupiah($totalSaldo))
+            Stat::make('Saldo Kas Saat Ini', $kas->formatRupiah($totalSaldo))
                 ->description('Iuran Lunas + Kas Masuk − Kas Keluar')
                 ->descriptionIcon($iconSaldo)
                 ->color($warnaSaldo)
                 ->chart($this->getSaldoChart()),
 
             // ── ⚠️ TUNGGAKAN (jika ada) ───────────────────────────
-            Stat::make('⚠️ Total Tunggakan', $kas->formatRupiah($totalTunggakan))
+            Stat::make('Total Tunggakan', $kas->formatRupiah($totalTunggakan))
                 ->description(
                     $totalTunggakan > 0
                         ? 'Iuran anggota yang belum dibayar'
@@ -63,6 +65,12 @@ class KasWidget extends BaseWidget
                         : 'heroicon-m-check-circle'
                 )
                 ->color($totalTunggakan > 0 ? 'warning' : 'success'),
+
+            // ── 👥 PENGGUNA AKTIF ─────────────────────────────────
+            Stat::make('Member Aktif', $penggunaAktif . ' orang')
+                ->description('Total Member aktif saat ini')
+                ->descriptionIcon('heroicon-m-users')
+                ->color('info'),
         ];
     }
 
