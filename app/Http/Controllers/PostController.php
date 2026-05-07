@@ -35,7 +35,7 @@ class PostController extends Controller
 
         $kategoris = ['semua', 'Berita', 'Kegiatan', 'Prestasi', 'Pengumuman'];
 
-        return view('berita.index', compact('posts', 'featured', 'kategoris', 'kategori', 'search'));
+        return view('landing.berita.index', compact('posts', 'featured', 'kategoris', 'kategori', 'search'));
     }
 
     /** Halaman detail satu berita */
@@ -58,6 +58,6 @@ class PostController extends Controller
             ->take(3)
             ->get();
 
-        return view('berita.show', compact('post', 'related'));
+        return view('landing.berita.show', compact('post', 'related'));
     }
 }

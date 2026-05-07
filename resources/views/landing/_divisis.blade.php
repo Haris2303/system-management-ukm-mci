@@ -8,37 +8,37 @@
         <div class="text-center max-w-2xl mx-auto mb-16 reveal">
             <span
                 class="inline-block text-xs font-bold tracking-widest text-brand-500 uppercase bg-brand-50 px-3 py-1.5 rounded-full border border-brand-100 mb-4">
-                Program & Divisi
+                Divisi
             </span>
             <h2 class="font-display text-4xl lg:text-5xl font-bold text-slate-900 leading-tight">
-                Temukan Jalur
-                <span class="gradient-text"> Teknologimu</span>
+                Temukan Minat
+                <br><span class="gradient-text"> Divisimu</span>
             </h2>
             <p class="text-slate-500 mt-4 text-lg font-light">
-                Kami memiliki berbagai divisi dan program yang dapat disesuaikan dengan minat dan kemampuan Anda.
+                Kami memiliki berbagai divisi yang dapat disesuaikan dengan minat dan kemampuan Anda.
             </p>
         </div>
 
         {{-- Cards --}}
-        @if ($programs->isNotEmpty())
+        @if ($divisis->isNotEmpty())
             <div class="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-                @foreach ($programs as $program)
+                @foreach ($divisis as $divisi)
                     <div
                         class="reveal reveal-delay-{{ min(($loop->index % 4) + 1, 4) }} bg-white rounded-2xl p-6 border border-slate-100 tech-card shadow-sm group">
                         <div
                             class="w-12 h-12 rounded-xl bg-brand-50 group-hover:bg-brand-100 flex items-center justify-center text-2xl mb-5 transition-colors duration-200">
-                            {{ $program->icon }}
+                            {{ $divisi->icon }}
                         </div>
                         <div
                             class="inline-block text-[10px] font-bold tracking-widest uppercase text-brand-400 bg-brand-50 px-2 py-0.5 rounded-full mb-2">
-                            {{ $program->kategori }}
+                            {{ $divisi->kategori }}
                         </div>
                         <h3
                             class="font-display font-bold text-slate-800 text-lg mb-2 group-hover:text-brand-600 transition-colors">
-                            {{ $program->nama }}
+                            {{ $divisi->nama }}
                         </h3>
                         <p class="text-slate-500 text-sm leading-relaxed">
-                            {{ $program->deskripsi }}
+                            {{ $divisi->deskripsi }}
                         </p>
                     </div>
                 @endforeach

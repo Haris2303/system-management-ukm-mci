@@ -5,11 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Divisi;
 use App\Models\Gallery;
 use App\Models\JawabanPendaftar;
-use App\Models\Member;
 use App\Models\Pendaftar;
-use App\Models\Pengurusmen;
 use App\Models\Post;
-use App\Models\Program;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -19,9 +16,8 @@ class LandingController extends Controller
     /** Tampilkan landing page utama */
     public function index(): View
     {
-        $programs  = Program::where('is_active', true)->orderBy('urut')->get();
+        $divisis  = Divisi::all();
         $galleries = Gallery::where('is_featured', true)->orderBy('urut')->take(9)->get();
-        $pengurus  = Pengurusmen::where('is_active', true)->orderBy('urut')->get();
 
         // Berita terbaru untuk section landing page (maks 6)
         $posts = Post::published()
@@ -30,10 +26,7 @@ class LandingController extends Controller
             ->take(6)
             ->get();
 
-        $divisis = Divisi::aktif()
-            ->with(['pertanyaanSeleksis' => fn($q) => $q->aktif()->orderBy('urut')])->get();
-
-        return view('landing', compact('programs', 'galleries', 'pengurus', 'posts', 'divisis'));
+        return view('landing', compact('divisis', 'galleries', 'posts'));
     }
 
     /** Proses formulir pendaftaran anggota */

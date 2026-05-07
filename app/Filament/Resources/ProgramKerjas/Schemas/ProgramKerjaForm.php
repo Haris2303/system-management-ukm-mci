@@ -83,6 +83,6 @@ class ProgramKerjaForm
                             ->helperText('Status berubah otomatis berdasarkan progress tugas.'),
 
                     ])->columns(2),
-            ])->columns(1);
+            ])->columns(2);
     }
 }
