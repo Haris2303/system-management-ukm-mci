@@ -28,9 +28,9 @@ class MateriResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Distribusi Materi';
 
-    protected static \UnitEnum|string|null $navigationGroup = 'Konten';
+    protected static \UnitEnum|string|null $navigationGroup = 'Materi';
 
-    protected static ?int $navigationSort = 5;
+    protected static ?int $navigationSort = 1;
 
     public static function form(Schema $schema): Schema
     {

@@ -7,6 +7,9 @@ use App\Models\Gallery;
 use App\Models\JawabanPendaftar;
 use App\Models\Pendaftar;
 use App\Models\Post;
+use App\Models\OpenRecruitment;
+use App\Models\ProfilUkm;
+use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -16,8 +19,12 @@ class LandingController extends Controller
     /** Tampilkan landing page utama */
     public function index(): View
     {
-        $divisis  = Divisi::all();
-        $galleries = Gallery::where('is_featured', true)->orderBy('urut')->take(9)->get();
+        $divisis         = Divisi::all();
+        $galleries       = Gallery::where('is_featured', true)->orderBy('urut')->take(9)->get();
+        $profil          = ProfilUkm::first();
+        $jumlahDivisi    = Divisi::count();
+        $jumlahAlumni    = User::role('demisioner')->count();
+        $openRecruitment = OpenRecruitment::active()->latest()->first();
 
         // Berita terbaru untuk section landing page (maks 6)
         $posts = Post::published()
@@ -26,7 +33,11 @@ class LandingController extends Controller
             ->take(6)
             ->get();
 
-        return view('landing', compact('divisis', 'galleries', 'posts'));
+        return view('landing', compact(
+            'divisis', 'galleries', 'posts',
+            'profil', 'jumlahDivisi', 'jumlahAlumni',
+            'openRecruitment'
+        ));
     }
 
     /** Proses formulir pendaftaran anggota */

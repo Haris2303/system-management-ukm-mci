@@ -15,11 +15,17 @@
             <div class="space-y-8">
 
                 {{-- Badge --}}
-                <div
-                    class="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-brand-50 border border-brand-100 text-brand-700 text-sm font-medium animate-fade-in">
-                    <span class="w-2 h-2 rounded-full bg-accent animate-pulse-slow inline-block"></span>
-                    Open Recruitment 2025 · Terbuka untuk Semua Jurusan
-                </div>
+                @if ($openRecruitment)
+                    <div
+                        class="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-brand-50 border border-brand-100 text-brand-700 text-sm font-medium animate-fade-in">
+                        <span class="w-2 h-2 rounded-full bg-accent animate-pulse-slow inline-block"></span>
+                        {{ $openRecruitment->judul }}
+                        @if ($openRecruitment->gelombang)
+                            · {{ $openRecruitment->gelombang }}
+                        @endif
+                        · Terbuka untuk Semua Jurusan
+                    </div>
+                @endif
 
                 {{-- Heading --}}
                 <div class="space-y-3">

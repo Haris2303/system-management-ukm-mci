@@ -23,16 +23,23 @@
                         <div class="relative z-10">
                             <div class="text-4xl mb-3">🎓</div>
                             <h3 class="font-display text-xl font-bold">Didirikan 2018</h3>
-                            <p class="text-brand-200 text-sm mt-1 font-light">Berkembang bersama teknologi selama 7
-                                tahun</p>
+                            <p class="text-brand-200 text-sm mt-1 font-light">Berkembang bersama teknologi selama 7 tahun</p>
                         </div>
                         <div class="relative z-10 flex gap-6 mt-4">
-                            @foreach ([['7', 'Tahun Berdiri'], ['8', 'Divisi'], ['200+', 'Alumni']] as [$n, $l])
-                                <div>
-                                    <div class="font-display font-bold text-2xl">{{ $n }}</div>
-                                    <div class="text-brand-200 text-xs">{{ $l }}</div>
+                            <div>
+                                <div class="font-display font-bold text-2xl">7</div>
+                                <div class="text-brand-200 text-xs">Tahun Berdiri</div>
+                            </div>
+                            <div>
+                                <div class="font-display font-bold text-2xl">{{ $jumlahDivisi }}</div>
+                                <div class="text-brand-200 text-xs">Divisi</div>
+                            </div>
+                            <div>
+                                <div class="font-display font-bold text-2xl">
+                                    {{ $jumlahAlumni > 0 ? $jumlahAlumni . '+' : '—' }}
                                 </div>
-                            @endforeach
+                                <div class="text-brand-200 text-xs">Alumni</div>
+                            </div>
                         </div>
                     </div>
 
@@ -56,30 +63,51 @@
                         Tentang Kami
                     </span>
                     <h2 class="font-display text-4xl lg:text-5xl font-bold text-slate-900 leading-tight">
-                        Komunitas yang
-                        <span class="gradient-text"> Menginspirasi</span>
+                        {{ $profil?->tagline
+                            ? implode(' ', array_slice(explode(' ', $profil->tagline), 0, -1))
+                            : 'Komunitas yang' }}
+                        <span class="gradient-text">
+                            {{ $profil?->tagline
+                                ? implode(' ', array_slice(explode(' ', $profil->tagline), -1))
+                                : 'Menginspirasi' }}
+                        </span>
                     </h2>
                 </div>
 
                 <div class="space-y-4 text-slate-500 leading-relaxed reveal reveal-delay-1">
-                    <p>
-                        <strong class="text-slate-700 font-semibold">UKM MCI (Mahasiswa Creative & Innovation)</strong>
-                        adalah unit kegiatan mahasiswa yang berfokus pada pengembangan kompetensi di bidang teknologi
-                        informasi, pemrograman, kecerdasan buatan, dan desain digital.
-                    </p>
-                    <p>
-                        Kami percaya bahwa setiap mahasiswa memiliki potensi untuk menjadi innovator. Melalui berbagai
-                        program, workshop, dan kompetisi, kami hadir sebagai wadah untuk mengembangkan skill, membangun
-                        portofolio, dan memperluas jaringan.
-                    </p>
+                    @if ($profil?->deskripsi)
+                        @foreach (explode("\n\n", $profil->deskripsi) as $paragraf)
+                            <p>{{ trim($paragraf) }}</p>
+                        @endforeach
+                    @else
+                        <p>
+                            <strong class="text-slate-700 font-semibold">UKM MCI (Mahasiswa Creative & Innovation)</strong>
+                            adalah unit kegiatan mahasiswa yang berfokus pada pengembangan kompetensi di bidang teknologi
+                            informasi, pemrograman, kecerdasan buatan, dan desain digital.
+                        </p>
+                        <p>
+                            Kami percaya bahwa setiap mahasiswa memiliki potensi untuk menjadi innovator. Melalui berbagai
+                            program, workshop, dan kompetisi, kami hadir sebagai wadah untuk mengembangkan skill, membangun
+                            portofolio, dan memperluas jaringan.
+                        </p>
+                    @endif
                 </div>
 
                 {{-- Feature list --}}
                 <div class="space-y-3 reveal reveal-delay-2">
-                    @foreach ([['✅', 'Workshop & Pelatihan rutin setiap bulan'], ['✅', 'Bimbingan langsung dari senior & alumni'], ['✅', 'Akses ke berbagai kompetisi nasional'], ['✅', 'Sertifikat keikutsertaan program']] as [$icon, $text])
+                    @php
+                        $defaultKeunggulan = [
+                            ['icon' => '✅', 'teks' => 'Workshop & Pelatihan rutin setiap bulan'],
+                            ['icon' => '✅', 'teks' => 'Bimbingan langsung dari senior & alumni'],
+                            ['icon' => '✅', 'teks' => 'Akses ke berbagai kompetisi nasional'],
+                            ['icon' => '✅', 'teks' => 'Sertifikat keikutsertaan program'],
+                        ];
+                        $keunggulan = $profil?->keunggulan ?: $defaultKeunggulan;
+                    @endphp
+                    @foreach ($keunggulan as $item)
                         <div class="flex items-center gap-3">
-                            <span class="text-sm">{{ $icon }}</span>
-                            <span class="text-slate-600 text-sm font-medium">{{ $text }}</span>
+                            <span class="text-sm">{{ $item['icon'] ?? '✅' }}</span>
+                            <span class="text-slate-600 text-sm font-medium">{{ $item['teks'] }}</span>
                         </div>
                     @endforeach
                 </div>

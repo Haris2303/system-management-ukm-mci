@@ -26,16 +26,31 @@
                     <div>
                         <span
                             class="inline-block text-xs font-bold tracking-widest text-brand-500 uppercase bg-brand-50 px-3 py-1.5 rounded-full border border-brand-100 mb-4">
-                            Open Recruitment
+                            {{ $openRecruitment
+                                ? $openRecruitment->judul . ($openRecruitment->gelombang ? ' · ' . $openRecruitment->gelombang : '')
+                                : 'Close Recruitment' }}
                         </span>
                         <h2 class="font-display text-4xl lg:text-5xl font-bold text-slate-900 leading-tight">
                             Mulai Perjalanan
                             <span class="gradient-text"> Teknologimu</span>
                         </h2>
                         <p class="text-slate-500 mt-4 font-light text-lg leading-relaxed">
-                            Bergabunglah bersama ratusan mahasiswa yang telah memilih MCI sebagai rumah berkembang di dunia
-                            teknologi.
+                            @if ($openRecruitment?->deskripsi)
+                                {{ $openRecruitment->deskripsi }}
+                            @else
+                                Bergabunglah bersama ratusan mahasiswa yang telah memilih MCI sebagai rumah berkembang di
+                                dunia
+                                teknologi.
+                            @endif
                         </p>
+                        @if ($openRecruitment)
+                            <div class="flex items-center gap-4 mt-4 text-sm text-slate-500">
+                                <span class="flex items-center gap-1.5">
+                                    📅 Ditutup <strong
+                                        class="text-slate-700">{{ $openRecruitment->waktu_selesai->translatedFormat('d M Y, H:i') }}</strong>
+                                </span>
+                            </div>
+                        @endif
                     </div>
 
                     {{-- Keuntungan --}}
@@ -75,9 +90,9 @@
                 {{-- ── RIGHT: Form atau Pesan Ditutup ─────────────── --}}
                 <div class="reveal reveal-delay-1">
 
-                    @if ($divisis->count() === 0)
+                    @if (!$openRecruitment)
                         {{-- ══════════════════════════════════════════════════
-                    REKRUTMEN DITUTUP — semua divisi is_active = false
+                    REKRUTMEN BELUM DIBUKA — tidak ada OpenRecruitment aktif
                 ══════════════════════════════════════════════════ --}}
                         <div
                             class="flex flex-col items-center justify-center text-center bg-slate-50 border-2 border-dashed border-slate-200 rounded-3xl p-12 gap-5 h-full min-h-[420px]">
@@ -89,7 +104,7 @@
                                     Pendaftaran Belum Dibuka
                                 </h3>
                                 <p class="text-slate-400 text-sm leading-relaxed max-w-sm">
-                                    Saat ini belum ada divisi yang membuka rekrutmen. Pantau terus pengumuman resmi dari UKM
+                                    Saat ini belum ada periode rekrutmen yang dibuka. Pantau terus pengumuman resmi dari UKM
                                     MCI untuk informasi pembukaan pendaftaran berikutnya.
                                 </p>
                             </div>
@@ -102,6 +117,26 @@
                                     class="flex items-center gap-2 bg-white border border-slate-200 rounded-xl px-4 py-2.5">
                                     <span>📢</span> Pantau pengumuman kampus
                                 </div>
+                            </div>
+                        </div>
+                    @elseif ($divisis->count() === 0)
+                        {{-- ══════════════════════════════════════════════════
+                    REKRUTMEN AKTIF — tapi tidak ada divisi aktif
+                ══════════════════════════════════════════════════ --}}
+                        <div
+                            class="flex flex-col items-center justify-center text-center bg-slate-50 border-2 border-dashed border-slate-200 rounded-3xl p-12 gap-5 h-full min-h-[420px]">
+                            <div class="w-20 h-20 rounded-2xl bg-yellow-50 flex items-center justify-center text-4xl">
+                                🚧
+                            </div>
+                            <div>
+                                <h3 class="font-display text-xl font-bold text-slate-700 mb-2">
+                                    Segera Dibuka
+                                </h3>
+                                <p class="text-slate-400 text-sm leading-relaxed max-w-sm">
+                                    Periode <strong class="text-slate-600">{{ $openRecruitment->judul }}</strong> sedang
+                                    disiapkan.
+                                    Divisi akan segera aktif, cek kembali dalam beberapa saat.
+                                </p>
                             </div>
                         </div>
                     @else

@@ -30,7 +30,8 @@
                             {{-- Foto / Inisial --}}
                             <div class="h-52 relative overflow-hidden bg-gradient-to-br from-brand-100 to-brand-200">
                                 @if ($p->foto)
-                                    <img src="{{ asset('storage/' . $p->foto) }}" alt="{{ $p->nama }}"
+                                    <img src="{{ Str::startsWith($p->foto, 'http') ? $p->foto : asset('storage/' . $p->foto) }}"
+                                        alt="{{ $p->nama }}"
                                         class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                                 @else
                                     <div class="w-full h-full flex items-center justify-center">

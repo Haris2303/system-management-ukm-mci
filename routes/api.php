@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\KasController;
 use App\Http\Controllers\Api\MateriController;
 use App\Http\Controllers\Api\PresensiController;
 use App\Http\Controllers\Api\ProkerController;
+use App\Http\Controllers\Api\VoteController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -43,6 +44,14 @@ Route::middleware(['auth:sanctum', 'cek.demisioner'])->prefix('kas')->name('api.
 Route::middleware('auth:sanctum')->prefix('presensi')->group(function () {
     Route::post('/', [PresensiController::class, 'store']);
     Route::get('/riwayat', [PresensiController::class, 'riwayat']);
+});
+
+// ── E-Voting ───────────────────────────────────────────────
+Route::middleware('auth:sanctum')->prefix('elections')->group(function () {
+    Route::get('/',              [VoteController::class, 'index']);   // Daftar pemilihan
+    Route::get('/{id}',         [VoteController::class, 'show']);    // Detail pemilihan
+    Route::post('/{id}/vote',   [VoteController::class, 'vote']);    // Kirim suara
+    Route::get('/{id}/hasil',   [VoteController::class, 'hasil']);   // Hasil voting
 });
 
 // ═════════════════════════════════════════════════════════════
