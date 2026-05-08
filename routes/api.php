@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\KasController;
 use App\Http\Controllers\Api\MateriController;
+use App\Http\Controllers\Api\PresensiController;
 use App\Http\Controllers\Api\ProkerController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -12,7 +13,7 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('auth')->group(function () {
     Route::post('/login',  [AuthController::class, 'login'])->middleware('cek.demisioner');
     Route::post('/register', [AuthController::class, 'register']);
-    Route::post('/logout', [AuthController::class, 'logout']);
+    Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 });
 
 // ═════════════════════════════════════════════════════════════
@@ -36,6 +37,12 @@ Route::middleware(['auth:sanctum', 'cek.demisioner'])->prefix('kas')->name('api.
 
     // Saldo total organisasi (untuk transparansi)
     Route::get('/saldo-transparansi', [KasController::class, 'saldoTransparansi'])->name('saldo');
+});
+
+// Presensi
+Route::middleware('auth:sanctum')->prefix('presensi')->group(function () {
+    Route::post('/', [PresensiController::class, 'store']);
+    Route::get('/riwayat', [PresensiController::class, 'riwayat']);
 });
 
 // ═════════════════════════════════════════════════════════════
