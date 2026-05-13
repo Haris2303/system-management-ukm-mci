@@ -149,12 +149,12 @@
                    @case('Pengumuman') bg-rose-50 text-rose-700 border border-rose-200 @break
                    @default           bg-brand-50 text-brand-700 border border-brand-200
                @endswitch">
-                        {{ $post->getKategoriEmoji() }} {{ $post->kategori }}
+                        {!! $post->getKategoriEmoji() !!} {{ $post->kategori }}
                     </a>
                     @if ($post->is_featured)
                         <span
                             class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-sm font-bold bg-amber-50 text-amber-700 border border-amber-200">
-                            ⭐ Featured
+                            <i class="fa-solid fa-star"></i> Featured
                         </span>
                     @endif
                     <span class="text-slate-400 text-sm">{{ $post->readTime() }}</span>
@@ -209,7 +209,7 @@
                             </svg>
                         </a>
                         <button
-                            onclick="navigator.clipboard.writeText(window.location.href).then(()=>alert('Link disalin! 📋'))"
+                            onclick="navigator.clipboard.writeText(window.location.href).then(()=>alert('Link disalin!'))"
                             class="w-8 h-8 rounded-lg bg-slate-100 hover:bg-brand-600 hover:text-white flex items-center justify-center text-slate-500 transition-all">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -260,7 +260,7 @@
                         <dl class="space-y-3 text-sm">
                             <div>
                                 <dt class="text-slate-400 text-xs mb-0.5">Kategori</dt>
-                                <dd class="font-semibold text-slate-700">{{ $post->getKategoriEmoji() }}
+                                <dd class="font-semibold text-slate-700">{!! $post->getKategoriEmoji() !!}
                                     {{ $post->kategori }}</dd>
                             </div>
                             <div>
@@ -313,7 +313,7 @@
                                 @else
                                     <div
                                         class="w-full h-full flex items-center justify-center text-4xl bg-gradient-to-br from-brand-100 to-brand-200">
-                                        {{ $rel->getKategoriEmoji() }}
+                                        {!! $rel->getKategoriEmoji() !!}
                                     </div>
                                 @endif
                             </div>

@@ -23,17 +23,13 @@ class ElectionResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
-    protected static ?string $recordTitleAttribute = 'id';
+    protected static ?string $recordTitleAttribute = 'judul';
 
     protected static ?string $navigationLabel = 'E-Voting';
 
     protected static ?string $modelLabel = 'Pemilihan';
 
     protected static ?string $pluralModelLabel = 'Daftar Pemilihan';
-
-    protected static string|UnitEnum|null $navigationGroup = 'E-Voting';
-
-    protected static ?int $navigationSort  = 1;
 
     public static function form(Schema $schema): Schema
     {

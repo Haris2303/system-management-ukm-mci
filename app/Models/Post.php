@@ -108,14 +108,14 @@ class Post extends Model
         };
     }
 
-    /** Emoji per kategori */
+    /** Icon FA per kategori (returns HTML <i> tag) */
     public function getKategoriEmoji(): string
     {
         return match ($this->kategori) {
-            'Prestasi'   => '🏆',
-            'Kegiatan'   => '📅',
-            'Pengumuman' => '📢',
-            default      => '📰',
+            'Prestasi'   => '<i class="fa-solid fa-trophy"></i>',
+            'Kegiatan'   => '<i class="fa-regular fa-calendar"></i>',
+            'Pengumuman' => '<i class="fa-solid fa-bullhorn"></i>',
+            default      => '<i class="fa-regular fa-newspaper"></i>',
         };
     }
 

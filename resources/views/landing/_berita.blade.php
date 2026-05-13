@@ -75,7 +75,7 @@
                                 @case('Pengumuman') bg-rose-400/20 text-rose-300 border border-rose-400/30 @break
                                 @default           bg-brand-400/20 text-brand-300 border border-brand-400/30
                             @endswitch">
-                                {{ $featured->getKategoriEmoji() }} {{ $featured->kategori }}
+                                {!! $featured->getKategoriEmoji() !!} {{ $featured->kategori }}
                             </span>
                             <span class="text-white/50 text-xs">{{ $featured->readTime() }}</span>
                         </div>
@@ -123,7 +123,7 @@
                                 @else
                                     <div
                                         class="w-full h-full bg-gradient-to-br from-brand-200 to-brand-400 flex items-center justify-center text-2xl">
-                                        {{ $post->getKategoriEmoji() }}
+                                        {!! $post->getKategoriEmoji() !!}
                                     </div>
                                 @endif
                             </div>
@@ -189,7 +189,7 @@
                             @default           from-brand-100 to-brand-200
                         @endswitch
                         flex items-center justify-center text-4xl">
-                                        {{ $post->getKategoriEmoji() }}
+                                        {!! $post->getKategoriEmoji() !!}
                                     </div>
                                 @endif
                                 {{-- Kategori overlay --}}
@@ -238,12 +238,16 @@
         @else
             {{-- ── Placeholder saat belum ada berita ──────────────── --}}
             <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                @foreach ([['📰', 'Berita', 'Selamat Datang di UKM MCI', 'Berita pertama kami akan segera hadir. Pantau terus halaman ini!'], ['🏆', 'Prestasi', 'Juara 1 Hackathon Nasional', 'Tim MCI berhasil meraih podium pertama dalam kompetisi bergengsi.'], ['📅', 'Kegiatan', 'Workshop Web Development', 'Kegiatan workshop intensif untuk meningkatkan skill anggota baru.']] as [$emoji, $kat, $judul, $desc])
+                @foreach ([
+                    ['fa-regular fa-newspaper', 'Berita',   'Selamat Datang di UKM MCI',    'Berita pertama kami akan segera hadir. Pantau terus halaman ini!'],
+                    ['fa-solid fa-trophy',      'Prestasi', 'Juara 1 Hackathon Nasional',   'Tim MCI berhasil meraih podium pertama dalam kompetisi bergengsi.'],
+                    ['fa-regular fa-calendar',  'Kegiatan', 'Workshop Web Development',     'Kegiatan workshop intensif untuk meningkatkan skill anggota baru.'],
+                ] as [$iconClass, $kat, $judul, $desc])
                     <div
                         class="reveal reveal-delay-{{ $loop->index + 1 }} rounded-2xl border-2 border-dashed border-slate-200 overflow-hidden opacity-60">
                         <div
-                            class="h-40 bg-gradient-to-br from-slate-100 to-slate-50 flex items-center justify-center text-5xl">
-                            {{ $emoji }}</div>
+                            class="h-40 bg-gradient-to-br from-slate-100 to-slate-50 flex items-center justify-center text-5xl text-slate-400">
+                            <i class="{{ $iconClass }}"></i></div>
                         <div class="p-5">
                             <span
                                 class="text-[10px] font-bold uppercase tracking-wider text-slate-400">{{ $kat }}</span>

@@ -10,7 +10,8 @@ use RuntimeException;
 
 class RagService
 {
-    private const MODEL          = 'openai/gpt-oss-120b:free';
+    // private const MODEL          = 'openai/gpt-oss-120b:free';
+    private const MODEL          = 'openrouter/free';
     private const ENDPOINT       = 'https://openrouter.ai/api/v1/chat/completions';
     private const TOP_K          = 5;
     private const MIN_SIMILARITY = 0.3;

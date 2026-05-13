@@ -1,0 +1,117 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam ArrowColor #336699
+skinparam ArrowFontName Times New Roman
+skinparam DefaultFontName Times New Roman
+skinparam DefaultFontSize 12
+skinparam TitleFontSize 18
+skinparam RectangleBorderColor #336699
+skinparam RectangleBackgroundColor #DDEEFF
+skinparam DiamondBackgroundColor #FFF8DC
+skinparam DiamondBorderColor #CC9900
+skinparam NoteBackgroundColor #F0FFF0
+skinparam NoteBorderColor #339933
+
+title Flowchart Alur Aplikasi UKM MCI Digitalisasi
+
+start
+
+:Pengguna mengakses aplikasi;
+
+:Halaman Landing Page\n(Profil UKM, Berita, Divisi,\nGallery, Program);
+
+fork
+  :Baca Berita / Konten;
+  stop
+fork again
+  :Tanya Chatbot RAG;
+  stop
+fork again
+  :Form Pendaftaran Anggota;
+  :Isi data diri & pilih divisi;
+  :Jawab pertanyaan seleksi divisi;
+  :Submit pendaftaran;
+  stop
+fork again
+  :Login ke Sistem;
+endfork
+
+if (Autentikasi berhasil?) then (Tidak)
+  :Tampilkan pesan error;
+  stop
+else (Ya)
+endif
+
+if (Role pengguna?) then (Admin / Pengurus)
+
+  :Dashboard Admin Panel (Filament);
+
+  fork
+    :Manajemen Pengguna\n& Hak Akses (Role);
+    stop
+  fork again
+    :Manajemen Konten\n(Berita, Galeri, Program);
+    stop
+  fork again
+    :Manajemen Divisi\n& Profil UKM;
+    stop
+  fork again
+    :Rekrutmen Anggota;
+    :Lihat data pendaftar;
+    if (Keputusan seleksi?) then (Terima)
+      :Status → Lulus;
+      :Buat akun user anggota;
+    else (Tolak)
+      :Status → Ditolak;
+    endif
+    stop
+  fork again
+    :Manajemen Materi;
+    stop
+  fork again
+    :Program Kerja (Proker);
+    :Buat proker & tugas;
+    :Update progress;
+    stop
+  fork again
+    :Manajemen Agenda & Absensi;
+    :Buat agenda & generate QR;
+    :Anggota scan QR → presensi tercatat;
+    stop
+  fork again
+    :Keuangan (EKA);
+    :Buat tagihan kas anggota;
+    :Catat transaksi kas;
+    stop
+  fork again
+    :E-Voting;
+    :Buat election & kandidat;
+    :Aktifkan voting;
+    :Anggota memberikan suara;
+    :Lihat rekap hasil voting;
+    stop
+  fork again
+    :Dokumen RAG Chatbot;
+    :Upload dokumen PDF;
+    :Sistem proses & embed chunks;
+    stop
+  fork again
+    :Pengaturan ID Card;
+    stop
+  endfork
+
+else (Anggota)
+
+  :Dashboard Anggota;
+
+  fork
+    :Lihat & Download ID Card;
+    stop
+  fork again
+    :Profil Publik (via QR Code);
+    stop
+  endfork
+
+endif
+
+@enduml

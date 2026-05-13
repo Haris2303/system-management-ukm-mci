@@ -563,12 +563,17 @@
         (() => {
             'use strict';
 
+            function generateUUID() {
+                return Math.random().toString(36).substring(2, 9) + '-' + Date.now().toString(36);
+            }
+
             // ── State ──────────────────────────────────────────────────────
             const SESSION_KEY = 'mci_chat_session';
             const HISTORY_KEY = 'mci_chat_history';
             let isOpen = false;
             let isStreaming = false;
-            let sessionId = localStorage.getItem(SESSION_KEY) || crypto.randomUUID();
+            // let sessionId = localStorage.getItem(SESSION_KEY) || crypto.randomUUID();
+            let sessionId = localStorage.getItem(SESSION_KEY) || generateUUID();
             localStorage.setItem(SESSION_KEY, sessionId);
 
             // ── DOM refs ───────────────────────────────────────────────────
@@ -833,7 +838,8 @@
             clearBtn.addEventListener('click', () => {
                 if (!confirm('Hapus seluruh percakapan?')) return;
                 messagesEl.innerHTML = '';
-                sessionId = crypto.randomUUID();
+                // sessionId = crypto.randomUUID();
+                sessionId = generateUUID();
                 localStorage.setItem(SESSION_KEY, sessionId);
                 localStorage.removeItem(HISTORY_KEY);
                 showWelcome();

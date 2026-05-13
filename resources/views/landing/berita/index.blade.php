@@ -11,7 +11,7 @@
         <div class="relative z-10 max-w-7xl mx-auto px-6 lg:px-8 text-center">
             <div
                 class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brand-50 border border-brand-100 text-brand-600 text-sm font-semibold mb-5">
-                📰 Pusat Informasi UKM MCI
+                <i class="fa-regular fa-newspaper"></i> Pusat Informasi UKM MCI
             </div>
             <h1 class="font-display text-4xl lg:text-6xl font-bold text-slate-900 leading-tight mb-4">
                 Berita <span class="gradient-text">&amp; Kegiatan</span>
@@ -51,18 +51,18 @@
                 @foreach ($kategoris as $kat)
                     @php
                         $isActive = $kategori === $kat || ($kat === 'semua' && !$kategori);
-                        $emoji = match ($kat) {
-                            'Berita' => '📰',
-                            'Kegiatan' => '📅',
-                            'Prestasi' => '🏆',
-                            'Pengumuman' => '📢',
-                            default => '🗂️',
+                        $iconClass = match ($kat) {
+                            'Berita' => 'fa-regular fa-newspaper',
+                            'Kegiatan' => 'fa-regular fa-calendar',
+                            'Prestasi' => 'fa-solid fa-trophy',
+                            'Pengumuman' => 'fa-solid fa-bullhorn',
+                            default => 'fa-solid fa-folder-open',
                         };
                     @endphp
                     <a href="{{ route('berita.index', array_filter(['kategori' => $kat === 'semua' ? null : $kat, 'q' => $search])) }}"
                         class="flex-shrink-0 flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200
                {{ $isActive ? 'bg-brand-600 text-white shadow-md shadow-brand-200' : 'text-slate-600 hover:bg-brand-50 hover:text-brand-600' }}">
-                        <span>{{ $emoji }}</span>
+                        <i class="{{ $iconClass }}"></i>
                         <span>{{ ucfirst($kat) }}</span>
                     </a>
                 @endforeach
@@ -90,19 +90,20 @@
                             @else
                                 <div
                                     class="w-full h-full bg-gradient-to-br from-brand-400 to-brand-700 flex items-center justify-center text-7xl">
-                                    {{ $featured->getKategoriEmoji() }}
+                                    {!! $featured->getKategoriEmoji() !!}
                                 </div>
                             @endif
                             <div class="absolute top-4 left-4">
-                                <span class="px-3 py-1.5 rounded-full bg-amber-400 text-white text-xs font-bold shadow">⭐
-                                    Featured</span>
+                                <span
+                                    class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-amber-400 text-white text-xs font-bold shadow">
+                                    <i class="fa-solid fa-star fa-xs"></i> Featured</span>
                             </div>
                         </div>
                         <div class="p-8 lg:p-10 flex flex-col justify-center gap-4">
                             <div class="flex items-center gap-3">
                                 <span
                                     class="text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-brand-50 text-brand-600">
-                                    {{ $featured->getKategoriEmoji() }} {{ $featured->kategori }}
+                                    {!! $featured->getKategoriEmoji() !!} {{ $featured->kategori }}
                                 </span>
                                 <span class="text-slate-400 text-xs">{{ $featured->readTime() }}</span>
                             </div>
@@ -151,7 +152,7 @@
                     </p>
                     <a href="{{ route('berita.index') }}"
                         class="text-sm text-slate-400 hover:text-red-500 transition-colors">
-                        ✕ Reset
+                        <i class="fa-solid fa-xmark mr-0.5"></i> Reset
                     </a>
                 </div>
             @endif
@@ -177,7 +178,7 @@
                             @case('Pengumuman') bg-gradient-to-br from-rose-100 to-rose-200 @break
                             @default           bg-gradient-to-br from-brand-100 to-brand-200
                         @endswitch">
-                                        {{ $post->getKategoriEmoji() }}
+                                        {!! $post->getKategoriEmoji() !!}
                                     </div>
                                 @endif
                                 {{-- Badge --}}
@@ -195,8 +196,8 @@
                                 </div>
                                 @if ($post->is_featured)
                                     <div class="absolute top-3 right-3">
-                                        <span
-                                            class="px-2 py-1 rounded-lg text-[10px] font-bold bg-amber-400 text-white">⭐</span>
+                                        <span class="px-2 py-1 rounded-lg text-[10px] font-bold bg-amber-400 text-white"><i
+                                                class="fa-solid fa-star fa-xs"></i></span>
                                     </div>
                                 @endif
                             </div>
@@ -229,7 +230,8 @@
                                     </div>
                                     <div class="flex items-center gap-2.5">
                                         <span class="flex items-center gap-1">
-                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <svg class="w-3 h-3" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                     d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -252,7 +254,7 @@
                 @endif
             @else
                 <div class="text-center py-24">
-                    <div class="text-6xl mb-4">📭</div>
+                    <div class="text-6xl mb-4 text-slate-300"><i class="fa-regular fa-envelope-open"></i></div>
                     <h3 class="font-display text-xl font-bold text-slate-700 mb-2">Tidak Ada Berita Ditemukan</h3>
                     <p class="text-slate-400 mb-6">Coba kata kunci lain atau hapus filter yang aktif.</p>
                     <a href="{{ route('berita.index') }}"

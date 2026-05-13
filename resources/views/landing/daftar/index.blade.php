@@ -46,7 +46,7 @@
                         @if ($openRecruitment)
                             <div class="flex items-center gap-4 mt-4 text-sm text-slate-500">
                                 <span class="flex items-center gap-1.5">
-                                    📅 Ditutup <strong
+                                    <i class="fa-regular fa-calendar text-slate-400"></i> Ditutup <strong
                                         class="text-slate-700">{{ $openRecruitment->waktu_selesai->translatedFormat('d M Y, H:i') }}</strong>
                                 </span>
                             </div>
@@ -55,12 +55,17 @@
 
                     {{-- Keuntungan --}}
                     <div class="space-y-3">
-                        @foreach ([['🚀', 'Akses Workshop Eksklusif', 'Pelatihan coding, design, dan tech leadership setiap bulan'], ['🏆', 'Ikut Kompetisi Bergengsi', 'Dukungan penuh untuk lomba nasional & internasional'], ['💼', 'Bangun Portofolio Nyata', 'Project kolaboratif yang siap masuk CV Anda'], ['🌐', 'Jaringan Alumni Luas', 'Terhubung dengan alumni di perusahaan tech terkemuka']] as [$icon, $title, $desc])
+                        @foreach ([
+                        ['fa-solid fa-rocket',    'Akses Workshop Eksklusif', 'Pelatihan coding, design, dan tech leadership setiap bulan'],
+                        ['fa-solid fa-trophy',    'Ikut Kompetisi Bergengsi', 'Dukungan penuh untuk lomba nasional & internasional'],
+                        ['fa-solid fa-briefcase', 'Bangun Portofolio Nyata',  'Project kolaboratif yang siap masuk CV Anda'],
+                        ['fa-solid fa-globe',     'Jaringan Alumni Luas',     'Terhubung dengan alumni di perusahaan tech terkemuka'],
+                    ] as [$iconClass, $title, $desc])
                             <div
                                 class="flex gap-4 items-start p-4 rounded-2xl hover:bg-brand-50/50 transition-colors group">
                                 <div
-                                    class="w-11 h-11 rounded-xl bg-brand-50 group-hover:bg-brand-100 flex items-center justify-center text-xl flex-shrink-0 transition-colors">
-                                    {{ $icon }}
+                                    class="w-11 h-11 rounded-xl bg-brand-50 group-hover:bg-brand-100 flex items-center justify-center text-brand-500 flex-shrink-0 transition-colors">
+                                    <i class="{{ $iconClass }}"></i>
                                 </div>
                                 <div>
                                     <div class="font-semibold text-slate-800 text-sm">{{ $title }}</div>
@@ -78,7 +83,7 @@
                                 @foreach ($divisis as $div)
                                     <span
                                         class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-brand-50 text-brand-700 text-xs font-semibold border border-brand-100">
-                                        <span>{{ $div->icon }}</span> {{ $div->nama }}
+                                        <i class="{{ $div->icon }} fa-xs"></i> {{ $div->nama }}
                                     </span>
                                 @endforeach
                             </div>
@@ -96,8 +101,8 @@
                 ══════════════════════════════════════════════════ --}}
                         <div
                             class="flex flex-col items-center justify-center text-center bg-slate-50 border-2 border-dashed border-slate-200 rounded-3xl p-12 gap-5 h-full min-h-[420px]">
-                            <div class="w-20 h-20 rounded-2xl bg-slate-100 flex items-center justify-center text-4xl">
-                                🔒
+                            <div class="w-20 h-20 rounded-2xl bg-slate-100 flex items-center justify-center text-4xl text-slate-400">
+                                <i class="fa-solid fa-lock"></i>
                             </div>
                             <div>
                                 <h3 class="font-display text-xl font-bold text-slate-700 mb-2">
@@ -111,11 +116,11 @@
                             <div class="flex flex-col sm:flex-row gap-3 text-xs text-slate-400 mt-2">
                                 <div
                                     class="flex items-center gap-2 bg-white border border-slate-200 rounded-xl px-4 py-2.5">
-                                    <span>📱</span> Ikuti Instagram UKM MCI
+                                    <i class="fa-brands fa-instagram text-pink-400"></i> Ikuti Instagram UKM MCI
                                 </div>
                                 <div
                                     class="flex items-center gap-2 bg-white border border-slate-200 rounded-xl px-4 py-2.5">
-                                    <span>📢</span> Pantau pengumuman kampus
+                                    <i class="fa-solid fa-bullhorn text-slate-400"></i> Pantau pengumuman kampus
                                 </div>
                             </div>
                         </div>
@@ -125,8 +130,8 @@
                 ══════════════════════════════════════════════════ --}}
                         <div
                             class="flex flex-col items-center justify-center text-center bg-slate-50 border-2 border-dashed border-slate-200 rounded-3xl p-12 gap-5 h-full min-h-[420px]">
-                            <div class="w-20 h-20 rounded-2xl bg-yellow-50 flex items-center justify-center text-4xl">
-                                🚧
+                            <div class="w-20 h-20 rounded-2xl bg-amber-50 flex items-center justify-center text-4xl text-amber-400">
+                                <i class="fa-solid fa-triangle-exclamation"></i>
                             </div>
                             <div>
                                 <h3 class="font-display text-xl font-bold text-slate-700 mb-2">
@@ -148,7 +153,7 @@
                         @if (session('sukses'))
                             <div
                                 class="mb-6 bg-emerald-50 border border-emerald-200 rounded-2xl p-5 flex items-start gap-3">
-                                <span class="text-2xl">🎉</span>
+                                <i class="fa-solid fa-circle-check text-2xl text-emerald-500 mt-0.5 flex-shrink-0"></i>
                                 <div>
                                     <div class="font-semibold text-emerald-800">Pendaftaran Berhasil!</div>
                                     <div class="text-emerald-600 text-sm mt-1 leading-relaxed">{{ session('sukses') }}</div>
@@ -160,7 +165,7 @@
                         @if ($errors->any())
                             <div class="mb-6 bg-red-50 border border-red-200 rounded-2xl p-5">
                                 <div class="font-semibold text-red-800 mb-2 flex items-center gap-2">
-                                    <span>⚠️</span> Mohon periksa kembali:
+                                    <i class="fa-solid fa-triangle-exclamation"></i> Mohon periksa kembali:
                                 </div>
                                 <ul class="space-y-1">
                                     @foreach ($errors->all() as $error)
@@ -378,7 +383,7 @@
                                                     </svg>
                                                 </div>
 
-                                                <span class="text-2xl mb-2 block" x-text="div.icon"></span>
+                                                <span class="text-xl mb-2 block text-brand-500"><i :class="div.icon"></i></span>
                                                 <p class="font-bold text-slate-800 text-sm" x-text="div.nama"></p>
                                                 <p class="text-slate-400 text-xs mt-1 leading-relaxed line-clamp-2"
                                                     x-text="div.deskripsi || 'Klik untuk memilih divisi ini.'"></p>
@@ -400,13 +405,13 @@
 
                                     {{-- Info saat tidak ada divisi --}}
                                     <div x-show="divisis.length === 0" class="text-center py-10 text-slate-400 text-sm">
-                                        😔 Belum ada divisi yang membuka pendaftaran saat ini.
+                                        <i class="fa-regular fa-face-sad-tear mr-1"></i> Belum ada divisi yang membuka pendaftaran saat ini.
                                     </div>
 
                                     {{-- Info: divisi terpilih tidak punya pertanyaan --}}
                                     <div x-show="form.divisi_id && selectedDivisi?.pertanyaan?.length === 0"
                                         class="mt-3 flex items-start gap-3 p-4 bg-blue-50 border border-blue-200 rounded-xl text-sm text-blue-700">
-                                        <span class="text-lg flex-shrink-0">ℹ️</span>
+                                        <i class="fa-solid fa-circle-info text-lg flex-shrink-0 mt-0.5"></i>
                                         <span>
                                             Divisi ini tidak memiliki pertanyaan seleksi.
                                             Klik <strong>Kirim Pendaftaran</strong> untuk langsung mendaftar tanpa mengisi
@@ -444,7 +449,7 @@
                                     {{-- Info divisi yang dipilih --}}
                                     <div
                                         class="flex items-center gap-3 p-4 rounded-2xl bg-brand-50 border border-brand-100 mb-6">
-                                        <span class="text-2xl" x-text="selectedDivisi?.icon"></span>
+                                        <span class="text-xl text-brand-500"><i :class="selectedDivisi?.icon"></i></span>
                                         <div>
                                             <p class="font-bold text-brand-800 text-sm"
                                                 x-text="'Divisi ' + selectedDivisi?.nama"></p>
@@ -483,7 +488,7 @@
 
                                     {{-- Privacy note --}}
                                     <p class="text-xs text-slate-400 leading-relaxed mt-5">
-                                        🔒 Data Anda disimpan secara aman. Jawaban akan dinilai oleh Ketua Divisi terkait.
+                                        <i class="fa-solid fa-lock mr-1 text-slate-400"></i> Data Anda disimpan secara aman. Jawaban akan dinilai oleh Ketua Divisi terkait.
                                     </p>
 
                                     {{-- Navigasi --}}
@@ -494,7 +499,7 @@
                                         </button>
                                         <button type="submit" :disabled="isSubmitting"
                                             class="flex-1 flex items-center justify-center gap-2 px-6 py-4 rounded-2xl bg-brand-600 text-white font-bold text-sm hover:bg-brand-700 shadow-lg shadow-brand-200 hover:-translate-y-0.5 transition-all duration-200 disabled:opacity-70 disabled:cursor-not-allowed disabled:translate-y-0">
-                                            <span x-show="!isSubmitting">Kirim Pendaftaran 🚀</span>
+                                            <span x-show="!isSubmitting">Kirim Pendaftaran <i class="fa-solid fa-paper-plane ml-0.5"></i></span>
                                             <span x-show="isSubmitting" class="flex items-center gap-2">
                                                 <svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
                                                     <circle class="opacity-25" cx="12" cy="12" r="10"

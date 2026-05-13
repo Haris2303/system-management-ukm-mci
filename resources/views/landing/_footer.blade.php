@@ -65,9 +65,14 @@
             <div>
                 <div class="font-display font-bold text-sm mb-5 text-white">Kontak</div>
                 <ul class="space-y-4">
-                    @foreach ([['📧', 'mci@kampus.ac.id'], ['📱', '+62 812-3456-7890'], ['📍', 'Gedung Teknik Lt. 2,\nUniversitas Anda'], ['🕐', 'Senin–Jumat, 09.00–17.00 WIT']] as [$icon, $text])
+                    @foreach ([
+                        ['fa-regular fa-envelope',    'mci@kampus.ac.id'],
+                        ['fa-solid fa-mobile-screen', '+62 812-3456-7890'],
+                        ['fa-solid fa-location-dot',  'Gedung Teknik Lt. 2, Universitas Anda'],
+                        ['fa-regular fa-clock',       'Senin–Jumat, 09.00–17.00 WIT'],
+                    ] as [$iconClass, $text])
                         <li class="flex items-start gap-2.5">
-                            <span class="text-base mt-0.5">{{ $icon }}</span>
+                            <i class="{{ $iconClass }} text-slate-500 mt-0.5 w-4 text-center flex-shrink-0"></i>
                             <span class="text-slate-400 text-sm font-light leading-relaxed">{{ $text }}</span>
                         </li>
                     @endforeach
@@ -78,7 +83,7 @@
         {{-- Bottom bar --}}
         <div class="py-6 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3">
             <p class="text-slate-500 text-xs font-light">
-                © {{ date('Y') }} UKM MCI. Dibuat dengan ❤️ oleh Tim Teknologi MCI.
+                © {{ date('Y') }} UKM MCI. Dibuat dengan <i class="fa-solid fa-heart text-red-400 mx-0.5"></i> oleh Tim Teknologi MCI.
             </p>
             <div class="flex items-center gap-1">
                 <div class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></div>

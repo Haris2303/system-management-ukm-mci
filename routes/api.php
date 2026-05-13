@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\MateriController;
 use App\Http\Controllers\Api\PresensiController;
 use App\Http\Controllers\Api\ProkerController;
 use App\Http\Controllers\Api\VoteController;
+use App\Http\Controllers\IdCardController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -70,3 +71,11 @@ Route::middleware(['auth:sanctum', 'cek.demisioner'])->prefix('proker')->name('a
     Route::get('/',     [ProkerController::class, 'index'])->name('index');
     Route::get('/{id}', [ProkerController::class, 'show'])->name('show');
 });
+
+// ═════════════════════════════════════════════════════════════
+// ID CARD
+// ═════════════════════════════════════════════════════════════
+// Milik user yang login
+Route::middleware('auth:sanctum')->get('/id-card/me', [IdCardController::class, 'apiMe'])->name('api.id-card.me');
+// Publik — untuk ditampilkan di mobile profile orang lain
+Route::get('/id-card/{userId}', [IdCardController::class, 'apiShowUser'])->name('api.id-card.show');

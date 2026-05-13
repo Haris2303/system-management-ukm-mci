@@ -37,7 +37,6 @@ class DivisiForm
                         TextInput::make('icon')
                             ->label('Ikon (Emoji)')
                             ->default('💻')
-                            ->maxLength(10)
                             ->helperText('Masukkan satu emoji. Contoh: 💻 🤖 🎨 🔒 ☁️'),
 
                         TextInput::make('urut')

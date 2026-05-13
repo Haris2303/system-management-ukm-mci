@@ -29,8 +29,10 @@ class DivisisTable
                     ->width(50),
 
                 TextColumn::make('icon')
-                    ->label('')
-                    ->width(40),
+                    ->label('Icon')
+                    ->formatStateUsing(fn($state) => '<span class="text-brand-500 text-xl"><i class="' . e($state) . '"></i></span>')
+                    ->html()
+                    ->width(60),
 
                 TextColumn::make('nama')
                     ->label('Nama Divisi')

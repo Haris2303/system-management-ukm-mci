@@ -1,0 +1,135 @@
+<svg width="300" height="534" viewBox="0 0 300 534"
+     xmlns="http://www.w3.org/2000/svg">
+
+  <defs>
+    <pattern id="hatch-blue" patternUnits="userSpaceOnUse" width="8" height="8" patternTransform="rotate(45)">
+      <rect width="8" height="8" fill="#dbeafe"/>
+      <line x1="0" y1="0" x2="0" y2="8" stroke="#93c5fd" stroke-width="3"/>
+    </pattern>
+    <pattern id="hatch-side" patternUnits="userSpaceOnUse" width="6" height="6" patternTransform="rotate(45)">
+      <rect width="6" height="6" fill="#fef3c7"/>
+      <line x1="0" y1="0" x2="0" y2="6" stroke="#fcd34d" stroke-width="2.5"/>
+    </pattern>
+    <clipPath id="card">
+      <rect width="300" height="534" rx="14"/>
+    </clipPath>
+  </defs>
+
+  <g clip-path="url(#card)">
+
+    <!-- ═══════════════════════════════════════════
+         ZONE 1 — HEADER (y:0–64)
+         Background image tampil penuh — BEBAS DESAIN
+         ═══════════════════════════════════════════ -->
+    <rect x="0" y="0" width="300" height="64" fill="url(#hatch-blue)"/>
+    <!-- header skeleton -->
+    <circle cx="34" cy="32" r="17" fill="none" stroke="#3b82f6" stroke-width="1.5" stroke-dasharray="4,2"/>
+    <text x="34" y="38" text-anchor="middle" font-family="Arial" font-size="11" font-weight="bold" fill="#2563eb">M</text>
+    <rect x="58" y="21" width="110" height="7"  rx="3" fill="rgba(59,130,246,.25)"/>
+    <rect x="58" y="34" width="175" height="11" rx="3" fill="rgba(59,130,246,.35)"/>
+    <text x="150" y="57" text-anchor="middle" font-family="Arial" font-size="8.5" font-weight="700" fill="#1d4ed8">
+      ✓ HEADER — BEBAS DESAIN (64px)
+    </text>
+
+    <!-- ═══════════════════════════════════════════
+         SIDE STRIPS (x:0–8 dan x:292–300, y:64–524)
+         Background image visible sebagai border strip
+         ═══════════════════════════════════════════ -->
+    <rect x="0"   y="64" width="8" height="460" fill="url(#hatch-side)"/>
+    <rect x="292" y="64" width="8" height="460" fill="url(#hatch-side)"/>
+
+    <!-- ═══════════════════════════════════════════
+         ZONE 2 — FOTO (x:8–292, y:64–196)
+         White panel 97% — konten foto terpusat
+         ═══════════════════════════════════════════ -->
+    <rect x="8" y="64" width="284" height="132" fill="white"/>
+    <!-- Photo placeholder: centered 96×96, x=(300/2)-48=102, y=64+22=86 -->
+    <rect x="102" y="86" width="96" height="96" rx="14"
+          fill="#eff6ff" stroke="#93c5fd" stroke-width="1.5" stroke-dasharray="4,2"/>
+    <text x="150" y="131" text-anchor="middle" font-family="Arial" font-size="9"   fill="#3b82f6">📷 FOTO</text>
+    <text x="150" y="144" text-anchor="middle" font-family="Arial" font-size="7.5" fill="#93c5fd">96 × 96 px</text>
+    <text x="150" y="155" text-anchor="middle" font-family="Arial" font-size="7"   fill="#bfdbfe">border 3px biru</text>
+
+    <!-- ═══════════════════════════════════════════
+         ZONE 3 — INFO (x:8–292, y:196–317)
+         Nama · Role · Divisi — terpusat
+         ═══════════════════════════════════════════ -->
+    <rect x="8" y="196" width="284" height="121" fill="white"/>
+    <!-- Nama -->
+    <rect x="65" y="208" width="170" height="16" rx="4" fill="#f1f5f9"/>
+    <text x="150" y="220" text-anchor="middle" font-family="Arial" font-size="8" fill="#94a3b8">NAMA ANGGOTA</text>
+    <!-- Role badge -->
+    <rect x="105" y="232" width="90" height="18" rx="9" fill="#dbeafe" stroke="#bfdbfe" stroke-width="1"/>
+    <text x="150" y="245" text-anchor="middle" font-family="Arial" font-size="8" fill="#1d4ed8">JABATAN</text>
+    <!-- Divisi pill -->
+    <rect x="72" y="258" width="156" height="24" rx="8" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
+    <text x="102" y="275" text-anchor="middle" font-family="Arial" font-size="7" fill="#94a3b8">DIVISI</text>
+    <line x1="115" y1="262" x2="115" y2="278" stroke="#e2e8f0" stroke-width="1"/>
+    <text x="185" y="275" text-anchor="middle" font-family="Arial" font-size="8.5" fill="#334155">Nama Divisi</text>
+    <!-- Warning -->
+    <text x="150" y="308" text-anchor="middle" font-family="Arial" font-size="7.5" font-weight="700" fill="#dc2626">
+      ⚠  ZONA KONTEN — dilapis 97% PUTIH
+    </text>
+
+    <!-- ═══════════════════════════════════════════
+         DIVIDER (y:317)
+         ═══════════════════════════════════════════ -->
+    <rect x="0"   y="317" width="8"   height="1" fill="url(#hatch-side)"/>
+    <rect x="292" y="317" width="8"   height="1" fill="url(#hatch-side)"/>
+    <line x1="8" y1="317" x2="292" y2="317" stroke="#e2e8f0" stroke-width="1"/>
+
+    <!-- ═══════════════════════════════════════════
+         ZONE 4 — QR CODE (x:8–292, y:318–496)
+         QR terpusat, 120×120px
+         ═══════════════════════════════════════════ -->
+    <rect x="8"   y="318" width="284" height="178" fill="white"/>
+    <rect x="0"   y="318" width="8"   height="178" fill="url(#hatch-side)"/>
+    <rect x="292" y="318" width="8"   height="178" fill="url(#hatch-side)"/>
+
+    <!-- scan label -->
+    <text x="150" y="342" text-anchor="middle" font-family="Arial" font-size="8" fill="#94a3b8" font-weight="600"
+          letter-spacing="1">SCAN UNTUK VERIFIKASI</text>
+
+    <!-- QR placeholder: centered 120×120, x=(300/2)-60=90, y=318+18+10+10=356 -->
+    <rect x="90" y="352" width="120" height="120" rx="8" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5"/>
+    <!-- QR mock dots -->
+    <rect x="98"  y="360" width="22" height="22" rx="2" fill="#334155"/>
+    <rect x="124" y="360" width="22" height="22" rx="2" fill="#334155"/>
+    <rect x="150" y="360" width="22" height="22" rx="2" fill="#334155"/>
+    <rect x="98"  y="386" width="8"  height="8"  rx="1" fill="#334155"/>
+    <rect x="110" y="386" width="8"  height="8"  rx="1" fill="#334155"/>
+    <rect x="122" y="386" width="8"  height="8"  rx="1" fill="#334155"/>
+    <rect x="150" y="386" width="22" height="22" rx="2" fill="#334155"/>
+    <rect x="98"  y="398" width="22" height="22" rx="2" fill="#334155"/>
+    <text x="150" y="468" text-anchor="middle" font-family="Arial" font-size="8"   fill="#94a3b8">QR Code · 120 × 120 px</text>
+    <text x="150" y="488" text-anchor="middle" font-family="Arial" font-size="7.5" font-weight="700" fill="#dc2626">
+      ⚠  ZONA KONTEN — dilapis 97% PUTIH
+    </text>
+
+    <!-- ═══════════════════════════════════════════
+         ZONE 5 — FOOTER (x:8–292, y:496–524)
+         ═══════════════════════════════════════════ -->
+    <rect x="8"   y="496" width="284" height="28" fill="#f8fafc"/>
+    <rect x="0"   y="496" width="8"   height="28" fill="url(#hatch-side)"/>
+    <rect x="292" y="496" width="8"   height="28" fill="url(#hatch-side)"/>
+    <line x1="8" y1="496" x2="292" y2="496" stroke="#f1f5f9" stroke-width="1"/>
+    <text x="150" y="514" text-anchor="middle" font-family="Arial" font-size="8" fill="#94a3b8">
+      UKM MCI · Kartu Anggota Resmi · 2025
+    </text>
+
+    <!-- Bottom visible strip -->
+    <rect x="0" y="524" width="300" height="10" fill="url(#hatch-side)"/>
+
+  </g>
+
+  <!-- Card border outline -->
+  <rect x="0.75" y="0.75" width="298.5" height="532.5" rx="13.5"
+        fill="none" stroke="#334155" stroke-width="1.5"/>
+
+  <!-- Dimension annotation -->
+  <line x1="0" y1="537" x2="300" y2="537" stroke="#64748b" stroke-width="0.75"/>
+  <line x1="0"   y1="534" x2="0"   y2="540" stroke="#64748b" stroke-width="0.75"/>
+  <line x1="300" y1="534" x2="300" y2="540" stroke="#64748b" stroke-width="0.75"/>
+  <text x="150" y="548" text-anchor="middle" font-family="Arial" font-size="8.5" fill="#475569">300 px</text>
+
+</svg>

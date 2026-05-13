@@ -26,12 +26,8 @@
                     <div
                         class="reveal reveal-delay-{{ min(($loop->index % 4) + 1, 4) }} bg-white rounded-2xl p-6 border border-slate-100 tech-card shadow-sm group">
                         <div
-                            class="w-12 h-12 rounded-xl bg-brand-50 group-hover:bg-brand-100 flex items-center justify-center text-2xl mb-5 transition-colors duration-200">
-                            {{ $divisi->icon }}
-                        </div>
-                        <div
-                            class="inline-block text-[10px] font-bold tracking-widest uppercase text-brand-400 bg-brand-50 px-2 py-0.5 rounded-full mb-2">
-                            {{ $divisi->kategori }}
+                            class="w-12 h-12 rounded-xl bg-brand-50 group-hover:bg-brand-100 flex items-center justify-center text-xl mb-5 transition-colors duration-200 text-brand-500">
+                            <i class="{{ $divisi->icon }}"></i>
                         </div>
                         <h3
                             class="font-display font-bold text-slate-800 text-lg mb-2 group-hover:text-brand-600 transition-colors">
@@ -46,12 +42,12 @@
         @else
             {{-- Default programs jika database kosong --}}
             <div class="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-                @foreach ([['💻', 'Divisi', 'Web Development', 'Membangun aplikasi web modern dengan framework terkini'], ['🤖', 'Divisi', 'AI & Machine Learning', 'Mengeksplorasi kecerdasan buatan dan data science'], ['📱', 'Divisi', 'Mobile Development', 'Merancang aplikasi Android & iOS yang inovatif'], ['🎨', 'Divisi', 'UI/UX Design', 'Menciptakan pengalaman pengguna yang intuitif dan estetis'], ['🔒', 'Divisi', 'Cyber Security', 'Mempelajari keamanan sistem dan ethical hacking'], ['☁️', 'Divisi', 'Cloud & DevOps', 'Infrastruktur cloud, CI/CD, dan otomasi deployment'], ['🏆', 'Program', 'Lomba & Hackathon', 'Mengikuti kompetisi teknologi tingkat nasional'], ['📚', 'Program', 'Workshop Bulanan', 'Pelatihan intensif dengan instruktur berpengalaman']] as [$icon, $kategori, $nama, $desc])
+                @foreach ([['fa-solid fa-laptop-code', 'Divisi', 'Web Development', 'Membangun aplikasi web modern dengan framework terkini'], ['fa-solid fa-robot', 'Divisi', 'AI & Machine Learning', 'Mengeksplorasi kecerdasan buatan dan data science'], ['fa-solid fa-mobile-screen', 'Divisi', 'Mobile Development', 'Merancang aplikasi Android & iOS yang inovatif'], ['fa-solid fa-palette', 'Divisi', 'UI/UX Design', 'Menciptakan pengalaman pengguna yang intuitif dan estetis'], ['fa-solid fa-shield-halved', 'Divisi', 'Cyber Security', 'Mempelajari keamanan sistem dan ethical hacking'], ['fa-solid fa-cloud', 'Divisi', 'Cloud & DevOps', 'Infrastruktur cloud, CI/CD, dan otomasi deployment'], ['fa-solid fa-trophy', 'Program', 'Lomba & Hackathon', 'Mengikuti kompetisi teknologi tingkat nasional'], ['fa-solid fa-book-open', 'Program', 'Workshop Bulanan', 'Pelatihan intensif dengan instruktur berpengalaman']] as [$iconClass, $kategori, $nama, $desc])
                     <div
                         class="reveal reveal-delay-{{ min(($loop->index % 4) + 1, 4) }} bg-white rounded-2xl p-6 border border-slate-100 tech-card shadow-sm group">
                         <div
-                            class="w-12 h-12 rounded-xl bg-brand-50 group-hover:bg-brand-100 flex items-center justify-center text-2xl mb-5 transition-colors duration-200">
-                            {{ $icon }}
+                            class="w-12 h-12 rounded-xl bg-brand-50 group-hover:bg-brand-100 flex items-center justify-center text-xl mb-5 transition-colors duration-200 text-brand-500">
+                            <i class="{{ $iconClass }}"></i>
                         </div>
                         <div
                             class="inline-block text-[10px] font-bold tracking-widest uppercase text-brand-400 bg-brand-50 px-2 py-0.5 rounded-full mb-2">

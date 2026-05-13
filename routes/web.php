@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ChatbotController;
 use App\Http\Controllers\DaftarController;
+use App\Http\Controllers\IdCardController;
 use App\Http\Controllers\LandingController;
 use App\Http\Controllers\PostController;
 use App\Models\User;
@@ -48,6 +49,23 @@ Route::get('/pengurus', function () {
 
 // ── Pendaftaran ─────────────────────────────────────────────────────
 Route::get('/daftar', [DaftarController::class, 'index']);
+
+// ── E-Voting Rekap Suara (publik, full-screen) ────────────────
+Route::get('/elections/{election}/rekap', function (App\Models\Election $election) {
+    return view('elections.rekap', ['election' => $election]);
+})->name('elections.rekap');
+
+// ── Profil Anggota Publik (scan QR code) ─────────────────────
+Route::get('/anggota/{userId}', [IdCardController::class, 'publicProfile'])->name('anggota.show');
+
+// ── ID Card Template Guide — harus sebelum wildcard {userId} ──
+Route::get('/id-card/template', fn () => view('id-card.template-guide'))->name('id-card.template');
+
+// ── ID Card (autentikasi: admin atau user sendiri) ────────────
+Route::middleware('auth')->group(function () {
+    Route::get('/id-card/preview',  [IdCardController::class, 'preview'])->name('id-card.preview');
+    Route::get('/id-card/{userId}', [IdCardController::class, 'show'])->name('id-card.show');
+});
 
 // ── Chatbot RAG ────────────────────────────────────────────────
 Route::prefix('chatbot')->name('chatbot.')->group(function () {

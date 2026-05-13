@@ -21,7 +21,7 @@
                             class="absolute bottom-0 left-0 w-32 h-32 bg-accent/10 rounded-full translate-y-1/2 -translate-x-1/2">
                         </div>
                         <div class="relative z-10">
-                            <div class="text-4xl mb-3">🎓</div>
+                            <div class="text-4xl mb-3 text-white/90"><i class="fa-solid fa-graduation-cap"></i></div>
                             <h3 class="font-display text-xl font-bold">Didirikan 2018</h3>
                             <p class="text-brand-200 text-sm mt-1 font-light">Berkembang bersama teknologi selama 7 tahun</p>
                         </div>
@@ -44,10 +44,13 @@
                     </div>
 
                     {{-- Value cards --}}
-                    @foreach ([['💡', 'Inovasi', 'Mendorong ide kreatif dan solusi teknologi terdepan'], ['🤝', 'Kolaborasi', 'Membangun tim solid lintas jurusan dan angkatan']] as [$icon, $title, $desc])
+                    @foreach ([
+                        ['fa-solid fa-lightbulb', 'text-amber-500', 'Inovasi',    'Mendorong ide kreatif dan solusi teknologi terdepan'],
+                        ['fa-solid fa-handshake', 'text-brand-500', 'Kolaborasi', 'Membangun tim solid lintas jurusan dan angkatan'],
+                    ] as [$iconClass, $iconColor, $title, $desc])
                         <div
                             class="reveal reveal-delay-{{ $loop->index + 1 }} rounded-2xl bg-slate-50 border border-slate-100 p-6 tech-card">
-                            <div class="text-3xl mb-3">{{ $icon }}</div>
+                            <div class="text-3xl mb-3 {{ $iconColor }}"><i class="{{ $iconClass }}"></i></div>
                             <div class="font-display font-bold text-slate-800 text-base">{{ $title }}</div>
                             <div class="text-slate-500 text-sm mt-1 leading-relaxed">{{ $desc }}</div>
                         </div>
@@ -97,16 +100,16 @@
                 <div class="space-y-3 reveal reveal-delay-2">
                     @php
                         $defaultKeunggulan = [
-                            ['icon' => '✅', 'teks' => 'Workshop & Pelatihan rutin setiap bulan'],
-                            ['icon' => '✅', 'teks' => 'Bimbingan langsung dari senior & alumni'],
-                            ['icon' => '✅', 'teks' => 'Akses ke berbagai kompetisi nasional'],
-                            ['icon' => '✅', 'teks' => 'Sertifikat keikutsertaan program'],
+                            ['icon' => 'fa-solid fa-circle-check', 'teks' => 'Workshop & Pelatihan rutin setiap bulan'],
+                            ['icon' => 'fa-solid fa-circle-check', 'teks' => 'Bimbingan langsung dari senior & alumni'],
+                            ['icon' => 'fa-solid fa-circle-check', 'teks' => 'Akses ke berbagai kompetisi nasional'],
+                            ['icon' => 'fa-solid fa-circle-check', 'teks' => 'Sertifikat keikutsertaan program'],
                         ];
                         $keunggulan = $profil?->keunggulan ?: $defaultKeunggulan;
                     @endphp
                     @foreach ($keunggulan as $item)
                         <div class="flex items-center gap-3">
-                            <span class="text-sm">{{ $item['icon'] ?? '✅' }}</span>
+                            <i class="{{ $item['icon'] ?? 'fa-solid fa-circle-check' }} text-emerald-500 w-4 text-center flex-shrink-0"></i>
                             <span class="text-slate-600 text-sm font-medium">{{ $item['teks'] }}</span>
                         </div>
                     @endforeach

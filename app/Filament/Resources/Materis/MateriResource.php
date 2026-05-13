@@ -22,13 +22,11 @@ class MateriResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'id';
 
-    protected static ?string $navigationLabel = 'Materi';
+    protected static ?string $navigationLabel = 'Distribusi Materi';
 
     protected static ?string $modelLabel = 'Materi';
 
     protected static ?string $pluralModelLabel = 'Distribusi Materi';
-
-    protected static \UnitEnum|string|null $navigationGroup = 'Materi';
 
     protected static ?int $navigationSort = 1;
 

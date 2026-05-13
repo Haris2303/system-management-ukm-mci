@@ -114,7 +114,8 @@
                     {{-- Floating badges --}}
                     <div
                         class="absolute -top-6 -right-8 bg-white rounded-2xl shadow-xl shadow-slate-200 px-4 py-3 flex items-center gap-2.5 border border-slate-100">
-                        <div class="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center text-lg">💻
+                        <div class="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center text-emerald-600">
+                            <i class="fa-solid fa-laptop-code fa-sm"></i>
                         </div>
                         <div>
                             <div class="text-xs font-bold text-slate-800">Web Dev</div>
@@ -123,7 +124,9 @@
                     </div>
                     <div
                         class="absolute -bottom-6 -left-8 bg-white rounded-2xl shadow-xl shadow-slate-200 px-4 py-3 flex items-center gap-2.5 border border-slate-100">
-                        <div class="w-8 h-8 rounded-lg bg-brand-100 flex items-center justify-center text-lg">🤖</div>
+                        <div class="w-8 h-8 rounded-lg bg-brand-100 flex items-center justify-center text-brand-600">
+                            <i class="fa-solid fa-robot fa-sm"></i>
+                        </div>
                         <div>
                             <div class="text-xs font-bold text-slate-800">AI & ML</div>
                             <div class="text-[10px] text-slate-400">Divisi Aktif</div>
@@ -131,7 +134,9 @@
                     </div>
                     <div
                         class="absolute top-1/2 -right-16 -translate-y-1/2 bg-white rounded-2xl shadow-xl shadow-slate-200 px-4 py-3 flex items-center gap-2.5 border border-slate-100">
-                        <div class="w-8 h-8 rounded-lg bg-violet-100 flex items-center justify-center text-lg">🎨</div>
+                        <div class="w-8 h-8 rounded-lg bg-violet-100 flex items-center justify-center text-violet-600">
+                            <i class="fa-solid fa-palette fa-sm"></i>
+                        </div>
                         <div>
                             <div class="text-xs font-bold text-slate-800">UI/UX</div>
                             <div class="text-[10px] text-slate-400">Divisi Aktif</div>

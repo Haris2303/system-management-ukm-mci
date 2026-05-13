@@ -1,0 +1,44 @@
+@startuml
+skinparam ActivityBackgroundColor #DDEEFF
+skinparam ActivityBorderColor #336699
+skinparam ArrowColor #336699
+skinparam ActivityDiamondBackgroundColor #FFF8DC
+skinparam ActivityDiamondBorderColor #CC9900
+skinparam ActivityFontName Times New Roman
+skinparam ArrowFontName Times New Roman
+skinparam TitleFontSize 24
+skinparam DefaultFontSize 24
+skinparam Padding 3
+
+|Ketua Divisi|
+|Sistem|
+
+title Activity Diagram Seleksi Pendaftar
+
+|Ketua Divisi|
+start
+:Membuka daftar pendaftar;
+:Memilih pendaftar\nyang dievaluasi;
+:Meninjau jawaban &\nmemberikan skor;
+:Menekan "Simpan Skor";
+
+|Sistem|
+:Menghitung total skor;
+:Memperbarui status pendaftar;
+
+|Ketua Divisi|
+if (Pendaftar\nmemenuhi syarat?) then (Ya)
+  :Menekan "Luluskan";
+  |Sistem|
+  :Status → "Lulus";
+  :Akun anggota dibuat otomatis;
+  :Kirim notifikasi kelulusan;
+else (Tidak)
+  :Menekan "Tolak";
+  |Sistem|
+  :Status → "Ditolak";
+  :Kirim notifikasi penolakan;
+endif
+
+stop
+@enduml

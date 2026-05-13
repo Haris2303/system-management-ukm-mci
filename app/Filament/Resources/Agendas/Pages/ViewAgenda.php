@@ -33,10 +33,10 @@ class ViewAgenda extends ViewRecord
                         ->multiple()
                         ->required()
                         ->searchable()
-                        ->options(fn () => User::whereDoesntHave(
-                                'roles',
-                                fn ($q) => $q->whereIn('name', ['super_admin', 'demisioner'])
-                            )
+                        ->options(fn() => User::whereDoesntHave(
+                            'roles',
+                            fn($q) => $q->whereIn('name', ['super_admin', 'demisioner'])
+                        )
                             ->whereNotIn('id', $this->getRecord()->presensis()->pluck('user_id'))
                             ->orderBy('name')
                             ->pluck('name', 'id'))
@@ -62,7 +62,7 @@ class ViewAgenda extends ViewRecord
                         ->success()
                         ->send();
                 })
-                ->visible(fn (): bool => (bool) $this->getRecord()->is_active),
+                ->visible(fn(): bool => (bool) $this->getRecord()->is_active),
 
             Action::make('tutup_agenda')
                 ->label('Tutup Agenda')
@@ -72,7 +72,7 @@ class ViewAgenda extends ViewRecord
                 ->modalHeading('Tutup Agenda Sekarang?')
                 ->modalDescription('Semua anggota yang belum melakukan presensi akan otomatis dicatat sebagai Absen. Tindakan ini tidak dapat dibatalkan.')
                 ->modalSubmitActionLabel('Ya, Tutup Agenda')
-                ->visible(fn (): bool => (bool) $this->getRecord()->is_active)
+                ->visible(fn(): bool => (bool) $this->getRecord()->is_active)
                 ->action(function (): void {
                     $this->getRecord()->tutup();
 

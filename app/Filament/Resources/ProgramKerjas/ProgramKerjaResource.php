@@ -26,13 +26,11 @@ class ProgramKerjaResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'id';
 
-    protected static ?string $navigationLabel = 'Program Kerja';
+    protected static ?string $navigationLabel = 'Tracking Program Kerja';
 
     protected static ?string $modelLabel = 'Program Kerja';
 
     protected static ?string $pluralModelLabel = 'Program Kerja';
-
-    protected static \UnitEnum|string|null $navigationGroup = 'Tracking';
 
     protected static ?int $navigationSort = 1;
 

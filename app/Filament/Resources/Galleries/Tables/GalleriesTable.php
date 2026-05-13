@@ -20,6 +20,7 @@ class GalleriesTable
             ->columns([
                 ImageColumn::make('foto')
                     ->label('Foto')
+                    ->disk('public')
                     ->square()
                     ->size(64),
 
