@@ -490,11 +490,8 @@
 {{-- ── TRIGGER BUTTON ──────────────────────────────────────── --}}
 <button id="chatbot-trigger" aria-label="Buka Chatbot MCI" title="Tanya MCI AI">
     <div id="chatbot-badge">1</div>
-    {{-- Icon chat --}}
-    <svg id="icon-chat" class="trigger-icon w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-            d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-4 4-1-4z" />
-    </svg>
+    {{-- Icon robot --}}
+    <i id="icon-chat" class="trigger-icon fa-solid fa-robot text-white text-2xl"></i>
     {{-- Icon close --}}
     <svg id="icon-close" class="trigger-icon hidden-icon w-6 h-6 text-white" fill="none" stroke="currentColor"
         viewBox="0 0 24 24">

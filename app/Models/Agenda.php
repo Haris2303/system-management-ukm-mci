@@ -38,6 +38,12 @@ class Agenda extends Model
                 $agenda->qr_code_token = Str::random(32);
             }
         });
+
+        static::retrieved(function (Agenda $agenda): void {
+            if ($agenda->is_active && now('Asia/Jayapura')->gt($agenda->waktu_selesai)) {
+                $agenda->tutup();
+            }
+        });
     }
 
     // ── Relationships ──────────────────────────────────────────────

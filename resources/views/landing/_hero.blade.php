@@ -1,12 +1,11 @@
 {{-- resources/views/landing/_hero.blade.php --}}
-<section id="hero" class="relative min-h-screen flex items-center overflow-hidden mesh-bg dot-grid noise">
+<section id="hero" class="relative min-h-screen flex items-center overflow-hidden mesh-bg noise">
 
-    {{-- Decorative blobs --}}
-    <div
-        class="absolute -top-32 -right-32 w-[600px] h-[600px] rounded-full bg-brand-100/60 blur-3xl pointer-events-none">
-    </div>
-    <div class="absolute bottom-0 -left-40 w-[500px] h-[500px] rounded-full bg-accent/10 blur-3xl pointer-events-none">
-    </div>
+    {{-- Decorative blobs — neon mint kiri, violet kanan --}}
+    <div class="absolute -top-32 -right-32 w-[600px] h-[600px] rounded-full blur-3xl pointer-events-none"
+        style="background: radial-gradient(circle, #8b5cf622 0%, transparent 70%);"></div>
+    <div class="absolute bottom-0 -left-40 w-[500px] h-[500px] rounded-full blur-3xl pointer-events-none"
+        style="background: radial-gradient(circle, #bdf8ec 0%, transparent 70%);"></div>
 
     <div class="relative z-10 max-w-7xl mx-auto px-6 lg:px-8 w-full py-24">
         <div class="grid lg:grid-cols-2 gap-16 items-center">
@@ -14,11 +13,11 @@
             {{-- Left: Copy --}}
             <div class="space-y-8">
 
-                {{-- Badge --}}
+                {{-- Badge / pill-tag-soft --}}
                 @if ($openRecruitment)
-                    <div
-                        class="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-brand-50 border border-brand-100 text-brand-700 text-sm font-medium animate-fade-in">
-                        <span class="w-2 h-2 rounded-full bg-accent animate-pulse-slow inline-block"></span>
+                    <div class="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-brand-200 border border-brand-300/40 text-brand-700 text-xs animate-fade-in"
+                        style="font-weight:400; letter-spacing:0.1px; text-transform:uppercase;">
+                        <span class="w-2 h-2 rounded-full bg-brand-600 animate-pulse-slow inline-block"></span>
                         {{ $openRecruitment->judul }}
                         @if ($openRecruitment->gelombang)
                             · {{ $openRecruitment->gelombang }}
@@ -27,46 +26,51 @@
                     </div>
                 @endif
 
-                {{-- Heading --}}
+                {{-- Heading — display-xxl: 56px weight 300 -1.4px tracking --}}
                 <div class="space-y-3">
-                    <h1 class="font-display text-5xl lg:text-6xl xl:text-7xl font-bold leading-[1.08] tracking-tight text-slate-900"
-                        style="animation: fadeUp 0.8s 0.1s ease both;">
+                    <h1 class="font-display text-5xl lg:text-6xl xl:text-7xl leading-[1.03] text-ink"
+                        style="font-weight:300; letter-spacing:-1.4px; animation: fadeUp 0.8s 0.1s ease both;">
                         Wujudkan Ide
                         <span class="block gradient-text">Teknologimu</span>
                         Bersama Kami.
                     </h1>
-                    <p class="text-lg lg:text-xl text-slate-500 font-light leading-relaxed max-w-lg"
-                        style="animation: fadeUp 0.8s 0.25s ease both;">
+                    <p class="text-lg lg:text-xl text-ink-mute leading-relaxed max-w-lg"
+                        style="font-weight:300; animation: fadeUp 0.8s 0.25s ease both;">
                         UKM MCI adalah komunitas mahasiswa yang berdedikasi dalam mengembangkan kemampuan di bidang
                         teknologi, pemrograman, dan inovasi digital.
                     </p>
                 </div>
 
-                {{-- Stats --}}
+                {{-- Stats — body-tabular with tnum --}}
                 <div class="flex items-center gap-8 pt-2" style="animation: fadeUp 0.8s 0.35s ease both;">
                     @foreach ([['200+', 'Anggota Aktif'], ['50+', 'Project Selesai'], ['8', 'Divisi']] as [$n, $l])
                         <div class="text-center">
-                            <div class="font-display text-2xl font-bold text-brand-600">{{ $n }}</div>
-                            <div class="text-xs text-slate-400 font-medium mt-0.5">{{ $l }}</div>
+                            <div class="font-display text-2xl text-brand-600"
+                                style="font-weight:300; font-feature-settings:'tnum'; letter-spacing:-0.42px;">
+                                {{ $n }}</div>
+                            <div class="text-xs text-ink-mute mt-0.5" style="font-weight:400;">{{ $l }}</div>
                         </div>
                         @if (!$loop->last)
-                            <div class="w-px h-10 bg-slate-200"></div>
+                            <div class="w-px h-10 bg-hairline"></div>
                         @endif
                     @endforeach
                 </div>
 
-                {{-- CTAs --}}
+                {{-- CTAs — button-primary-pill: rounded-full 8px 16px --}}
                 <div class="flex flex-wrap gap-4" style="animation: fadeUp 0.8s 0.45s ease both;">
                     <a href="#daftar"
-                        class="inline-flex items-center gap-2 px-7 py-4 rounded-2xl bg-brand-600 text-white font-semibold text-base hover:bg-brand-700 shadow-xl shadow-brand-200 hover:shadow-brand-300 hover:-translate-y-1 transition-all duration-200">
+                        class="inline-flex items-center gap-2 px-7 py-3 rounded-full bg-brand-600 text-white hover:bg-brand-700 shadow-xl shadow-brand-200 hover:shadow-brand-300 hover:-translate-y-1 transition-all duration-200"
+                        style="font-weight:400; font-size:16px; line-height:1.0;">
                         Daftar Sekarang
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M17 8l4 4m0 0l-4 4m4-4H3" />
                         </svg>
                     </a>
+                    {{-- button-secondary: canvas bg, primary text, 1px border --}}
                     <a href="#tentang"
-                        class="inline-flex items-center gap-2 px-7 py-4 rounded-2xl bg-white text-slate-700 font-semibold text-base border border-slate-200 hover:border-brand-200 hover:text-brand-600 hover:bg-brand-50 hover:-translate-y-1 transition-all duration-200 shadow-sm">
+                        class="inline-flex items-center gap-2 px-7 py-3 rounded-full bg-white text-brand-600 border border-brand-600 hover:bg-brand-50 hover:-translate-y-1 transition-all duration-200 shadow-sm"
+                        style="font-weight:400; font-size:16px; line-height:1.0;">
                         Pelajari Lebih
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
@@ -75,73 +79,48 @@
                 </div>
             </div>
 
-            {{-- Right: Illustration / Visual --}}
+            {{-- Right: Logo + Floating Badges --}}
             <div class="hidden lg:flex justify-center items-center relative"
                 style="animation: fadeIn 1s 0.3s ease both;">
-                {{-- Main card floating --}}
-                <div class="relative animate-float">
-                    <div
-                        class="w-80 h-80 rounded-3xl bg-gradient-to-br from-brand-600 to-brand-400 shadow-2xl shadow-brand-300 flex items-center justify-center relative overflow-hidden">
-                        {{-- Circuit pattern inside --}}
-                        <div class="absolute inset-0 opacity-10">
-                            <svg viewBox="0 0 320 320" class="w-full h-full" fill="none" stroke="white"
-                                stroke-width="1">
-                                <line x1="0" y1="80" x2="320" y2="80" />
-                                <line x1="0" y1="160" x2="320" y2="160" />
-                                <line x1="0" y1="240" x2="320" y2="240" />
-                                <line x1="80" y1="0" x2="80" y2="320" />
-                                <line x1="160" y1="0" x2="160" y2="320" />
-                                <line x1="240" y1="0" x2="240" y2="320" />
-                                <circle cx="80" cy="80" r="6" fill="white" />
-                                <circle cx="160" cy="80" r="6" fill="white" />
-                                <circle cx="240" cy="160" r="6" fill="white" />
-                                <circle cx="80" cy="240" r="6" fill="white" />
-                                <circle cx="160" cy="160" r="16" fill="white" opacity="0.3" />
-                                <circle cx="160" cy="160" r="8" fill="white" />
-                            </svg>
-                        </div>
-                        {{-- Scan line animation --}}
-                        <div class="absolute left-0 right-0 h-0.5 bg-accent/70 blur-[1px]"
-                            style="animation: scan 3s linear infinite;"></div>
+                <div class="relative animate-float -translate-y-10">
 
-                        {{-- Center logo --}}
-                        <div class="relative z-10 text-center text-white">
-                            <div class="font-display text-7xl font-bold">MCI</div>
-                            <div class="text-sm font-light tracking-[0.25em] opacity-80 mt-1">TEKNOLOGI</div>
-                        </div>
-                    </div>
+                    {{-- Logo utama --}}
+                    <img src="{{ asset('assets/logo/logo.png') }}" alt="UKM MCI Logo"
+                        class="w-96 h-96 object-contain select-none"
+                        style="filter: drop-shadow(0 25px 40px rgba(26,79,245,0.2)) drop-shadow(0 8px 16px rgba(139,92,246,0.15));">
 
-                    {{-- Floating badges --}}
-                    <div
-                        class="absolute -top-6 -right-8 bg-white rounded-2xl shadow-xl shadow-slate-200 px-4 py-3 flex items-center gap-2.5 border border-slate-100">
-                        <div class="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center text-emerald-600">
-                            <i class="fa-solid fa-laptop-code fa-sm"></i>
+                    {{-- Floating badges dinamis dari database (maks 4 divisi) --}}
+                    @php
+                        $badgePositions = [
+                            'absolute -top-4 -right-10',
+                            'absolute -bottom-4 -left-10',
+                            'absolute top-1/2 -right-14 -translate-y-1/2',
+                            'absolute top-1/4 -left-14',
+                        ];
+                        $badgeColors = [
+                            ['bg' => 'bg-brand-100', 'color' => '#1a4ff5'],
+                            ['bg' => 'bg-violet-100', 'color' => '#8b5cf6'],
+                            ['bg' => 'bg-emerald-100', 'color' => '#059669'],
+                            ['bg' => 'bg-amber-100', 'color' => '#d97706'],
+                        ];
+                    @endphp
+
+                    @foreach ($divisis->take(4) as $divisi)
+                        @php $i = $loop->index; @endphp
+                        <div class="{{ $badgePositions[$i] }} bg-white rounded-xl shadow-xl shadow-brand-100 px-4 py-3 flex items-center gap-2.5 border border-hairline"
+                            style="animation: fadeIn 0.6s {{ 0.4 + $i * 0.15 }}s ease both;">
+                            <div class="w-8 h-8 rounded-lg {{ $badgeColors[$i]['bg'] }} flex items-center justify-center shrink-0"
+                                style="color: {{ $badgeColors[$i]['color'] }};">
+                                <i class="{{ $divisi->icon }} fa-sm"></i>
+                            </div>
+                            <div>
+                                <div class="text-xs text-ink whitespace-nowrap" style="font-weight:400;">
+                                    {{ $divisi->nama }}</div>
+                                <div class="text-[10px] text-ink-mute">Divisi Aktif</div>
+                            </div>
                         </div>
-                        <div>
-                            <div class="text-xs font-bold text-slate-800">Web Dev</div>
-                            <div class="text-[10px] text-slate-400">Divisi Aktif</div>
-                        </div>
-                    </div>
-                    <div
-                        class="absolute -bottom-6 -left-8 bg-white rounded-2xl shadow-xl shadow-slate-200 px-4 py-3 flex items-center gap-2.5 border border-slate-100">
-                        <div class="w-8 h-8 rounded-lg bg-brand-100 flex items-center justify-center text-brand-600">
-                            <i class="fa-solid fa-robot fa-sm"></i>
-                        </div>
-                        <div>
-                            <div class="text-xs font-bold text-slate-800">AI & ML</div>
-                            <div class="text-[10px] text-slate-400">Divisi Aktif</div>
-                        </div>
-                    </div>
-                    <div
-                        class="absolute top-1/2 -right-16 -translate-y-1/2 bg-white rounded-2xl shadow-xl shadow-slate-200 px-4 py-3 flex items-center gap-2.5 border border-slate-100">
-                        <div class="w-8 h-8 rounded-lg bg-violet-100 flex items-center justify-center text-violet-600">
-                            <i class="fa-solid fa-palette fa-sm"></i>
-                        </div>
-                        <div>
-                            <div class="text-xs font-bold text-slate-800">UI/UX</div>
-                            <div class="text-[10px] text-slate-400">Divisi Aktif</div>
-                        </div>
-                    </div>
+                    @endforeach
+
                 </div>
             </div>
         </div>
@@ -149,8 +128,8 @@
 
     {{-- Scroll cue --}}
     <div
-        class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-slate-400 animate-bounce">
-        <span class="text-xs font-medium tracking-widest uppercase">Scroll</span>
+        class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-ink-mute animate-bounce">
+        <span class="text-xs tracking-widest uppercase" style="font-weight:300;">Scroll</span>
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
         </svg>

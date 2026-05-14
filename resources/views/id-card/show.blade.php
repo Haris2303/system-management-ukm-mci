@@ -189,35 +189,80 @@
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
-            padding-bottom: 10px;
         }
         .id-card-bg-mode .id-card-corner-tl,
         .id-card-bg-mode .id-card-corner-tr,
         .id-card-bg-mode .id-card-corner-bl,
         .id-card-bg-mode .id-card-corner-br { display: none; }
 
+        /* Header: subtle dark overlay agar teks terbaca */
         .id-card-bg-mode .id-card-header {
-            background: linear-gradient(180deg, rgba(0,0,0,.32) 0%, rgba(0,0,0,.10) 100%);
+            background: linear-gradient(180deg, rgba(0,0,0,.45) 0%, rgba(0,0,0,.08) 100%);
         }
         .id-card-bg-mode .id-card-header-org   { color: rgba(255,255,255,.85); }
-        .id-card-bg-mode .id-card-header-title { color: #fff; text-shadow: 0 1px 4px rgba(0,0,0,.4); }
+        .id-card-bg-mode .id-card-header-title { color: #fff; text-shadow: 0 1px 4px rgba(0,0,0,.5); }
         .id-card-bg-mode .id-card-header-logo  { background: rgba(255,255,255,.22); color: #fff; }
 
-        /* Single content panel inset 8px — background image visible as side border strip */
-        .id-card-bg-mode .id-card-content {
-            margin: 0 8px;
-            border-radius: 10px 10px 0 0;
-            background: rgba(255,255,255,.97);
+        /* Content panel: transparan — background image bebas terlihat */
+        .id-card-bg-mode .id-card-content { background: transparent; }
+
+        /* Foto: ring putih + shadow agar menonjol di atas background */
+        .id-card-bg-mode .id-card-photo-wrap { padding: 24px 20px 16px; }
+        .id-card-bg-mode .id-card-photo,
+        .id-card-bg-mode .id-card-photo-placeholder {
+            border: 3px solid #fff;
+            box-shadow: 0 4px 20px rgba(0,0,0,.35);
         }
+
+        /* Nama: teks putih dengan text-shadow tebal */
+        .id-card-bg-mode .id-card-name {
+            color: #fff;
+            text-shadow: 0 1px 8px rgba(0,0,0,.7), 0 0 24px rgba(0,0,0,.4);
+        }
+
+        /* Badge jabatan: frosted glass kecil */
+        .id-card-bg-mode .id-card-badge {
+            background: rgba(255,255,255,.18);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            color: #fff;
+            border: 1px solid rgba(255,255,255,.35);
+        }
+
+        /* Divisi row: frosted glass pill */
+        .id-card-bg-mode .id-card-divisi-row {
+            background: rgba(255,255,255,.18);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(255,255,255,.3);
+        }
+        .id-card-bg-mode .id-card-divisi-label { color: rgba(255,255,255,.7); }
+        .id-card-bg-mode .id-card-divisi-value { color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,.3); }
+
+        /* Divider: garis putih transparan */
         .id-card-bg-mode .id-card-divider {
-            background: rgba(226,232,240,.9);
+            background: rgba(255,255,255,.25);
+            margin: 0 24px;
         }
+
+        /* QR: kotak putih frosted kecil hanya di sekitar QR */
+        .id-card-bg-mode .id-card-qr-wrap { padding: 16px 20px 24px; }
+        .id-card-bg-mode .id-card-scan-label { color: rgba(255,255,255,.75); }
+        .id-card-bg-mode .id-card-qr {
+            background: rgba(255,255,255,.92);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            border-radius: 12px;
+            padding: 8px;
+            box-shadow: 0 4px 16px rgba(0,0,0,.25);
+        }
+
+        /* Footer: transparan, teks putih subtle */
         .id-card-bg-mode .id-card-footer {
-            margin: 0 8px 2px;
-            border-radius: 0 0 10px 10px;
-            background: rgba(248,250,252,.97);
-            border-top: 1px solid rgba(226,232,240,.8);
+            background: transparent;
+            border-top: 1px solid rgba(255,255,255,.2);
         }
+        .id-card-bg-mode .id-card-footer-text { color: rgba(255,255,255,.55); }
 
         /* ── Template CSS (injected when no background image) ── */
         @if(!$backgroundImage)

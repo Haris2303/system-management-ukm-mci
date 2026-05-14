@@ -5,6 +5,7 @@ namespace App\Filament\Resources\RagDocuments;
 use App\Filament\Resources\RagDocuments\Pages\CreateRagDocument;
 use App\Filament\Resources\RagDocuments\Pages\EditRagDocument;
 use App\Filament\Resources\RagDocuments\Pages\ListRagDocuments;
+use App\Filament\Resources\RagDocuments\Pages\ViewRagDocument;
 use App\Filament\Resources\RagDocuments\Schemas\RagDocumentForm;
 use App\Filament\Resources\RagDocuments\Tables\RagDocumentsTable;
 use App\Models\RagDocument;
@@ -51,8 +52,9 @@ class RagDocumentResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => ListRagDocuments::route('/'),
+            'index'  => ListRagDocuments::route('/'),
             'create' => CreateRagDocument::route('/create'),
+            'view'   => ViewRagDocument::route('/{record}'),
         ];
     }
 

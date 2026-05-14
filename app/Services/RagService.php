@@ -227,16 +227,16 @@ PROMPT;
         }
 
         return <<<PROMPT
-Berikut konteks dari dokumen UKM MCI yang relevan:
+        Berikut konteks dari dokumen UKM MCI yang relevan:
 
-{$context}
+        {$context}
 
----
+        ---
 
-Berdasarkan konteks di atas, jawab pertanyaan berikut:
+        Berdasarkan konteks di atas, jawab pertanyaan berikut:
 
-Pertanyaan: {$question}
-PROMPT;
+        Pertanyaan: {$question}
+        PROMPT;
     }
 
     private function formatSources(Collection $chunks): array

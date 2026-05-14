@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Template Border ID Card — UKM MCI</title>
+    <title>Panduan Desain Background ID Card — UKM MCI</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
@@ -17,7 +17,6 @@
             min-height: 100vh;
         }
 
-        /* ── Header ── */
         .tg-header {
             background: #fff;
             border-bottom: 1px solid #e2e8f0;
@@ -32,9 +31,7 @@
             font-size: 13px; font-weight: 500; color: #475569;
             text-decoration: none;
         }
-        .tg-title {
-            font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; color: #0f172a;
-        }
+        .tg-title { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; color: #0f172a; }
         .tg-download {
             display: inline-flex; align-items: center; gap: 8px;
             padding: 9px 20px; border-radius: 10px;
@@ -45,17 +42,13 @@
         }
         .tg-download:hover { background: #1340e1; }
 
-        /* ── Layout ── */
         .tg-body {
             max-width: 1100px; margin: 40px auto; padding: 0 32px;
             display: grid; grid-template-columns: 380px 1fr; gap: 48px;
             align-items: start;
         }
-        @media (max-width: 800px) {
-            .tg-body { grid-template-columns: 1fr; }
-        }
+        @media (max-width: 800px) { .tg-body { grid-template-columns: 1fr; } }
 
-        /* ── Card preview panel ── */
         .tg-preview-wrap {
             background: #fff; border-radius: 16px;
             border: 1px solid #e2e8f0;
@@ -66,15 +59,13 @@
             font-size: 11px; font-weight: 600; letter-spacing: .06em;
             text-transform: uppercase; color: #94a3b8; margin-bottom: 16px;
         }
-        .tg-preview-wrap svg {
-            width: 100%; max-width: 300px; height: auto;
-            filter: drop-shadow(0 8px 24px rgba(0,0,0,.10));
-        }
-        .tg-preview-note {
-            margin-top: 12px; font-size: 11px; color: #94a3b8; line-height: 1.5;
+        .tg-preview-wrap svg { width: 100%; max-width: 300px; height: auto; filter: drop-shadow(0 8px 24px rgba(0,0,0,.12)); }
+        .tg-preview-note { margin-top: 14px; font-size: 11px; color: #94a3b8; line-height: 1.6; }
+        .tg-legend-dot {
+            display: inline-block; width: 12px; height: 12px;
+            border-radius: 2px; vertical-align: middle; margin-right: 4px;
         }
 
-        /* ── Instructions panel ── */
         .tg-info-section { margin-bottom: 32px; }
         .tg-info-section h2 {
             font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700;
@@ -82,13 +73,11 @@
             padding-bottom: 10px; border-bottom: 2px solid #f1f5f9;
         }
 
-        /* Zone table */
         .tg-zone-table { width: 100%; border-collapse: collapse; }
         .tg-zone-table th {
             text-align: left; font-size: 11px; font-weight: 600;
             text-transform: uppercase; letter-spacing: .06em; color: #64748b;
-            padding: 8px 12px; background: #f8fafc;
-            border-bottom: 1px solid #e2e8f0;
+            padding: 8px 12px; background: #f8fafc; border-bottom: 1px solid #e2e8f0;
         }
         .tg-zone-table td {
             padding: 10px 12px; font-size: 13px; color: #374151;
@@ -100,18 +89,17 @@
             font-size: 10px; font-weight: 700; text-transform: uppercase;
             background: #dcfce7; color: #16a34a; border: 1px solid #bbf7d0;
         }
-        .badge-caution {
+        .badge-frosted {
+            display: inline-block; padding: 2px 8px; border-radius: 999px;
+            font-size: 10px; font-weight: 700; text-transform: uppercase;
+            background: #ede9fe; color: #6d28d9; border: 1px solid #ddd6fe;
+        }
+        .badge-overlay {
             display: inline-block; padding: 2px 8px; border-radius: 999px;
             font-size: 10px; font-weight: 700; text-transform: uppercase;
             background: #fef3c7; color: #b45309; border: 1px solid #fde68a;
         }
-        .badge-warn {
-            display: inline-block; padding: 2px 8px; border-radius: 999px;
-            font-size: 10px; font-weight: 700; text-transform: uppercase;
-            background: #fee2e2; color: #dc2626; border: 1px solid #fecaca;
-        }
 
-        /* Steps */
         .tg-steps { list-style: none; }
         .tg-steps li {
             display: flex; gap: 14px; align-items: flex-start;
@@ -127,7 +115,6 @@
         .tg-steps li strong { font-weight: 600; }
         .tg-steps li small { display: block; color: #64748b; font-size: 12px; margin-top: 2px; }
 
-        /* Tips */
         .tg-tips { display: flex; flex-direction: column; gap: 10px; }
         .tg-tip {
             display: flex; gap: 10px; align-items: flex-start;
@@ -136,21 +123,12 @@
             font-size: 13px; color: #0c4a6e;
         }
         .tg-tip-icon { flex-shrink: 0; font-size: 16px; }
-        .tg-tip-warn {
-            background: #fff7ed; border-color: #fed7aa; color: #7c2d12;
-        }
-        .tg-tip-ok {
-            background: #f0fdf4; border-color: #bbf7d0; color: #14532d;
-        }
+        .tg-tip-warn { background: #fff7ed; border-color: #fed7aa; color: #7c2d12; }
+        .tg-tip-ok   { background: #f0fdf4; border-color: #bbf7d0; color: #14532d; }
+        .tg-tip-purple { background: #f5f3ff; border-color: #ddd6fe; color: #4c1d95; }
 
-        /* Spec box */
-        .tg-spec-grid {
-            display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
-        }
-        .tg-spec {
-            padding: 12px 14px; border-radius: 10px;
-            background: #f8fafc; border: 1px solid #e2e8f0;
-        }
+        .tg-spec-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .tg-spec { padding: 12px 14px; border-radius: 10px; background: #f8fafc; border: 1px solid #e2e8f0; }
         .tg-spec-key { font-size: 10px; color: #94a3b8; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 4px; }
         .tg-spec-val { font-size: 14px; font-weight: 600; color: #0f172a; }
     </style>
@@ -158,11 +136,10 @@
 
 <body>
 
-    <!-- Header -->
     <div class="tg-header">
         <div class="tg-header-left">
-            <a href="javascript:history.back()" class="tg-back">← Kembali</a>
-            <span class="tg-title">Panduan Desain Border ID Card</span>
+            <a href="javascript:window.close()" class="tg-back">← Tutup Tab</a>
+            <span class="tg-title">Panduan Desain Background ID Card</span>
         </div>
         <a href="/templates/id-card-border-template.svg"
            download="id-card-border-template.svg"
@@ -174,109 +151,128 @@
         </a>
     </div>
 
-    <!-- Body -->
     <div class="tg-body">
 
-        <!-- Left: SVG template preview -->
+        <!-- Left: SVG preview -->
         <div class="tg-preview-wrap">
-            <p class="tg-preview-label">Template Layout ID Card</p>
+            <p class="tg-preview-label">Layout ID Card — Mode Background Image</p>
 
-            {{-- Inline the SVG template for preview (300×534px vertical layout) --}}
             <svg width="300" height="548" viewBox="0 0 300 548" xmlns="http://www.w3.org/2000/svg">
               <defs>
-                <pattern id="hatch-blue-p" patternUnits="userSpaceOnUse" width="8" height="8" patternTransform="rotate(45)">
-                  <rect width="8" height="8" fill="#dbeafe"/>
-                  <line x1="0" y1="0" x2="0" y2="8" stroke="#93c5fd" stroke-width="3"/>
-                </pattern>
-                <pattern id="hatch-side-p" patternUnits="userSpaceOnUse" width="6" height="6" patternTransform="rotate(45)">
-                  <rect width="6" height="6" fill="#fef3c7"/>
-                  <line x1="0" y1="0" x2="0" y2="6" stroke="#fcd34d" stroke-width="2.5"/>
-                </pattern>
-                <clipPath id="card-p">
+                <!-- Background gradient simulasi background image -->
+                <linearGradient id="bg-grad" x1="0" y1="0" x2="300" y2="534" gradientUnits="userSpaceOnUse">
+                  <stop offset="0%"   stop-color="#1a4ff5"/>
+                  <stop offset="50%"  stop-color="#8b5cf6"/>
+                  <stop offset="100%" stop-color="#0ff4c6"/>
+                </linearGradient>
+                <!-- Frosted glass pattern -->
+                <filter id="blur-sm">
+                  <feGaussianBlur stdDeviation="2"/>
+                </filter>
+                <clipPath id="card-clip">
                   <rect width="300" height="534" rx="14"/>
                 </clipPath>
               </defs>
 
-              <g clip-path="url(#card-p)">
+              <g clip-path="url(#card-clip)">
 
-                <!-- ZONE 1 — HEADER (y:0–64) -->
-                <rect x="0" y="0" width="300" height="64" fill="url(#hatch-blue-p)"/>
-                <circle cx="34" cy="32" r="17" fill="none" stroke="#3b82f6" stroke-width="1.5" stroke-dasharray="4,2"/>
-                <text x="34" y="38" text-anchor="middle" font-family="Arial" font-size="11" font-weight="bold" fill="#2563eb">M</text>
-                <rect x="58" y="21" width="110" height="7"  rx="3" fill="rgba(59,130,246,.25)"/>
-                <rect x="58" y="34" width="175" height="11" rx="3" fill="rgba(59,130,246,.35)"/>
-                <text x="150" y="57" text-anchor="middle" font-family="Arial" font-size="8.5" font-weight="700" fill="#1d4ed8">
-                  ✓ HEADER — BEBAS DESAIN (64px)
+                <!-- FULL BACKGROUND — tampil di seluruh kartu -->
+                <rect x="0" y="0" width="300" height="534" fill="url(#bg-grad)"/>
+
+                <!-- Blob dekoratif (simulasi background image) -->
+                <ellipse cx="240" cy="80"  rx="90" ry="70"  fill="rgba(255,255,255,0.08)"/>
+                <ellipse cx="60"  cy="400" rx="80" ry="100" fill="rgba(255,255,255,0.06)"/>
+                <ellipse cx="280" cy="320" rx="60" ry="80"  fill="rgba(15,244,198,0.12)"/>
+
+                <!-- ZONA 1: HEADER — dark overlay 45% (y:0–64) -->
+                <rect x="0" y="0" width="300" height="64"
+                      fill="url(#bg-grad)" opacity="0.5"/>
+                <rect x="0" y="0" width="300" height="64"
+                      fill="rgba(0,0,0,0.45)"/>
+                <!-- Logo box -->
+                <rect x="18" y="15" width="34" height="34" rx="9" fill="rgba(255,255,255,0.22)"/>
+                <text x="35" y="37" text-anchor="middle" font-family="Arial" font-size="13" font-weight="800" fill="#fff">M</text>
+                <!-- Header text placeholders -->
+                <rect x="60" y="21" width="90" height="6"  rx="3" fill="rgba(255,255,255,0.5)"/>
+                <rect x="60" y="33" width="160" height="9" rx="3" fill="rgba(255,255,255,0.8)"/>
+                <!-- Label -->
+                <text x="150" y="58" text-anchor="middle" font-family="Arial" font-size="7.5" font-weight="700" fill="rgba(255,255,255,0.9)">
+                  ✓ HEADER — DARK OVERLAY 45% (64px)
                 </text>
 
-                <!-- SIDE STRIPS (x:0–8 dan x:292–300, y:64–524) -->
-                <rect x="0"   y="64" width="8" height="460" fill="url(#hatch-side-p)"/>
-                <rect x="292" y="64" width="8" height="460" fill="url(#hatch-side-p)"/>
-
-                <!-- ZONE 2 — FOTO (x:8–292, y:64–196) -->
-                <rect x="8" y="64" width="284" height="132" fill="white"/>
-                <rect x="102" y="86" width="96" height="96" rx="14"
-                      fill="#eff6ff" stroke="#93c5fd" stroke-width="1.5" stroke-dasharray="4,2"/>
-                <text x="150" y="131" text-anchor="middle" font-family="Arial" font-size="9"   fill="#3b82f6">📷 FOTO</text>
-                <text x="150" y="144" text-anchor="middle" font-family="Arial" font-size="7.5" fill="#93c5fd">96 × 96 px</text>
-                <text x="150" y="155" text-anchor="middle" font-family="Arial" font-size="7"   fill="#bfdbfe">border 3px biru</text>
-
-                <!-- ZONE 3 — INFO (x:8–292, y:196–317) -->
-                <rect x="8" y="196" width="284" height="121" fill="white"/>
-                <rect x="65" y="208" width="170" height="16" rx="4" fill="#f1f5f9"/>
-                <text x="150" y="220" text-anchor="middle" font-family="Arial" font-size="8" fill="#94a3b8">NAMA ANGGOTA</text>
-                <rect x="105" y="232" width="90" height="18" rx="9" fill="#dbeafe" stroke="#bfdbfe" stroke-width="1"/>
-                <text x="150" y="245" text-anchor="middle" font-family="Arial" font-size="8" fill="#1d4ed8">JABATAN</text>
-                <rect x="72" y="258" width="156" height="24" rx="8" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
-                <text x="102" y="275" text-anchor="middle" font-family="Arial" font-size="7" fill="#94a3b8">DIVISI</text>
-                <line x1="115" y1="262" x2="115" y2="278" stroke="#e2e8f0" stroke-width="1"/>
-                <text x="185" y="275" text-anchor="middle" font-family="Arial" font-size="8.5" fill="#334155">Nama Divisi</text>
-                <text x="150" y="308" text-anchor="middle" font-family="Arial" font-size="7.5" font-weight="700" fill="#dc2626">
-                  ⚠  ZONA KONTEN — 97% PUTIH
+                <!-- ZONA 2: FOTO — background image langsung (y:64–196) -->
+                <!-- Tidak ada panel putih — background kelihatan -->
+                <rect x="102" y="82" width="96" height="96" rx="14"
+                      fill="rgba(30,41,59,0.3)"
+                      stroke="rgba(255,255,255,0.9)" stroke-width="3"/>
+                <text x="150" y="129" text-anchor="middle" font-family="Arial" font-size="9" fill="rgba(255,255,255,0.9)">📷 FOTO</text>
+                <text x="150" y="141" text-anchor="middle" font-family="Arial" font-size="7" fill="rgba(255,255,255,0.6)">96×96px · border putih</text>
+                <!-- Drop shadow indicator -->
+                <text x="150" y="157" text-anchor="middle" font-family="Arial" font-size="7" fill="rgba(255,255,255,0.5)">box-shadow gelap</text>
+                <!-- Label zona -->
+                <text x="150" y="186" text-anchor="middle" font-family="Arial" font-size="7" font-weight="700" fill="rgba(255,255,255,0.75)">
+                  BACKGROUND BEBAS TERLIHAT
                 </text>
 
-                <!-- DIVIDER (y:317) -->
-                <rect x="0"   y="317" width="8" height="1" fill="url(#hatch-side-p)"/>
-                <rect x="292" y="317" width="8" height="1" fill="url(#hatch-side-p)"/>
-                <line x1="8" y1="317" x2="292" y2="317" stroke="#e2e8f0" stroke-width="1"/>
-
-                <!-- ZONE 4 — QR CODE (x:8–292, y:318–496) -->
-                <rect x="8"   y="318" width="284" height="178" fill="white"/>
-                <rect x="0"   y="318" width="8"   height="178" fill="url(#hatch-side-p)"/>
-                <rect x="292" y="318" width="8"   height="178" fill="url(#hatch-side-p)"/>
-                <text x="150" y="342" text-anchor="middle" font-family="Arial" font-size="8" fill="#94a3b8" font-weight="600"
-                      letter-spacing="1">SCAN UNTUK VERIFIKASI</text>
-                <rect x="90" y="352" width="120" height="120" rx="8" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5"/>
-                <rect x="98"  y="360" width="22" height="22" rx="2" fill="#334155"/>
-                <rect x="124" y="360" width="22" height="22" rx="2" fill="#334155"/>
-                <rect x="150" y="360" width="22" height="22" rx="2" fill="#334155"/>
-                <rect x="98"  y="386" width="8"  height="8"  rx="1" fill="#334155"/>
-                <rect x="110" y="386" width="8"  height="8"  rx="1" fill="#334155"/>
-                <rect x="122" y="386" width="8"  height="8"  rx="1" fill="#334155"/>
-                <rect x="150" y="386" width="22" height="22" rx="2" fill="#334155"/>
-                <rect x="98"  y="398" width="22" height="22" rx="2" fill="#334155"/>
-                <text x="150" y="468" text-anchor="middle" font-family="Arial" font-size="8"   fill="#94a3b8">QR Code · 120 × 120 px</text>
-                <text x="150" y="488" text-anchor="middle" font-family="Arial" font-size="7.5" font-weight="700" fill="#dc2626">
-                  ⚠  ZONA KONTEN — 97% PUTIH
+                <!-- ZONA 3: INFO — frosted glass per elemen (y:196–320) -->
+                <!-- Nama: teks putih dengan text-shadow -->
+                <rect x="60" y="200" width="180" height="16" rx="4" fill="rgba(0,0,0,0.25)"/>
+                <text x="150" y="213" text-anchor="middle" font-family="Arial" font-size="8.5" font-weight="700" fill="#fff">NAMA ANGGOTA</text>
+                <!-- Badge jabatan: frosted glass -->
+                <rect x="96" y="224" width="108" height="18" rx="9"
+                      fill="rgba(255,255,255,0.18)"
+                      stroke="rgba(255,255,255,0.35)" stroke-width="1"/>
+                <text x="150" y="237" text-anchor="middle" font-family="Arial" font-size="8" fill="#fff">JABATAN (frosted)</text>
+                <!-- Divisi row: frosted glass -->
+                <rect x="72" y="252" width="156" height="22" rx="8"
+                      fill="rgba(255,255,255,0.18)"
+                      stroke="rgba(255,255,255,0.3)" stroke-width="1"/>
+                <text x="96"  y="267" text-anchor="middle" font-family="Arial" font-size="7"   fill="rgba(255,255,255,0.7)">DIVISI</text>
+                <line x1="112" y1="256" x2="112" y2="270" stroke="rgba(255,255,255,0.3)" stroke-width="1"/>
+                <text x="185" y="267" text-anchor="middle" font-family="Arial" font-size="8"   fill="#fff">Nama Divisi</text>
+                <text x="150" y="305" text-anchor="middle" font-family="Arial" font-size="7" font-weight="700" fill="rgba(255,255,255,0.75)">
+                  BACKGROUND BEBAS TERLIHAT
                 </text>
 
-                <!-- ZONE 5 — FOOTER (x:8–292, y:496–524) -->
-                <rect x="8"   y="496" width="284" height="28" fill="#f8fafc"/>
-                <rect x="0"   y="496" width="8"   height="28" fill="url(#hatch-side-p)"/>
-                <rect x="292" y="496" width="8"   height="28" fill="url(#hatch-side-p)"/>
-                <line x1="8" y1="496" x2="292" y2="496" stroke="#f1f5f9" stroke-width="1"/>
-                <text x="150" y="514" text-anchor="middle" font-family="Arial" font-size="8" fill="#94a3b8">
+                <!-- DIVIDER: garis putih transparan (y:318) -->
+                <line x1="24" y1="318" x2="276" y2="318" stroke="rgba(255,255,255,0.25)" stroke-width="1"/>
+
+                <!-- ZONA 4: QR CODE — frosted glass kecil hanya di sekitar QR (y:318–496) -->
+                <!-- Label scan -->
+                <text x="150" y="338" text-anchor="middle" font-family="Arial" font-size="7.5" font-weight="600"
+                      fill="rgba(255,255,255,0.75)" letter-spacing="1">SCAN UNTUK VERIFIKASI</text>
+                <!-- QR box: frosted white -->
+                <rect x="82" y="350" width="136" height="136" rx="12"
+                      fill="rgba(255,255,255,0.92)"
+                      stroke="none"/>
+                <!-- QR pattern simulasi -->
+                <rect x="94"  y="362" width="24" height="24" rx="2" fill="#334155"/>
+                <rect x="122" y="362" width="24" height="24" rx="2" fill="#334155"/>
+                <rect x="150" y="362" width="24" height="24" rx="2" fill="#334155"/>
+                <rect x="94"  y="390" width="8"  height="8"  rx="1" fill="#334155"/>
+                <rect x="106" y="390" width="8"  height="8"  rx="1" fill="#334155"/>
+                <rect x="118" y="390" width="8"  height="8"  rx="1" fill="#334155"/>
+                <rect x="150" y="390" width="24" height="24" rx="2" fill="#334155"/>
+                <rect x="94"  y="402" width="24" height="24" rx="2" fill="#334155"/>
+                <text x="150" y="460" text-anchor="middle" font-family="Arial" font-size="7.5" fill="#64748b">QR · 120×120px</text>
+                <text x="150" y="488" text-anchor="middle" font-family="Arial" font-size="7" font-weight="700" fill="rgba(255,255,255,0.75)">
+                  BACKGROUND BEBAS TERLIHAT
+                </text>
+
+                <!-- ZONA 5: FOOTER — transparan (y:496–524) -->
+                <line x1="0" y1="496" x2="300" y2="496" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+                <text x="150" y="514" text-anchor="middle" font-family="Arial" font-size="8" fill="rgba(255,255,255,0.55)">
                   UKM MCI · Kartu Anggota Resmi · 2025
                 </text>
-
-                <!-- Bottom visible strip -->
-                <rect x="0" y="524" width="300" height="10" fill="url(#hatch-side-p)"/>
+                <text x="150" y="527" text-anchor="middle" font-family="Arial" font-size="7" font-weight="700" fill="rgba(255,255,255,0.6)">
+                  FOOTER TRANSPARAN
+                </text>
 
               </g>
 
-              <!-- Card border outline -->
+              <!-- Card border -->
               <rect x="0.75" y="0.75" width="298.5" height="532.5" rx="13.5"
-                    fill="none" stroke="#334155" stroke-width="1.5"/>
+                    fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="1.5"/>
 
               <!-- Dimension annotation -->
               <line x1="0" y1="537" x2="300" y2="537" stroke="#64748b" stroke-width="0.75"/>
@@ -286,9 +282,9 @@
             </svg>
 
             <p class="tg-preview-note">
-                <span style="display:inline-block;width:12px;height:12px;background:#dbeafe;border:1px solid #93c5fd;border-radius:2px;vertical-align:middle;margin-right:4px;"></span>Biru = bebas desain &nbsp;
-                <span style="display:inline-block;width:12px;height:12px;background:#fef3c7;border:1px solid #fcd34d;border-radius:2px;vertical-align:middle;margin-right:4px;"></span>Kuning = strip border &nbsp;
-                <span style="display:inline-block;width:12px;height:12px;background:#fff;border:1px solid #e2e8f0;border-radius:2px;vertical-align:middle;margin-right:4px;"></span>Putih = zona konten
+                <span class="tg-legend-dot" style="background:linear-gradient(135deg,#1a4ff5,#8b5cf6);"></span>Background image tampil di seluruh kartu &nbsp;
+                <span class="tg-legend-dot" style="background:rgba(255,255,255,0.18);border:1px solid rgba(255,255,255,0.4);"></span>Frosted glass per elemen &nbsp;
+                <span class="tg-legend-dot" style="background:rgba(255,255,255,0.92);border:1px solid #e2e8f0;"></span>Putih hanya di sekitar QR
             </p>
         </div>
 
@@ -334,44 +330,38 @@
                         <tr>
                             <td><strong>Header</strong></td>
                             <td>64 px</td>
-                            <td><span class="badge-ok">Bebas Desain</span></td>
-                            <td>Background tampil ~70%. Sistem menambahkan dark overlay 30% saat mode background image aktif. Gunakan warna/gambar menarik — teks putih tetap terbaca.</td>
+                            <td><span class="badge-overlay">Dark Overlay</span></td>
+                            <td>Background tampil dengan dark overlay 45% di atasnya agar teks logo dan nama organisasi tetap terbaca. Desain bebas — warna cerah sangat dianjurkan di area ini.</td>
                         </tr>
                         <tr>
-                            <td><strong>Strip Kiri/Kanan</strong></td>
-                            <td>8 px × 2</td>
-                            <td><span class="badge-ok">Bebas Desain</span></td>
-                            <td>Background image terlihat penuh di sisi kiri dan kanan sebagai border frame. Letakkan elemen dekoratif di sini.</td>
+                            <td><strong>Foto</strong></td>
+                            <td>~132 px</td>
+                            <td><span class="badge-ok">Background Penuh</span></td>
+                            <td>Background image tampil bebas. Foto anggota memiliki border putih 3px + drop shadow gelap agar menonjol di atas background apapun.</td>
                         </tr>
                         <tr>
-                            <td><strong>Foto</strong> (terpusat)</td>
-                            <td>132 px</td>
-                            <td><span class="badge-warn">97% Putih</span></td>
-                            <td>Panel putih menutup hampir seluruh area ini. Foto anggota 96×96px ditampilkan terpusat.</td>
+                            <td><strong>Nama · Jabatan · Divisi</strong></td>
+                            <td>~120 px</td>
+                            <td><span class="badge-ok">Background Penuh</span></td>
+                            <td>Background tampil bebas. Nama menggunakan teks putih dengan text-shadow tebal. Badge jabatan dan divisi menggunakan <em>frosted glass</em> — putih transparan 18% + blur.</td>
                         </tr>
                         <tr>
-                            <td><strong>Info</strong> (Nama · Role · Divisi)</td>
-                            <td>121 px</td>
-                            <td><span class="badge-warn">97% Putih</span></td>
-                            <td>Panel putih menutup area ini. Berisi nama, badge jabatan, dan divisi — semuanya terpusat.</td>
+                            <td><strong>Divider</strong></td>
+                            <td>1 px</td>
+                            <td><span class="badge-ok">Background Penuh</span></td>
+                            <td>Garis putih transparan tipis (rgba 25%). Background tetap terlihat.</td>
                         </tr>
                         <tr>
-                            <td><strong>QR Code</strong> (terpusat)</td>
-                            <td>178 px</td>
-                            <td><span class="badge-warn">97% Putih</span></td>
-                            <td>QR code 120×120px dan label scan. Panel putih menutup area ini.</td>
+                            <td><strong>QR Code</strong></td>
+                            <td>~178 px</td>
+                            <td><span class="badge-frosted">Frosted QR</span></td>
+                            <td>Background tampil bebas di seluruh area. Hanya di sekitar QR code ada kotak putih 92% dengan border-radius — cukup untuk keterbacaan scanner. Area di luar kotak QR tetap terlihat background-nya.</td>
                         </tr>
                         <tr>
                             <td><strong>Footer</strong></td>
                             <td>28 px</td>
-                            <td><span class="badge-warn">97% Putih</span></td>
-                            <td>Teks organisasi. Panel putih menutup area ini.</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Strip Bawah</strong></td>
-                            <td>10 px</td>
-                            <td><span class="badge-ok">Bebas Desain</span></td>
-                            <td>Background image terlihat di bawah kartu.</td>
+                            <td><span class="badge-ok">Transparan</span></td>
+                            <td>Background tampil penuh. Teks footer putih 55% opacity, border-top putih 20% opacity.</td>
                         </tr>
                     </tbody>
                 </table>
@@ -379,45 +369,52 @@
 
             <!-- Cara penggunaan -->
             <div class="tg-info-section">
-                <h2>Cara Penggunaan Template</h2>
+                <h2>Cara Membuat Background</h2>
                 <ol class="tg-steps">
                     <li>
                         <div class="tg-step-num">1</div>
                         <div>
-                            <strong>Download template SVG</strong> di tombol kanan atas halaman ini.
-                            <small>File SVG berisi kerangka zona yang sudah diposisikan sesuai layout asli ID card.</small>
+                            <strong>Download template SVG</strong> di tombol kanan atas.
+                            <small>SVG berisi kerangka zona layout sesuai posisi asli ID card.</small>
                         </div>
                     </li>
                     <li>
                         <div class="tg-step-num">2</div>
                         <div>
                             <strong>Buka di Canva / Figma / Photoshop</strong>
-                            <small>Di Canva: klik Upload → pilih SVG. Di Figma: File → Import. Di Photoshop: Open as Smart Object.</small>
+                            <small>Di Canva: Upload → pilih SVG. Di Figma: File → Import. Di Photoshop: Open as Smart Object.</small>
                         </div>
                     </li>
                     <li>
                         <div class="tg-step-num">3</div>
                         <div>
-                            <strong>Posisikan template sebagai layer paling atas</strong>
-                            <small>Template berfungsi sebagai panduan — tampilkan di atas layer desain Anda agar Anda bisa melihat batas zona konten.</small>
+                            <strong>Desain background bebas di seluruh area kartu</strong>
+                            <small>Background sekarang tampil di seluruh kartu — gunakan gradien, foto, tekstur, atau ilustrasi di semua area. Tidak ada zona yang tertutup panel putih besar.</small>
                         </div>
                     </li>
                     <li>
                         <div class="tg-step-num">4</div>
                         <div>
-                            <strong>Desain border di layer bawah</strong>
-                            <small>Fokus hiasan di HEADER (atas 64px), STRIP SAMPING (kiri/kanan 8px), dan STRIP BAWAH (10px). Area putih akan tertutup panel konten.</small>
+                            <strong>Perhatikan kontras di area teks</strong>
+                            <small>Nama anggota ditampilkan dengan teks putih + text-shadow. Pastikan background tidak terlalu terang di area tengah (nama, jabatan, divisi) agar teks tetap terbaca.</small>
                         </div>
                     </li>
                     <li>
                         <div class="tg-step-num">5</div>
                         <div>
-                            <strong>Sembunyikan/hapus layer template, lalu ekspor</strong>
-                            <small>Export sebagai PNG/JPG ukuran 300×534px (atau kelipatan: 600×1068px untuk 2x).</small>
+                            <strong>Area QR: hindari pola terlalu ramai</strong>
+                            <small>QR code punya kotak putih kecil di sekitarnya, tapi background di luar kotak itu tetap terlihat. Pola atau warna terlalu padat di area QR bisa mengurangi estetika.</small>
                         </div>
                     </li>
                     <li>
                         <div class="tg-step-num">6</div>
+                        <div>
+                            <strong>Hapus layer template, ekspor PNG/JPG 300×534px</strong>
+                            <small>Kelipatan yang diizinkan: 600×1068px (2×), 900×1602px (3×).</small>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="tg-step-num">7</div>
                         <div>
                             <strong>Upload di Admin Panel → Template ID Card</strong>
                             <small>Klik "Ganti Background Image" → upload hasil desain Anda.</small>
@@ -433,36 +430,36 @@
                     <div class="tg-tip tg-tip-ok">
                         <span class="tg-tip-icon">✅</span>
                         <div>
-                            <strong>Header yang kuat</strong><br>
-                            Beri warna gradien, gambar, atau pola menarik di area header (64px teratas). Ini adalah area paling visible — tampil 70% tanpa overlay.
+                            <strong>Background dominan — bebas di seluruh kartu</strong><br>
+                            Background image sekarang tampil dari atas ke bawah tanpa tertutup panel putih besar. Manfaatkan ini dengan gradien kaya, foto, atau ilustrasi yang mengisi seluruh kartu.
                         </div>
                     </div>
                     <div class="tg-tip tg-tip-ok">
                         <span class="tg-tip-icon">✅</span>
                         <div>
-                            <strong>Dekorasi di strip samping &amp; bawah</strong><br>
-                            Strip kiri-kanan (8px) dan bawah (10px) terlihat penuh. Tambahkan ornamen, garis, atau motif di sini untuk efek frame yang indah.
+                            <strong>Warna gelap atau sedang = kontras terbaik</strong><br>
+                            Karena teks nama menggunakan warna putih dengan text-shadow, background gelap (navy, ungu, hijau tua) akan membuat teks paling terbaca dan estetis.
                         </div>
                     </div>
-                    <div class="tg-tip tg-tip-ok">
-                        <span class="tg-tip-icon">✅</span>
+                    <div class="tg-tip tg-tip-purple">
+                        <span class="tg-tip-icon">🔮</span>
                         <div>
-                            <strong>Area body: putih bersih atau gradien halus</strong><br>
-                            Di area body/fields/QR, gunakan background putih atau gradien sangat halus ke putih. Warna gelap di sini akan terlihat sedikit (3%) dan bisa mengganggu keterbacaan teks.
-                        </div>
-                    </div>
-                    <div class="tg-tip tg-tip-warn">
-                        <span class="tg-tip-icon">⚠️</span>
-                        <div>
-                            <strong>Hindari teks atau logo di area body</strong><br>
-                            Teks atau logo yang Anda taruh di area konten (bawah header) hampir tidak terlihat karena tertutup panel putih 97%.
+                            <strong>Frosted glass otomatis di elemen konten</strong><br>
+                            Badge jabatan dan row divisi menggunakan <em>backdrop-filter blur</em> — tampil seperti kaca buram transparan di atas background Anda. Tidak perlu khawatir soal ini, sistem menanganinya otomatis.
                         </div>
                     </div>
                     <div class="tg-tip tg-tip-warn">
                         <span class="tg-tip-icon">⚠️</span>
                         <div>
-                            <strong>Ukuran harus tepat</strong><br>
-                            Pastikan ukuran ekspor adalah <strong>300×534px</strong> (atau kelipatan persisnya: 600×1068, 900×1602). Jika ukuran berbeda, gambar akan stretch dan zona tidak sesuai.
+                            <strong>Hindari background terlalu terang di area tengah</strong><br>
+                            Teks nama, jabatan, dan divisi tampil putih. Jika background di area tengah terlalu terang (putih, kuning pucat), teks akan sulit terbaca. Gunakan gradien dari gelap ke terang atau warna solid yang kontras.
+                        </div>
+                    </div>
+                    <div class="tg-tip tg-tip-warn">
+                        <span class="tg-tip-icon">⚠️</span>
+                        <div>
+                            <strong>Ukuran harus tepat: 300×534px</strong><br>
+                            Jika ukuran berbeda, gambar akan stretch dan zona tidak sesuai. Kelipatan yang aman: 600×1068px atau 900×1602px.
                         </div>
                     </div>
                 </div>

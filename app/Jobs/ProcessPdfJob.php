@@ -63,6 +63,7 @@ class ProcessPdfJob implements ShouldQueue
 
             // 2. Hapus chunks lama (jika reprocess)
             $document->chunks()->delete();
+            $document->update(['total_chunks' => 0]);
 
             // 3. Split text → chunks dengan overlap
             $chunks = $this->splitIntoChunks($text);
@@ -81,6 +82,9 @@ class ProcessPdfJob implements ShouldQueue
                         'token_count' => (int) (mb_strlen($chunkText) / 4),  // estimasi kasar
                     ]);
 
+                    // Update progress setelah setiap chunk berhasil disimpan
+                    $document->increment('total_chunks');
+
                     // Delay kecil untuk hindari rate limit Gemini
                     usleep(150_000); // 150ms
 
@@ -90,11 +94,7 @@ class ProcessPdfJob implements ShouldQueue
             }
 
             // 5. Update status sukses
-            $totalChunks = $document->chunks()->count();
-            $document->update([
-                'status'       => 'ready',
-                'total_chunks' => $totalChunks,
-            ]);
+            $document->update(['status' => 'ready']);
 
             Log::info("✅ Document #{$document->id} berhasil diproses ({$totalChunks} chunks).");
         } catch (\Throwable $e) {
