@@ -41,15 +41,33 @@
             <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 lg:gap-4">
                 @php
                     $placeholders = [
-                        ['Hackathon 2024',   'Lomba',       true,  'from-brand-400 to-brand-700',    'fa-solid fa-trophy'],
-                        ['Workshop Web Dev', 'Workshop',    false, 'from-violet-400 to-violet-700',  'fa-solid fa-laptop-code'],
-                        ['Ospek Divisi',     'Orientasi',   false, 'from-emerald-400 to-emerald-700','fa-solid fa-graduation-cap'],
-                        ['Demo Day',         'Showcase',    false, 'from-amber-400 to-orange-600',   'fa-solid fa-rocket'],
-                        ['Team Building',    'Kebersamaan', false, 'from-pink-400 to-rose-600',      'fa-solid fa-handshake'],
-                        ['CTF Competition',  'Lomba',       false, 'from-cyan-400 to-brand-600',     'fa-solid fa-lock'],
-                        ['UI/UX Bootcamp',   'Workshop',    false, 'from-fuchsia-400 to-purple-700', 'fa-solid fa-palette'],
-                        ['Tech Talk',        'Seminar',     false, 'from-teal-400 to-teal-700',      'fa-solid fa-microphone'],
-                        ['Project Demo',     'Showcase',    false, 'from-indigo-400 to-brand-700',   'fa-solid fa-mobile-screen'],
+                        ['Hackathon 2024', 'Lomba', true, 'from-brand-400 to-brand-700', 'fa-solid fa-trophy'],
+                        [
+                            'Workshop Web Dev',
+                            'Workshop',
+                            false,
+                            'from-violet-400 to-violet-700',
+                            'fa-solid fa-laptop-code',
+                        ],
+                        [
+                            'Ospek Divisi',
+                            'Orientasi',
+                            false,
+                            'from-emerald-400 to-emerald-700',
+                            'fa-solid fa-graduation-cap',
+                        ],
+                        ['Demo Day', 'Showcase', false, 'from-amber-400 to-orange-600', 'fa-solid fa-rocket'],
+                        ['Team Building', 'Kebersamaan', false, 'from-pink-400 to-rose-600', 'fa-solid fa-handshake'],
+                        ['CTF Competition', 'Lomba', false, 'from-cyan-400 to-brand-600', 'fa-solid fa-lock'],
+                        ['UI/UX Bootcamp', 'Workshop', false, 'from-fuchsia-400 to-purple-700', 'fa-solid fa-palette'],
+                        ['Tech Talk', 'Seminar', false, 'from-teal-400 to-teal-700', 'fa-solid fa-microphone'],
+                        [
+                            'Project Demo',
+                            'Showcase',
+                            false,
+                            'from-indigo-400 to-brand-700',
+                            'fa-solid fa-mobile-screen',
+                        ],
                     ];
                 @endphp
 
