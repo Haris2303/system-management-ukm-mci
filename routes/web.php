@@ -60,7 +60,7 @@ Route::get('/elections/{election}/rekap', function (App\Models\Election $electio
 })->name('elections.rekap');
 
 // ── Profil Anggota Publik (scan QR code) ─────────────────────
-Route::get('/anggota/{userId}', [IdCardController::class, 'publicProfile'])->name('anggota.show');
+Route::get('/anggota/{publicId}', [IdCardController::class, 'publicProfile'])->name('anggota.show');
 
 // ── ID Card Template Guide — harus sebelum wildcard {userId} ──
 Route::get('/id-card/template', fn () => view('id-card.template-guide'))->name('id-card.template');

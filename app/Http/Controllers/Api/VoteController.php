@@ -176,7 +176,7 @@ class VoteController extends Controller
                 'nama' => $c->user->name ?? '–',
                 'visi' => $c->visi,
                 'misi' => $c->misi,
-                'foto' => $c->foto ? asset('storage/' . $c->foto) : null,
+                'foto' => $c->foto_url,
             ];
             // Tampilkan hasil hanya jika diizinkan
             if ($withHasil && $e->hasilBolehDitampilkan()) {

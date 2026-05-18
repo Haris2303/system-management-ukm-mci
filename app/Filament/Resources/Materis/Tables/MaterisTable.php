@@ -14,6 +14,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Str;
 
 class MaterisTable
@@ -27,30 +28,19 @@ class MaterisTable
                     ->searchable()
                     ->sortable()
                     ->weight('bold')
-                    ->description(
-                        fn(Materi $r) => $r->deskripsi
-                            ? Str::limit($r->deskripsi, 70)
-                            : '—'
-                    )
                     ->wrap(),
 
-                TextColumn::make('divisi.nama')
+                TextColumn::make('divisi_id')
                     ->label('Divisi')
                     ->badge()
                     ->color(fn(Materi $r) => $r->isUmum() ? 'gray' : 'primary')
-                    ->formatStateUsing(fn(?string $state) => $state ?? '🌐 Semua Divisi'),
+                    ->getStateUsing(fn(Materi $r) => $r->divisi?->nama ?? '🌐 Semua Divisi'),
 
                 IconColumn::make('file_path')
                     ->label('PDF')
                     ->icon(fn(?string $state) => $state ? 'heroicon-o-document-arrow-down' : 'heroicon-o-minus')
                     ->color(fn(?string $state) => $state ? 'success' : 'gray')
                     ->tooltip(fn(Materi $r) => $r->file_path ? "Ukuran: {$r->file_size}" : 'Tidak ada file'),
-
-                IconColumn::make('link_url')
-                    ->label('Link')
-                    ->icon(fn(?string $state) => $state ? 'heroicon-o-link' : 'heroicon-o-minus')
-                    ->color(fn(?string $state) => $state ? 'info' : 'gray')
-                    ->tooltip(fn(Materi $r) => $r->link_url ?? 'Tidak ada link'),
 
                 TextColumn::make('uploader.name')
                     ->label('Diunggah Oleh')
@@ -67,7 +57,13 @@ class MaterisTable
                     ->label('Filter Divisi')
                     ->options(Divisi::query()->orderBy('urut')->pluck('nama', 'id'))
                     ->searchable()
-                    ->preload(),
+                    ->preload()
+                    ->query(fn (Builder $query, array $data) => $data['value']
+                        ? $query->where(fn (Builder $q) => $q
+                            ->where('divisi_id', $data['value'])
+                            ->orWhereNull('divisi_id'))
+                        : $query
+                    ),
 
                 TernaryFilter::make('is_umum')
                     ->label('Jenis Materi')
@@ -81,12 +77,6 @@ class MaterisTable
                     ),
             ])
             ->recordActions([
-                Action::make('download')
-                    ->label('Unduh')
-                    ->icon('heroicon-o-arrow-down-tray')
-                    ->color('success')
-                    ->visible(fn(Materi $r) => $r->hasFile())
-                    ->url(fn(Materi $r) => $r->file_url, shouldOpenInNewTab: true),
 
                 Action::make('open_link')
                     ->label('Buka Link')

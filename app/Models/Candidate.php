@@ -44,6 +44,16 @@ class Candidate extends Model
         return $this->hasMany(Vote::class);
     }
 
+    /** URL foto kandidat — fallback ke avatar profil jika tidak ada foto */
+    public function getFotoUrlAttribute(): ?string
+    {
+        if ($this->foto) {
+            return asset('storage/' . $this->foto);
+        }
+
+        return $this->user?->avatar_url;
+    }
+
     /** Jumlah suara yang diterima kandidat ini */
     public function jumlahSuara(): int
     {

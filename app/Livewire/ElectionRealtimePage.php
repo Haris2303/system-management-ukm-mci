@@ -14,17 +14,10 @@ class ElectionRealtimePage extends Component
         $election = Election::with(['candidates.user', 'candidates.votes'])->findOrFail($this->electionId);
         $totalSuara = $election->votes()->count();
 
-        $base = request()->getSchemeAndHttpHost();
-        $storageUrl = fn(?string $path) => match (true) {
-            !$path                        => null,
-            str_starts_with($path, 'http') => $path,
-            default                       => $base . '/storage/' . $path,
-        };
-
         $candidates = $election->candidates->map(fn($c) => [
             'urut'         => $c->urut,
             'nama'         => $c->user->name,
-            'foto'         => $storageUrl($c->foto) ?? $storageUrl($c->user->avatar),
+            'foto'         => $c->foto_url,
             'jumlah_suara' => $c->votes->count(),
             'persentase'   => $totalSuara > 0 ? round(($c->votes->count() / $totalSuara) * 100, 1) : 0,
         ])->sortByDesc('jumlah_suara')->values();

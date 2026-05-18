@@ -31,9 +31,9 @@
             <div class="flex justify-center -mt-14 mb-4 relative z-10">
                 <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($fotoUrl): ?>
                     <img src="<?php echo e($fotoUrl); ?>" alt="<?php echo e($user->name); ?>"
-                         class="w-28 h-28 rounded-2xl object-cover object-top border-4 border-white shadow-lg shadow-brand-100/50">
+                         class="w-28 h-28 rounded-full object-cover object-top border-4 border-white shadow-lg shadow-brand-100/50">
                 <?php else: ?>
-                    <div class="w-28 h-28 rounded-2xl border-4 border-white shadow-lg shadow-brand-100/50 flex items-center justify-center"
+                    <div class="w-28 h-28 rounded-full border-4 border-white shadow-lg shadow-brand-100/50 flex items-center justify-center"
                          style="background:linear-gradient(135deg,#1a4ff5,#3671ff);">
                         <span class="font-display font-bold text-white text-4xl">
                             <?php echo e(mb_strtoupper(mb_substr($user->name, 0, 1))); ?>
@@ -110,10 +110,7 @@
             
             <div class="bg-slate-50 border-t border-slate-100 px-6 py-4 flex items-center justify-between">
                 <div class="flex items-center gap-2">
-                    <div class="w-6 h-6 rounded-lg bg-gradient-to-br from-brand-600 to-brand-400 flex items-center justify-center shadow-sm">
-                        <span class="text-white font-display font-bold text-[10px]">M</span>
-                    </div>
-                    <span class="text-xs font-semibold text-slate-500">UKM MCI</span>
+                    <img src="<?php echo e(asset('assets/logo/brand.png')); ?>" alt="UKM MCI" class="h-6 w-auto">
                 </div>
                 <span class="text-[10px] text-slate-400">Anggota Resmi <?php echo e(date('Y')); ?></span>
             </div>

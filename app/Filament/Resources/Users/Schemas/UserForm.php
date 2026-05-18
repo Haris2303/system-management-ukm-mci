@@ -4,7 +4,6 @@ namespace App\Filament\Resources\Users\Schemas;
 
 use App\Models\Divisi;
 use Filament\Forms\Components\DateTimePicker;
-use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Grid;
@@ -21,16 +20,6 @@ class UserForm
             ->components([
                 Section::make('Informasi Pengguna')
                     ->schema([
-                        FileUpload::make('avatar')
-                            ->label('Foto Profil')
-                            ->image()
-                            ->disk('public')
-                            ->directory('avatars')
-                            ->avatar()
-                            ->imageEditor()
-                            ->circleCropper()
-                            ->columnSpanFull(),
-
                         TextInput::make('name')
                             ->label('Nama Lengkap')
                             ->required()

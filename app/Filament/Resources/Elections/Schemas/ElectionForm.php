@@ -74,7 +74,7 @@ class ElectionForm
                             ->schema([
                                 Select::make('user_id')
                                     ->label('Anggota')
-                                    ->options(User::query()->pluck('name', 'id'))
+                                    ->options(User::role('anggota')->pluck('name', 'id'))
                                     ->searchable()->required(),
 
                                 FileUpload::make('foto')

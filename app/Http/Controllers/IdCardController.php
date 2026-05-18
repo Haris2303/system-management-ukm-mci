@@ -26,7 +26,7 @@ class IdCardController extends Controller
         $template       = IdCardTemplates::find(IdCardSetting::activeTemplate());
         $backgroundImage = IdCardSetting::backgroundImageUrl();
 
-        $profileUrl = $base . route('anggota.show', $user->id, false);
+        $profileUrl = $base . route('anggota.show', $user->public_id, false);
 
         $qrCode = QrCode::format('svg')
             ->size(120)
@@ -36,9 +36,7 @@ class IdCardController extends Controller
 
         $memberId = 'MCI-' . str_pad($user->id, 4, '0', STR_PAD_LEFT);
 
-        $fotoUrl = $user->avatar
-            ? $base . '/storage/' . $user->avatar
-            : null;
+        $fotoUrl = $user->avatar_url;
 
         return view('id-card.show', compact(
             'user', 'template', 'backgroundImage', 'qrCode', 'memberId', 'fotoUrl', 'profileUrl'
@@ -46,15 +44,13 @@ class IdCardController extends Controller
     }
 
     /** Profil publik — ditampilkan saat QR code di-scan */
-    public function publicProfile(string $userId)
+    public function publicProfile(string $publicId)
     {
-        $user = User::with('divisi', 'roles')->findOrFail($userId);
+        $user = User::with('divisi', 'roles')->where('public_id', $publicId)->firstOrFail();
 
         $memberId = 'MCI-' . str_pad($user->id, 4, '0', STR_PAD_LEFT);
 
-        $fotoUrl = $user->avatar
-            ? request()->getSchemeAndHttpHost() . '/storage/' . $user->avatar
-            : null;
+        $fotoUrl = $user->avatar_url;
 
         return view('landing.anggota.show', compact('user', 'memberId', 'fotoUrl'));
     }
@@ -77,10 +73,10 @@ class IdCardController extends Controller
         $base  = request()->getSchemeAndHttpHost();
 
         $memberId        = 'MCI-' . str_pad($user->id, 4, '0', STR_PAD_LEFT);
-        $fotoUrl         = $user->avatar ? $base . '/storage/' . $user->avatar : null;
+        $fotoUrl         = $user->avatar_url;
         $backgroundImage = IdCardSetting::backgroundImageUrl();
         $cardUrl         = $base . route('id-card.show', $user->id, false);
-        $profileUrl      = $base . route('anggota.show', $user->id, false);
+        $profileUrl      = $base . route('anggota.show', $user->public_id, false);
 
         return response()->json([
             'user' => [

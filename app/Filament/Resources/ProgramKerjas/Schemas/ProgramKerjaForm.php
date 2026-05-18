@@ -47,7 +47,6 @@ class ProgramKerjaForm
                             ->label('PIC (Penanggung Jawab)')
                             ->options(function () {
                                 $user = auth()->user();
-                                // Filter user berdasarkan divisi (kecuali admin)
                                 $query = User::query();
                                 if (! $user?->hasAnyRole(['super_admin', 'ketua_ukm']) && $user?->divisi_id) {
                                     $query->where('divisi_id', $user->divisi_id);
@@ -56,7 +55,13 @@ class ProgramKerjaForm
                             })
                             ->searchable()
                             ->required()
-                            ->default(fn() => auth()->id())
+                            ->default(fn () => auth()->id())
+                            ->disabled(fn () => auth()->user()->isKetuaDivisi())
+                            ->dehydrated(true)
+                            ->helperText(fn () => auth()->user()->isKetuaDivisi()
+                                ? 'PIC otomatis diisi dengan nama Anda.'
+                                : null
+                            )
                             ->preload(),
 
                         DatePicker::make('tanggal_mulai')

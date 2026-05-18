@@ -18,19 +18,22 @@ class RedirectDemisioner
     {
         $user = $request->user();
 
-        if ($user && $user->hasRole('demisioner')) {
-            // Logout dari sesi web
+        if ($user && ($user->hasRole('demisioner') || $user->hasRole('anggota') || $user->isKicked())) {
             Auth::logout();
-
-            // Invalidate sesi agar tidak bisa di-resume
             $request->session()->invalidate();
             $request->session()->regenerateToken();
 
+            $message = match (true) {
+                $user->hasRole('anggota')    => 'Akun dengan role Anggota tidak memiliki akses ke panel admin.',
+                $user->hasRole('demisioner') => 'Akun Anda telah dinonaktifkan (demisioner) dan tidak dapat mengakses panel admin.',
+                $user->isKicked()            => 'Akun Anda telah dikeluarkan dari sistem.',
+                default                      => 'Akses ditolak.',
+            };
+
             return redirect()->to(filament()->getLoginUrl())
-                ->withErrors([
-                    'email' => 'Akun ada telah dinonaktifkan (demisioner) dan tidak dapat mengakses panel admin.'
-                ]);
+                ->withErrors(['email' => $message]);
         }
+
         return $next($request);
     }
 }

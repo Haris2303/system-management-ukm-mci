@@ -35,10 +35,25 @@ class MateriForm
 
                         Select::make('divisi_id')
                             ->label('Divisi')
-                            ->options(Divisi::query()->orderBy('urut')->pluck('nama', 'id'))
+                            ->options(fn () => auth()->user()->isKetuaDivisi()
+                                ? Divisi::where('id', auth()->user()->divisi_id)->pluck('nama', 'id')
+                                : Divisi::query()->orderBy('urut')->pluck('nama', 'id')
+                            )
+                            ->default(fn () => auth()->user()->isKetuaDivisi()
+                                ? auth()->user()->divisi_id
+                                : null
+                            )
+                            ->disabled(fn () => auth()->user()->isKetuaDivisi())
+                            ->dehydrated(true)
                             ->searchable()
-                            ->placeholder('— Materi Umum (untuk semua divisi) —')
-                            ->helperText('Kosongkan jika materi ini untuk semua anggota.')
+                            ->placeholder(fn () => auth()->user()->isKetuaDivisi()
+                                ? null
+                                : '— Materi Umum (untuk semua divisi) —'
+                            )
+                            ->helperText(fn () => auth()->user()->isKetuaDivisi()
+                                ? 'Materi otomatis dikaitkan ke divisi Anda.'
+                                : 'Kosongkan jika materi ini untuk semua anggota.'
+                            )
                             ->columnSpanFull(),
 
                     ])->columns(2),

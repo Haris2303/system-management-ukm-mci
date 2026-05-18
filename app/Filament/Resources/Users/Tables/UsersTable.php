@@ -30,14 +30,12 @@ class UsersTable
             ->columns([
                 ImageColumn::make('avatar')
                     ->label('')
-                    ->disk('public')
                     ->circular()
-                    ->defaultImageUrl(
-                        fn(User $r) =>
-                        'https://ui-avatars.com/api/?name=' . urlencode($r->name)
-                            . '&background=1a4ff5&color=fff'
-                    )
-                    ->size(40),
+                    ->size(40)
+                    ->getStateUsing(fn(User $r) =>
+                        $r->avatar_url
+                            ?? 'https://ui-avatars.com/api/?name=' . urlencode($r->name) . '&background=1a4ff5&color=fff&size=80'
+                    ),
 
                 TextColumn::make('name')
                     ->label('Nama')
