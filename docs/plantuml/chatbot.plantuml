@@ -1,0 +1,57 @@
+@startuml
+skinparam ActivityBackgroundColor #DDEEFF
+skinparam ActivityBorderColor #336699
+skinparam ArrowColor #336699
+skinparam ActivityDiamondBackgroundColor #FFF8DC
+skinparam ActivityDiamondBorderColor #CC9900
+skinparam ActivityFontName Times New Roman
+skinparam ArrowFontName Times New Roman
+skinparam DefaultFontSize 24
+skinparam TitleFontSize 24
+skinparam Padding 3
+
+|Pengunjung|
+|Sistem|
+
+title Activity Diagram Chatbot RAG
+
+|Pengunjung|
+start
+:Membuka halaman web publik;
+:Menekan widget chatbot;
+
+|Sistem|
+:Menampilkan antarmuka\npercakapan chatbot;
+
+|Pengunjung|
+:Mengetik pertanyaan;
+:Menekan tombol kirim;
+
+|Sistem|
+if (Input kosong?) then (Ya)
+  :Mencegah pengiriman;
+  stop
+else (Tidak)
+endif
+
+:Menampilkan indikator\npengetikan (typing indicator);
+:Memproses pertanyaan\nmenggunakan NLP;
+:Melakukan pencarian\npada knowledge base (RAG);
+
+if (Informasi relevan\nditemukan?) then (Ya)
+  :Menghasilkan jawaban\nberbasis dokumen\nknowledge base;
+else (Tidak)
+endif
+
+:Menampilkan jawaban\npada antarmuka chat;
+
+|Pengunjung|
+if (Pertanyaan lanjutan?) then (Ya)
+  :Mengetik pertanyaan\nberikutnya;
+  |Sistem|
+else (Tidak)
+endif
+
+:Menutup widget chatbot;
+stop
+@enduml

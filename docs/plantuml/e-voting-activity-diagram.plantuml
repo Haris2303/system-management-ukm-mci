@@ -1,0 +1,68 @@
+@startuml
+skinparam ActivityBackgroundColor #DDEEFF
+skinparam ActivityBorderColor #336699
+skinparam ArrowColor #336699
+skinparam ActivityDiamondBackgroundColor #FFF8DC
+skinparam ActivityDiamondBorderColor #CC9900
+skinparam ActivityFontName Times New Roman
+skinparam ArrowFontName Times New Roman
+skinparam TitleFontSize 24
+skinparam DefaultFontSize 24
+skinparam Padding 3
+
+|Ketua UKM|
+|Sistem|
+|Anggota|
+
+title Activity Diagram E-Voting
+
+|Ketua UKM|
+start
+:Membuat periode pemilihan\n(nama, waktu mulai & selesai);
+:Mengaktifkan periode;
+
+|Sistem|
+:Menyimpan periode pemilihan;
+
+|Anggota|
+:Membuka menu e-voting;
+
+|Sistem|
+if (Periode pemilihan aktif?) then (Tidak)
+  :Menampilkan pesan\n"Pemilihan belum dimulai";
+  stop
+else (Ya)
+endif
+if (Anggota sudah memilih?) then (Ya)
+  :Menampilkan pesan\n"Hak suara sudah digunakan";
+  stop
+else (Tidak)
+endif
+:Menampilkan daftar kandidat;
+
+|Anggota|
+:Memilih kandidat;
+:Menekan "Kirim Suara";
+:Mengkonfirmasi pilihan;
+
+|Sistem|
+if (Pilihan valid?) then (Tidak)
+  :Menampilkan pesan\nperingatan;
+  stop
+else (Ya)
+endif
+:Mencatat suara ke basis data;
+:Mengunci hak suara anggota;
+:Menampilkan "Suara berhasil dikirim";
+:Memperbarui grafik hasil\nvoting secara realtime;
+
+|Ketua UKM|
+:Memantau hasil pemilihan\nsecara realtime;
+:Menutup periode pemilihan;
+
+|Sistem|
+:Mengunci seluruh hak suara;
+:Menampilkan hasil akhir pemilihan;
+
+stop
+@enduml

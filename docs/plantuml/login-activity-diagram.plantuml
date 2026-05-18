@@ -1,0 +1,40 @@
+@startuml
+skinparam ActivityBackgroundColor #DDEEFF
+skinparam ActivityBorderColor #336699
+skinparam ArrowColor #336699
+skinparam ActivityDiamondBackgroundColor #FFF8DC
+skinparam ActivityDiamondBorderColor #CC9900
+skinparam ActivityFontName Times New Roman
+skinparam ArrowFontName Times New Roman
+skinparam ActivityFontSize 11
+skinparam Padding 3
+skinparam TitleFontSize 24
+skinparam DefaultFontSize 24
+
+|Pengguna|
+|Sistem|
+
+title Activity Diagram Login Sistem
+
+|Pengguna|
+start
+:Memasukkan email dan password;
+:Menekan tombol "Masuk";
+
+|Sistem|
+if (Input valid &\nkredensial cocok?) then (Tidak)
+  :Menampilkan pesan error;
+  stop
+else (Ya)
+endif
+:Membuat sesi autentikasi;
+if (Role?) then (Pengurus)
+  :Arahkan ke Dashboard\nAdmin Panel;
+else (Anggota)
+  :Arahkan ke Dashboard\nMobile;
+endif
+
+|Pengguna|
+:Mengakses dashboard;
+stop
+@enduml

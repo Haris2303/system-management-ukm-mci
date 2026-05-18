@@ -1,0 +1,56 @@
+@startuml
+skinparam ActivityBackgroundColor #DDEEFF
+skinparam ActivityBorderColor #336699
+skinparam ArrowColor #336699
+skinparam ActivityDiamondBackgroundColor #FFF8DC
+skinparam ActivityDiamondBorderColor #CC9900
+skinparam ActivityFontName Times New Roman
+skinparam ArrowFontName Times New Roman
+skinparam DefaultFontSize 24
+skinparam Padding 3
+skinparam TitleFontSize 24
+
+|Calon Anggota|
+|Sistem|
+
+title Activity Diagram Pendaftaran Anggota Baru
+
+|Calon Anggota|
+start
+:Membuka halaman pendaftaran;
+
+|Sistem|
+if (Periode rekrutmen aktif?) then (Tidak)
+  :Menampilkan pesan\n"Pendaftaran ditutup";
+  stop
+else (Ya)
+endif
+
+|Calon Anggota|
+:Tahap 1: Mengisi data diri;
+
+|Sistem|
+if (Data valid &\nNIM belum terdaftar?) then (Tidak)
+  :Menampilkan pesan error;
+  stop
+else (Ya)
+endif
+
+|Calon Anggota|
+:Tahap 2: Memilih divisi;
+:Tahap 3: Menjawab\npertanyaan seleksi;
+:Menekan tombol "Kirim";
+
+|Sistem|
+if (Semua tahap lengkap?) then (Tidak)
+  :Menampilkan pesan\nperingatan;
+  stop
+else (Ya)
+endif
+:Menyimpan data pendaftaran;
+:Menampilkan konfirmasi\n"Pendaftaran berhasil";
+
+|Calon Anggota|
+:Menunggu hasil seleksi;
+stop
+@enduml

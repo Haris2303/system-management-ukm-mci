@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Http\Middleware\RedirectDemisioner;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -27,10 +28,16 @@ class AdministrasiPanelProvider extends PanelProvider
             ->default()
             ->id('administrasi')
             ->path('administrasi')
+            ->spa()
             ->login()
             ->colors([
-                'primary' => Color::Amber,
+                'primary' => Color::Blue,
             ])
+            ->darkMode(false)
+            ->renderHook(
+                \Filament\View\PanelsRenderHook::HEAD_END,
+                fn() => '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">',
+            )
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
             ->pages([
@@ -39,7 +46,12 @@ class AdministrasiPanelProvider extends PanelProvider
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\Filament\Widgets')
             ->widgets([
                 AccountWidget::class,
-                FilamentInfoWidget::class,
+            ])
+            ->navigationGroups([
+                'Manajemen Presensi',
+                'E-Kas Keuangan',
+                'Rekrutmen',
+                'Konten',
             ])
             ->middleware([
                 EncryptCookies::class,
@@ -54,6 +66,7 @@ class AdministrasiPanelProvider extends PanelProvider
             ])
             ->authMiddleware([
                 Authenticate::class,
+                RedirectDemisioner::class
             ]);
     }
 }
