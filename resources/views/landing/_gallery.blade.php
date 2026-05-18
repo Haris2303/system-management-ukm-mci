@@ -36,6 +36,17 @@
                     </div>
                 @endforeach
             </div>
+
+            {{-- Lihat Semua --}}
+            <div class="text-center mt-10">
+                <a href="{{ route('galeri.index') }}"
+                    class="inline-flex items-center gap-2 px-6 py-3 rounded-full border-2 border-brand-200 text-brand-600 font-semibold text-sm hover:bg-brand-600 hover:text-white hover:border-brand-600 transition-all duration-200">
+                    Lihat Semua Foto
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                    </svg>
+                </a>
+            </div>
         @else
             {{-- Placeholder grid saat belum ada foto --}}
             <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 lg:gap-4">

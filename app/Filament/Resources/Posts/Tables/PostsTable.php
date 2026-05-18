@@ -12,9 +12,11 @@ use Filament\Actions\EditAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Str;
 
 class PostsTable
@@ -63,6 +65,16 @@ class PostsTable
                 SelectFilter::make('kategori')
                     ->options(['Berita' => 'Berita', 'Kegiatan' => 'Kegiatan', 'Prestasi' => 'Prestasi', 'Pengumuman' => 'Pengumuman']),
                 TernaryFilter::make('is_featured')->label('Featured'),
+                Filter::make('tag')
+                    ->form([
+                        \Filament\Forms\Components\TextInput::make('tag')->label('Tag'),
+                    ])
+                    ->query(fn(Builder $query, array $data) =>
+                        $data['tag']
+                            ? $query->where('tag', 'like', '%' . $data['tag'] . '%')
+                            : $query
+                    )
+                    ->indicateUsing(fn(array $data) => $data['tag'] ? 'Tag: ' . $data['tag'] : null),
             ])
             ->recordActions([
                 Action::make('preview')

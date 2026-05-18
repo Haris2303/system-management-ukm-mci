@@ -13,6 +13,7 @@ class PostController extends Controller
     {
         $kategori = $request->query('kategori');
         $search   = $request->query('q');
+        $tag      = $request->query('tag');
 
         $query = Post::published()
             ->with('author:id,name')
@@ -30,12 +31,16 @@ class PostController extends Controller
             );
         }
 
+        if ($tag) {
+            $query->byTag($tag);
+        }
+
         $posts    = $query->paginate(9)->withQueryString();
         $featured = Post::published()->featured()->latest('published_at')->first();
 
         $kategoris = ['semua', 'Berita', 'Kegiatan', 'Prestasi', 'Pengumuman'];
 
-        return view('landing.berita.index', compact('posts', 'featured', 'kategoris', 'kategori', 'search'));
+        return view('landing.berita.index', compact('posts', 'featured', 'kategoris', 'kategori', 'search', 'tag'));
     }
 
     /** Halaman detail satu berita */

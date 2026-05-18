@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -84,12 +85,28 @@ class Post extends Model
         return $q->where('kategori', $kategori);
     }
 
+    public function scopeByTag($q, string $tag)
+    {
+        return $q->where('tag', 'like', '%' . $tag . '%');
+    }
+
+    // ── Attribute cast: simpan sebagai comma-string, baca sebagai array ──
+    protected function tag(): Attribute
+    {
+        return Attribute::make(
+            get: fn(?string $value) => $value
+                ? array_values(array_filter(array_map('trim', explode(',', $value))))
+                : [],
+            set: fn($value) => is_array($value)
+                ? implode(',', array_filter(array_map('trim', $value)))
+                : $value,
+        );
+    }
+
     // ── Helpers ───────────────────────────────────────────────
     public function getTags(): array
     {
-        return $this->tag
-            ? array_map('trim', explode(',', $this->tag))
-            : [];
+        return $this->tag ?? [];
     }
 
     public function incrementViews(): void

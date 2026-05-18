@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ChatbotController;
 use App\Http\Controllers\DaftarController;
+use App\Http\Controllers\GalleryController;
 use App\Http\Controllers\IdCardController;
 use App\Http\Controllers\LandingController;
 use App\Http\Controllers\PostController;
@@ -18,6 +19,9 @@ Route::post('/daftar', [LandingController::class, 'daftar'])->name('daftar');
 // ── Berita & Kegiatan ─────────────────────────────────────────
 Route::get('/berita',        [PostController::class, 'index'])->name('berita.index');
 Route::get('/berita/{slug}', [PostController::class, 'show'])->name('berita.show');
+
+// ── Galeri ────────────────────────────────────────────────────
+Route::get('/galeri', [GalleryController::class, 'index'])->name('galeri.index');
 
 // ── Struktur Kepemimpinan ─────────────────────────────────────────────────────
 Route::get('/pengurus', function () {
@@ -66,6 +70,14 @@ Route::middleware('auth')->group(function () {
     Route::get('/id-card/preview',  [IdCardController::class, 'preview'])->name('id-card.preview');
     Route::get('/id-card/{userId}', [IdCardController::class, 'show'])->name('id-card.show');
 });
+
+// ── RAG Document Download ──────────────────────────────────────
+Route::middleware('auth')->get('/rag-documents/{document}/download', function (App\Models\RagDocument $document) {
+    $filePath = \Illuminate\Support\Facades\Storage::disk('local')->path($document->path_file);
+    abort_unless(file_exists($filePath), 404);
+
+    return response()->download($filePath, $document->nama_file . '.pdf');
+})->name('rag-documents.download');
 
 // ── Chatbot RAG ────────────────────────────────────────────────
 Route::prefix('chatbot')->name('chatbot.')->group(function () {

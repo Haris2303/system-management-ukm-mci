@@ -19,9 +19,7 @@ class VoteController extends Controller
     // ─────────────────────────────────────────────────────────
     public function index(): JsonResponse
     {
-        $elections = Election::with(['candidates.user:id,name', 'candidates' => function ($q) {
-            $q->orderBy('urut');
-        }])
+        $elections = Election::with(['candidates.user:id,name'])
             ->whereIn('status', ['aktif', 'selesai'])
             ->orderByDesc('waktu_mulai')
             ->get()
@@ -39,9 +37,7 @@ class VoteController extends Controller
     // ─────────────────────────────────────────────────────────
     public function show(int $id): JsonResponse
     {
-        $election = Election::with(['candidates' => function ($q) {
-            $q->with('user:id,name')->orderBy('urut');
-        }])
+        $election = Election::with(['candidates.user:id,name'])
             ->findOrFail($id);
 
         return response()->json([
@@ -140,7 +136,6 @@ class VoteController extends Controller
             ->sortByDesc(fn(Candidate $c) => $c->jumlahSuara())
             ->values()
             ->map(fn(Candidate $c, int $rank) => [
-                'urut'          => $c->urut,
                 'nama'          => $c->user->name,
                 'jumlah_suara'  => $c->jumlahSuara(),
                 'persentase'    => $c->persentase($totalSuara),

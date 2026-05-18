@@ -1,12 +1,12 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="id" class="scroll-smooth">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description"
-        content="UKM MCI — Unit Kegiatan Mahasiswa Teknologi & Informatika. Bergabunglah bersama kami dalam mengeksplorasi dunia teknologi.">
-    <title>@yield('title', 'UKM MCI — Mahasiswa Creative & Innovation')</title>
+        content="UKM MCI â€” Unit Kegiatan Mahasiswa Teknologi & Informatika. Bergabunglah bersama kami dalam mengeksplorasi dunia teknologi.">
+    <title>@yield('title', 'UKM MCI â€” Mahasiswa Creative & Innovation')</title>
 
     {{-- Google Fonts: Inter (open-source Sohne alternative, weights 300 & 400) --}}
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -102,7 +102,7 @@
             font-feature-settings: "ss01";
         }
 
-        /* ── Gradient mesh — neon mint (kiri) + biru (tengah) + violet (kanan) ── */
+        /* â”€â”€ Gradient mesh â€” neon mint (kiri) + biru (tengah) + violet (kanan) â”€â”€ */
         .mesh-bg {
             background:
                 radial-gradient(ellipse 70% 60% at 5% 15%,  #0ff4c618 0%, transparent 55%),
@@ -112,13 +112,13 @@
                 #f8faff;
         }
 
-        /* ── Grid dot pattern ── */
+        /* â”€â”€ Grid dot pattern â”€â”€ */
         .dot-grid {
             background-image: radial-gradient(circle, #1a4ff520 1px, transparent 1px);
             background-size: 28px 28px;
         }
 
-        /* ── Section reveal on scroll ── */
+        /* â”€â”€ Section reveal on scroll â”€â”€ */
         .reveal {
             opacity: 0;
             transform: translateY(40px);
@@ -135,7 +135,7 @@
         .reveal-delay-3 { transition-delay: 0.3s; }
         .reveal-delay-4 { transition-delay: 0.4s; }
 
-        /* ── Navbar blur glass ── */
+        /* â”€â”€ Navbar blur glass â”€â”€ */
         .navbar-glass {
             background: rgba(255, 255, 255, 0.92);
             backdrop-filter: blur(20px);
@@ -143,7 +143,7 @@
             border-bottom: 1px solid rgba(83, 58, 253, 0.07);
         }
 
-        /* ── Gradient text — neon mint → biru → violet (logo brand) ── */
+        /* â”€â”€ Gradient text â€” neon mint â†’ biru â†’ violet (logo brand) â”€â”€ */
         .gradient-text {
             background: linear-gradient(135deg, #0ff4c6 0%, #3671ff 50%, #8b5cf6 100%);
             -webkit-background-clip: text;
@@ -151,7 +151,7 @@
             background-clip: text;
         }
 
-        /* ── Tech card hover ── */
+        /* â”€â”€ Tech card hover â”€â”€ */
         .tech-card {
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
@@ -161,17 +161,17 @@
             box-shadow: 0 20px 48px rgba(26, 79, 245, 0.12);
         }
 
-        /* ── Gallery hover ── */
+        /* â”€â”€ Gallery hover â”€â”€ */
         .gallery-item { overflow: hidden; }
         .gallery-item img { transition: transform 0.5s ease; }
         .gallery-item:hover img { transform: scale(1.08); }
 
-        /* ── Scrollbar ── */
+        /* â”€â”€ Scrollbar â”€â”€ */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #f1f5f9; }
         ::-webkit-scrollbar-thumb { background: #3671ff; border-radius: 3px; }
 
-        /* ── Mobile menu ── */
+        /* â”€â”€ Mobile menu â”€â”€ */
         #mobile-menu {
             max-height: 0;
             overflow: hidden;
@@ -188,7 +188,7 @@
             box-shadow: 0 0 0 3px rgba(54, 113, 255, 0.15);
         }
 
-        /* ── Noise texture overlay ── */
+        /* â”€â”€ Noise texture overlay â”€â”€ */
         .noise::after {
             content: '';
             position: absolute;
@@ -207,7 +207,7 @@
 
 <body class="font-body text-ink antialiased bg-white" style="font-weight: 300;">
 
-    {{-- ── NAVBAR ─────────────────────────────────────────────── --}}
+    {{-- â”€â”€ NAVBAR â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ --}}
     <nav id="navbar" class="fixed top-0 left-0 right-0 z-50 transition-all duration-300">
         <div class="max-w-7xl mx-auto px-6 lg:px-8">
             <div class="flex items-center justify-between h-16 lg:h-18">
@@ -219,8 +219,9 @@
                 </a>
 
                 {{-- Desktop Nav Links --}}
+                @php($recruitmentOpen = \App\Models\OpenRecruitment::active()->exists())
                 <div class="hidden lg:flex items-center gap-1">
-                    @foreach ([['#tentang', 'Tentang'], ['#program', 'Program'], ['/berita', 'Berita', 'berita'], ['#galeri', 'Galeri'], ['/pengurus', 'Pengurus'], ['/daftar', 'Daftar']] as [$href, $label])
+                    @foreach ([['/#tentang', 'Tentang'], ['/#program', 'Program'], ['/berita', 'Berita', 'berita'], ['/galeri', 'Galeri', 'galeri'], ['/pengurus', 'Pengurus']] as [$href, $label])
                         <a href="{{ $href }}"
                             class="px-4 py-2 rounded-lg text-sm text-ink-mute hover:text-brand-600 hover:bg-brand-50 transition-all duration-200"
                             style="font-weight:300;">
@@ -231,10 +232,10 @@
 
                 {{-- CTA + Hamburger --}}
                 <div class="flex items-center gap-3">
-                    <a href="#daftar"
-                        class="hidden lg:inline-flex items-center gap-2 px-5 py-2 rounded-full bg-brand-600 text-white text-sm hover:bg-brand-700 shadow-lg shadow-brand-200 hover:shadow-brand-300 transition-all duration-200 hover:-translate-y-0.5"
+                    <a href="/daftar"
+                        class="hidden lg:inline-flex items-center gap-2 px-5 py-2 rounded-full text-white text-sm shadow-lg transition-all duration-200 hover:-translate-y-0.5 {{ $recruitmentOpen ? 'bg-brand-600 hover:bg-brand-700 shadow-brand-200 hover:shadow-brand-300' : 'bg-slate-400 hover:bg-slate-500 shadow-slate-200' }}"
                         style="font-weight:400;">
-                        Bergabung Sekarang
+                        {{ $recruitmentOpen ? 'Bergabung Sekarang' : 'Pendaftaran Ditutup' }}
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M17 8l4 4m0 0l-4 4m4-4H3" />
@@ -256,7 +257,7 @@
         {{-- Mobile Menu --}}
         <div id="mobile-menu" class="lg:hidden navbar-glass border-t border-hairline">
             <div class="max-w-7xl mx-auto px-6 py-4 flex flex-col gap-1">
-                @foreach ([['#tentang', 'Tentang Kami'], ['#program', 'Program'], ['#galeri', 'Galeri'], ['#pengurus', 'Pengurus'], ['#daftar', 'Daftar Anggota']] as [$href, $label])
+                @foreach ([['/#tentang', 'Tentang Kami'], ['/#program', 'Program'], ['/galeri', 'Galeri'], ['/pengurus', 'Pengurus']] as [$href, $label])
                     <a href="{{ $href }}"
                         class="mobile-link px-4 py-3 rounded-xl text-sm text-ink-mute hover:bg-brand-50 hover:text-brand-600 transition-colors"
                         style="font-weight:300;">
@@ -264,27 +265,27 @@
                     </a>
                 @endforeach
                 <div class="pt-2 border-t border-hairline mt-1">
-                    <a href="#daftar"
-                        class="flex items-center justify-center gap-2 px-5 py-3 rounded-full bg-brand-600 text-white text-sm"
+                    <a href="/daftar"
+                        class="flex items-center justify-center gap-2 px-5 py-3 rounded-full text-white text-sm {{ $recruitmentOpen ? 'bg-brand-600' : 'bg-slate-400' }}"
                         style="font-weight:400;">
-                        Bergabung Sekarang →
+                        {{ $recruitmentOpen ? 'Bergabung Sekarang' : 'Pendaftaran Ditutup' }} &rarr;
                     </a>
                 </div>
             </div>
         </div>
     </nav>
 
-    {{-- ── MAIN CONTENT ──────────────────────────────────────── --}}
+    {{-- â”€â”€ MAIN CONTENT â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ --}}
     <main>
         @yield('content')
     </main>
 
-    {{-- ── FOOTER ────────────────────────────────────────────── --}}
+    {{-- â”€â”€ FOOTER â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ --}}
     @include('landing._footer')
 
     @include('components.chatbot')
 
-    {{-- ── BACK TO TOP ────────────────────────────────────────── --}}
+    {{-- â”€â”€ BACK TO TOP â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ --}}
     <button id="back-top"
         class="fixed bottom-8 right-8 z-40 w-11 h-11 rounded-full bg-brand-600 text-white shadow-lg shadow-brand-200 flex items-center justify-center opacity-0 translate-y-4 transition-all duration-300 hover:bg-brand-700 hover:-translate-y-1"
         aria-label="Kembali ke atas">
@@ -293,7 +294,7 @@
         </svg>
     </button>
 
-    {{-- ── GLOBAL SCRIPTS ──────────────────────────────────────── --}}
+    {{-- â”€â”€ GLOBAL SCRIPTS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ --}}
     <script>
         (() => {
             // Navbar scroll effect

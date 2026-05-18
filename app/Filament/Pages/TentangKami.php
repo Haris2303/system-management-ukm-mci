@@ -72,24 +72,25 @@ class TentangKami extends Page
                     ])->columns(2),
 
                 Section::make('Keunggulan / Highlight')
-                    ->description('Poin-poin yang ditampilkan di halaman Tentang Kami')
+                    ->description('Ikon menggunakan kelas Font Awesome, contoh: fa-solid fa-circle-check')
                     ->schema([
                         Repeater::make('keunggulan')
                             ->label('')
                             ->schema([
                                 Grid::make(12)->schema([
                                     TextInput::make('icon')
-                                        ->label('Ikon (emoji)')
-                                        ->placeholder('✅')
-                                        ->maxLength(10)
-                                        ->columnSpan(2),
+                                        ->label('Ikon Font Awesome')
+                                        ->placeholder('fa-solid fa-circle-check')
+
+                                        ->maxLength(60)
+                                        ->columnSpan(4),
 
                                     TextInput::make('teks')
                                         ->label('Teks')
                                         ->required()
                                         ->maxLength(255)
                                         ->placeholder('Workshop & Pelatihan rutin setiap bulan')
-                                        ->columnSpan(10),
+                                        ->columnSpan(8),
                                 ]),
                             ])
                             ->addActionLabel('Tambah Poin')

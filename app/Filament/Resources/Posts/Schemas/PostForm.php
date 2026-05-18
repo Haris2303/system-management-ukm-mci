@@ -6,6 +6,7 @@ use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TagsInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
@@ -110,10 +111,10 @@ class PostForm
                             ->default('Berita')
                             ->required(),
 
-                        TextInput::make('tag')
+                        TagsInput::make('tag')
                             ->label('Tag')
-                            ->placeholder('teknologi, hackathon, web-dev')
-                            ->helperText('Pisahkan dengan koma.'),
+                            ->placeholder('Tambah tag...')
+                            ->helperText('Tekan Enter atau koma untuk menambah tag.'),
                     ])->columns(1),
 
                     Section::make('Publikasi')->schema([

@@ -77,10 +77,6 @@ class ElectionForm
                                     ->options(User::query()->pluck('name', 'id'))
                                     ->searchable()->required(),
 
-                                TextInput::make('urut')
-                                    ->label('Nomor Urut')
-                                    ->numeric()->default(1)->required(),
-
                                 FileUpload::make('foto')
                                     ->label('Foto Kandidat')
                                     ->image()
@@ -96,16 +92,18 @@ class ElectionForm
                                 Textarea::make('misi')
                                     ->label('Misi')->rows(3)->columnSpanFull(),
                             ])
-                            ->columns(2)
+                            ->columns(1)
                             ->addActionLabel('+ Tambah Kandidat')
+                            ->orderColumn('urut')
                             ->reorderableWithButtons()
                             ->collapsible()
-                            ->itemLabel(
-                                fn(array $state): ?string =>
-                                isset($state['user_id'])
-                                    ? 'Kandidat #' . ($state['urut'] ?? '?') . ' — ' . (User::find($state['user_id'])?->name ?? '')
-                                    : 'Kandidat Baru'
-                            ),
+                            ->itemLabel(function (array $state): string {
+                                if (! isset($state['user_id'])) {
+                                    return 'Kandidat Baru';
+                                }
+                                $nama = User::query()->where('id', $state['user_id'])->value('name') ?? '';
+                                return 'Kandidat — ' . $nama;
+                            }),
                     ]),
             ]);
     }

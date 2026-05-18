@@ -53,6 +53,11 @@ class Agenda extends Model
         return $this->hasMany(Presensi::class);
     }
 
+    public function presensisHadir(): HasMany
+    {
+        return $this->hasMany(Presensi::class)->where('status', 'Hadir');
+    }
+
     // ── Actions ────────────────────────────────────────────────────
 
     /**

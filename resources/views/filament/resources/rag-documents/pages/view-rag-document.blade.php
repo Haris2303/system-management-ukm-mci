@@ -36,6 +36,64 @@
         @endif
     </x-filament::section>
 
+    {{-- File Terupload --}}
+    <x-filament::section>
+        <x-slot name="heading">File Terupload</x-slot>
+
+        @php
+            $filePath = \Illuminate\Support\Facades\Storage::disk('local')->path($this->record->path_file);
+            $fileExists = file_exists($filePath);
+            $fileSize = $fileExists ? filesize($filePath) : null;
+            $fileSizeFormatted = $fileSize !== null
+                ? ($fileSize >= 1048576
+                    ? round($fileSize / 1048576, 2) . ' MB'
+                    : round($fileSize / 1024, 1) . ' KB')
+                : null;
+        @endphp
+
+        <div style="display:flex; align-items:center; gap:16px; padding:16px; background:#f9fafb; border:1px solid #e5e7eb; border-radius:10px;">
+
+            {{-- Ikon PDF --}}
+            <div style="flex-shrink:0; width:48px; height:48px; background:#fee2e2; border-radius:10px; display:flex; align-items:center; justify-content:center;">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:26px;height:26px;">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                    <polyline points="14 2 14 8 20 8"/>
+                    <line x1="9" y1="13" x2="15" y2="13"/>
+                    <line x1="9" y1="17" x2="13" y2="17"/>
+                </svg>
+            </div>
+
+            {{-- Info File --}}
+            <div style="flex:1; min-width:0;">
+                <p style="font-size:14px; font-weight:600; color:#111827; margin:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                    {{ basename($this->record->path_file) }}
+                </p>
+                <p style="font-size:12px; color:#9ca3af; margin:4px 0 0;">
+                    @if($fileExists)
+                        {{ $fileSizeFormatted }} &middot; PDF Document
+                    @else
+                        <span style="color:#ef4444;">File tidak ditemukan di server</span>
+                    @endif
+                </p>
+            </div>
+
+            {{-- Tombol Download --}}
+            @if($fileExists)
+                <a href="{{ route('rag-documents.download', $this->record) }}"
+                   style="flex-shrink:0; display:inline-flex; align-items:center; gap:8px; padding:8px 16px; background:#2563eb; color:#fff; border-radius:8px; font-size:13px; font-weight:600; text-decoration:none; transition:background 0.15s;"
+                   onmouseover="this.style.background='#1d4ed8'" onmouseout="this.style.background='#2563eb'">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                        <polyline points="7 10 12 15 17 10"/>
+                        <line x1="12" y1="15" x2="12" y2="3"/>
+                    </svg>
+                    Download PDF
+                </a>
+            @endif
+
+        </div>
+    </x-filament::section>
+
     {{-- Tabel chunks --}}
     <x-filament::section>
         <x-slot name="heading">Isi Chunks ({{ $this->record->total_chunks }} chunk)</x-slot>

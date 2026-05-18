@@ -15,23 +15,19 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 
-#[Fillable(['name', 'email', 'password', 'divisi_id', 'no_hp', 'avatar'])]
+#[Fillable(['name', 'email', 'password', 'divisi_id', 'no_hp', 'avatar', 'kicked_at', 'kicked_by', 'kicked_reason'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable, HasApiTokens, HasRoles;
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
     protected function casts(): array
     {
         return [
             'email_verified_at' => 'datetime',
-            'password' => 'hashed',
+            'kicked_at'         => 'datetime',
+            'password'          => 'hashed',
         ];
     }
 
@@ -49,32 +45,27 @@ class User extends Authenticatable
         return $this->hasMany(Presensi::class);
     }
 
+    public function kickedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'kicked_by');
+    }
+
     // ═══════════════════════════════════════════════════════════
     // FILAMENT PANEL ACCESS CONTROL
     // ═══════════════════════════════════════════════════════════
 
-    /**
-     * Tentukan siapa yang boleh masuk ke panel admin.
-     * Anggota biasa TIDAK BOLEH masuk panel — hanya akses via mobile app.
-     * Demisioner DIBLOKIR TOTAL — tidak bisa login di mana pun.
-     */
     public function canAccessPanel(Panel $panel): bool
     {
-        // Demisioner langsung ditolak
-        if ($this->hasRole('demisioner')) {
+        if ($this->hasRole('demisioner') || $this->isKicked()) {
             return false;
         }
 
         return $this->hasPermissionTo('akses_panel_admin');
     }
 
-    /**
-     * Cek apakah akun ini boleh login di mana pun (panel atau mobile).
-     * Dipakai oleh AuthController untuk blokir demisioner saat login API.
-     */
     public function isAccountActive(): bool
     {
-        return !$this->hasRole('demisioner');
+        return ! $this->hasRole('demisioner') && ! $this->isKicked();
     }
 
     // ═══════════════════════════════════════════════════════════
@@ -97,6 +88,12 @@ class User extends Authenticatable
     public function isDemisioner(): bool
     {
         return $this->hasRole('demisioner');
+    }
+
+    /** Apakah user sudah di-kick (dikeluarkan) */
+    public function isKicked(): bool
+    {
+        return $this->kicked_at !== null;
     }
 
     /** Label role utama yang ramah dibaca */

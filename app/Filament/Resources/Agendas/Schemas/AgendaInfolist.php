@@ -46,14 +46,26 @@ class AgendaInfolist
                                 ->boolean(),
                         ])->columns(2),
 
-                    Section::make('Statistik Kehadiran')
+                    Section::make('Statistik Presensi')
                         ->schema([
-                            TextEntry::make('presensis_count')
-                                ->label('Total Kehadiran')
-                                ->state(fn(Agenda $record): int => $record->presensis()->count())
+                            TextEntry::make('presensis_hadir_count')
+                                ->label('Total Hadir')
+                                ->state(fn(Agenda $record): int => $record->presensis()->where('status', 'Hadir')->count())
                                 ->badge()
                                 ->color('success'),
-                        ]),
+
+                            TextEntry::make('presensis_absen_count')
+                                ->label('Total Absen')
+                                ->state(fn(Agenda $record): int => $record->presensis()->where('status', 'Absen')->count())
+                                ->badge()
+                                ->color('danger'),
+
+                            TextEntry::make('presensis_izin_count')
+                                ->label('Total Izin')
+                                ->state(fn(Agenda $record): int => $record->presensis()->where('status', 'Izin')->count())
+                                ->badge()
+                                ->color('warning'),
+                        ])->columns(3),
                 ]),
 
                 Section::make('QR Code Presensi')

@@ -117,9 +117,6 @@
                     <p class="winner-name-shimmer font-display font-bold leading-tight" style="font-size:clamp(1.8rem,5vw,3rem);">
                         {{ $winner['nama'] }}
                     </p>
-                    <p class="text-sm" style="color:rgba(255,255,255,0.5);">
-                        Kandidat Nomor {{ $winner['urut'] }}
-                    </p>
                 </div>
 
                 {{-- Statistik kemenangan --}}
@@ -205,15 +202,6 @@
                                     </div>
                                 @endif
 
-                                {{-- Nomor urut badge --}}
-                                <div class="absolute top-3 left-3">
-                                    <div class="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold shadow-lg
-                                        {{ $isLeading ? 'bg-brand-600 text-white' : 'bg-white text-slate-600' }}"
-                                         style="{{ $isLeading ? 'box-shadow:0 4px 12px rgba(26,79,245,0.3);' : '' }}">
-                                        {{ $candidate['urut'] }}
-                                    </div>
-                                </div>
-
                                 {{-- Leading badge --}}
                                 @if($isLeading)
                                     <div class="absolute top-3 right-3">
@@ -237,7 +225,6 @@
                                     <p class="font-display font-bold text-xl text-slate-900 group-hover:text-brand-600 transition-colors leading-tight">
                                         {{ $candidate['nama'] }}
                                     </p>
-                                    <p class="text-xs text-slate-400 mt-0.5">Kandidat Nomor {{ $candidate['urut'] }}</p>
                                 </div>
 
                                 {{-- Persentase + suara --}}

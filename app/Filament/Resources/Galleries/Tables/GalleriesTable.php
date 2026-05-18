@@ -45,9 +45,7 @@ class GalleriesTable
                     ->label('Utama')
                     ->boolean(),
 
-                TextColumn::make('urut')
-                    ->label('Urutan')
-                    ->sortable(),
+
             ])
             ->filters([
                 SelectFilter::make('kategori')
@@ -72,6 +70,6 @@ class GalleriesTable
                     DeleteBulkAction::make(),
                 ]),
             ])
-            ->defaultSort('urut');
+            ->defaultSort('created_at', 'desc');
     }
 }

@@ -55,17 +55,9 @@ class GalleryForm
                             ->maxLength(500)
                             ->columnSpanFull(),
 
-                        Grid::make(2)
-                            ->schema([
-                                TextInput::make('urut')
-                                    ->label('Urutan Tampil')
-                                    ->numeric()
-                                    ->default(0),
-
-                                Toggle::make('is_featured')
-                                    ->label('Tampilkan di Utama')
-                                    ->default(false),
-                            ]),
+                        Toggle::make('is_featured')
+                            ->label('Tampilkan di Utama')
+                            ->default(false),
                     ])->columns(2),
             ]);
     }

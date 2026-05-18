@@ -71,9 +71,9 @@
         background: #fff; text-align: left;
         padding: 0; outline: none;
     }
-    .idc-card:hover { border-color: #93c5fd; box-shadow: 0 8px 24px rgba(59,130,246,.12); transform: translateY(-2px); }
+    .idc-card:not(:disabled):hover { border-color: #93c5fd; box-shadow: 0 8px 24px rgba(59,130,246,.12); transform: translateY(-2px); }
     .idc-card.active { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,.2); }
-    .idc-card.dimmed { opacity: 0.5; }
+    .idc-card:disabled { opacity: 0.4; cursor: not-allowed; pointer-events: none; }
 
     .idc-swatch {
         height: 96px; display: flex; align-items: center; justify-content: center;
@@ -180,7 +180,8 @@
         <button
             wire:click="selectTemplate('{{ $slug }}')"
             type="button"
-            class="idc-card {{ $isActive ? 'active' : '' }} {{ $this->backgroundImage ? 'dimmed' : '' }}"
+            @disabled($this->backgroundImage)
+            class="idc-card {{ $isActive ? 'active' : '' }}"
         >
             {{-- Swatch --}}
             <div class="idc-swatch" style="background: {{ $tpl['preview_bg'] }};">

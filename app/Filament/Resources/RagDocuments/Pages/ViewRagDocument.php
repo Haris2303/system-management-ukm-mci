@@ -17,7 +17,10 @@ class ViewRagDocument extends ViewRecord implements HasTable
 
     protected static string $resource = RagDocumentResource::class;
 
-    protected string $view = 'filament.resources.rag-documents.pages.view-rag-document';
+    public function getView(): string
+    {
+        return 'filament.resources.rag-documents.pages.view-rag-document';
+    }
 
     public function table(Table $table): Table
     {

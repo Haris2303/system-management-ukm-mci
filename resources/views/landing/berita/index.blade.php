@@ -35,6 +35,9 @@
                     @if ($kategori && $kategori !== 'semua')
                         <input type="hidden" name="kategori" value="{{ $kategori }}">
                     @endif
+                    @if ($tag)
+                        <input type="hidden" name="tag" value="{{ $tag }}">
+                    @endif
                     <button type="submit"
                         class="px-4 py-1.5 rounded-xl bg-brand-600 text-white text-sm font-semibold hover:bg-brand-700 transition-colors">
                         Cari
@@ -75,7 +78,7 @@
         <div class="max-w-7xl mx-auto px-6 lg:px-8">
 
             {{-- Featured post (hanya tampil di halaman pertama tanpa filter/search) --}}
-            @if ($featured && !$search && (!$kategori || $kategori === 'semua') && $posts->currentPage() === 1)
+            @if ($featured && !$search && !$tag && (!$kategori || $kategori === 'semua') && $posts->currentPage() === 1)
                 <div class="mb-10">
                     <div class="flex items-center gap-2 mb-5">
                         <div class="w-1 h-5 rounded-full bg-brand-600"></div>
@@ -139,7 +142,7 @@
             @endif
 
             {{-- Result info --}}
-            @if ($search || ($kategori && $kategori !== 'semua'))
+            @if ($search || ($kategori && $kategori !== 'semua') || $tag)
                 <div class="flex items-center gap-3 mb-6">
                     <p class="text-slate-600 text-sm">
                         <span class="font-semibold">{{ $posts->total() }}</span> hasil
@@ -148,6 +151,9 @@
                         @endif
                         @if ($kategori && $kategori !== 'semua')
                             dalam kategori <span class="font-semibold text-brand-600">{{ $kategori }}</span>
+                        @endif
+                        @if ($tag)
+                            dengan tag <span class="font-semibold text-brand-600">#{{ $tag }}</span>
                         @endif
                     </p>
                     <a href="{{ route('berita.index') }}"

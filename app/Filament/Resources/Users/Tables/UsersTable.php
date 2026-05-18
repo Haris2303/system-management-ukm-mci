@@ -9,12 +9,15 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Forms\Components\Textarea;
 use Filament\Notifications\Notification;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
@@ -88,6 +91,20 @@ class UsersTable
                     ->date('d M Y')
                     ->sortable()
                     ->toggleable(),
+
+                TextColumn::make('kicked_at')
+                    ->label('Status Kick')
+                    ->badge()
+                    ->color('danger')
+                    ->formatStateUsing(fn($state) => '🚫 Dikeluarkan ' . \Carbon\Carbon::parse($state)->format('d M Y'))
+                    ->description(
+                        fn(User $r) => $r->kickedBy
+                            ? 'oleh ' . $r->kickedBy->name . ($r->kicked_reason ? ' · ' . $r->kicked_reason : '')
+                            : null
+                    )
+                    ->placeholder('—')
+                    ->sortable()
+                    ->toggleable(),
             ])
             ->filters([
                 SelectFilter::make('roles')
@@ -100,6 +117,11 @@ class UsersTable
                     ->label('Filter Divisi')
                     ->options(Divisi::query()->orderBy('urut')->pluck('nama', 'id'))
                     ->searchable(),
+
+                Filter::make('dikeluarkan')
+                    ->label('Dikeluarkan')
+                    ->query(fn(Builder $query) => $query->whereNotNull('kicked_at'))
+                    ->toggle(),
             ])
             ->recordActions([
                 // ── Reset Password ──────────────────────────────
@@ -131,7 +153,7 @@ class UsersTable
                     ->color('gray')
                     ->visible(
                         fn(User $r): bool =>
-                        ! $r->hasRole('demisioner') && auth()->id() !== $r->id
+                        ! $r->hasRole('demisioner') && auth()->user()?->id !== $r->id
                     )
                     ->requiresConfirmation()
                     ->modalHeading('Pensiunkan Akun Pengguna?')
@@ -162,9 +184,85 @@ class UsersTable
                             ->send();
                     }),
 
+                // ── Kick (Keluarkan) ────────────────────────────
+                Action::make('kick')
+                    ->label('Keluarkan')
+                    ->icon('heroicon-o-user-minus')
+                    ->color('danger')
+                    ->visible(
+                        fn(User $r): bool =>
+                        ! $r->isKicked() && auth()->user()?->id !== $r->id
+                    )
+                    ->requiresConfirmation()
+                    ->modalHeading('Keluarkan Pengguna?')
+                    ->modalDescription(
+                        fn(User $r) =>
+                        "Akun {$r->name} akan dikeluarkan dari sistem. "
+                        . "Semua sesi dan token akan langsung dicabut. "
+                        . "Data pengguna tetap tersimpan dengan catatan dikeluarkan."
+                    )
+                    ->modalSubmitActionLabel('Ya, Keluarkan')
+                    ->modalIcon('heroicon-o-user-minus')
+                    ->form([
+                        Textarea::make('kicked_reason')
+                            ->label('Alasan Dikeluarkan')
+                            ->placeholder('Opsional — tuliskan alasan pengeluaran...')
+                            ->rows(3),
+                    ])
+                    ->action(function (User $record, array $data): void {
+                        $record->update([
+                            'kicked_at'     => now(),
+                            'kicked_by'     => auth()->id(),
+                            'kicked_reason' => $data['kicked_reason'] ?? null,
+                        ]);
+
+                        // Cabut semua token Sanctum (kick dari mobile)
+                        $record->tokens()->delete();
+
+                        // Hapus semua sesi web (kick dari panel admin)
+                        DB::table('sessions')->where('user_id', $record->id)->delete();
+
+                        Notification::make()
+                            ->title("🚫 {$record->name} berhasil dikeluarkan.")
+                            ->body('Semua sesi dan token telah dicabut.')
+                            ->danger()
+                            ->duration(4000)
+                            ->send();
+                    }),
+
+                // ── Pulihkan dari kick ──────────────────────────
+                Action::make('pulihkan_kick')
+                    ->label('Pulihkan')
+                    ->icon('heroicon-o-arrow-path')
+                    ->color('success')
+                    ->visible(fn(User $r): bool => $r->isKicked())
+                    ->requiresConfirmation()
+                    ->modalHeading('Pulihkan Pengguna?')
+                    ->modalDescription(
+                        fn(User $r) =>
+                        "Akun {$r->name} akan dipulihkan. "
+                        . "Status dikeluarkan akan dihapus dan akun dapat login kembali."
+                    )
+                    ->modalSubmitActionLabel('Ya, Pulihkan')
+                    ->modalIcon('heroicon-o-arrow-path')
+                    ->action(function (User $record): void {
+                        $record->update([
+                            'kicked_at'     => null,
+                            'kicked_by'     => null,
+                            'kicked_reason' => null,
+                        ]);
+
+                        Notification::make()
+                            ->title("✅ {$record->name} berhasil dipulihkan.")
+                            ->body('Akun dapat login kembali.')
+                            ->success()
+                            ->duration(4000)
+                            ->send();
+                    }),
+
                 EditAction::make(),
                 DeleteAction::make()
-                    ->visible(fn(User $r) => auth()->id() !== $r->id),
+                    ->visible(fn(User $r) => auth()->user()?->id !== $r->id),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

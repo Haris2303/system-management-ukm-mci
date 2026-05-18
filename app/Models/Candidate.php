@@ -20,6 +20,15 @@ class Candidate extends Model
         'urut',
     ];
 
+    protected static function booted(): void
+    {
+        static::creating(function (Candidate $candidate) {
+            if (! $candidate->urut) {
+                $candidate->urut = static::where('election_id', $candidate->election_id)->max('urut') + 1;
+            }
+        });
+    }
+
     public function election(): BelongsTo
     {
         return $this->belongsTo(Election::class);

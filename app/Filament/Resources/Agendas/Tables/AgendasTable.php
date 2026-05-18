@@ -39,9 +39,9 @@ class AgendasTable
                     ->dateTime('d M Y, H:i')
                     ->sortable(),
 
-                TextColumn::make('presensis_count')
+                TextColumn::make('presensis_hadir_count')
                     ->label('Jumlah Hadir')
-                    ->counts('presensis')
+                    ->counts('presensisHadir')
                     ->badge()
                     ->color('success'),
 

@@ -244,10 +244,10 @@
                         <div class="flex flex-wrap gap-2 mt-10 pt-8 border-t border-slate-100">
                             <span class="text-sm text-slate-400 font-medium">Tag:</span>
                             @foreach ($post->getTags() as $tag)
-                                <span
-                                    class="px-3 py-1 rounded-full bg-slate-100 text-slate-600 text-sm hover:bg-brand-50 hover:text-brand-600 transition-colors cursor-default">
+                                <a href="{{ route('berita.index', ['tag' => trim($tag)]) }}"
+                                    class="px-3 py-1 rounded-full bg-slate-100 text-slate-600 text-sm hover:bg-brand-50 hover:text-brand-600 transition-colors">
                                     #{{ trim($tag) }}
-                                </span>
+                                </a>
                             @endforeach
                         </div>
                     @endif
