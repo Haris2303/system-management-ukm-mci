@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\KasController;
 use App\Http\Controllers\Api\MateriController;
 use App\Http\Controllers\Api\PresensiController;
+use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\ProkerController;
 use App\Http\Controllers\Api\VoteController;
 use App\Http\Controllers\IdCardController;
@@ -70,6 +71,15 @@ Route::middleware(['auth:sanctum', 'cek.demisioner'])->prefix('proker')->name('a
 
     Route::get('/',     [ProkerController::class, 'index'])->name('index');
     Route::get('/{id}', [ProkerController::class, 'show'])->name('show');
+});
+
+// ═════════════════════════════════════════════════════════════
+// PROFIL ANGGOTA
+// ═════════════════════════════════════════════════════════════
+Route::middleware(['auth:sanctum', 'cek.demisioner'])->prefix('profile')->group(function () {
+    Route::get('/',          [ProfileController::class, 'show']);
+    Route::post('/avatar',   [ProfileController::class, 'updateAvatar']);
+    Route::post('/password', [ProfileController::class, 'changePassword']);
 });
 
 // ═════════════════════════════════════════════════════════════
