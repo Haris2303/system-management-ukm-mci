@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\TagihanKas\Tables;
 
+use App\Helpers\BulanHelper;
 use App\Models\TagihanKas;
 use App\Models\User;
 use Filament\Actions\Action;
@@ -81,7 +82,7 @@ class TagihanKasTable
 
                 SelectFilter::make('bulan_tagihan')
                     ->label('Filter Bulan')
-                    ->options(self::getBulanOptions()),
+                    ->options(BulanHelper::options()),
             ])
             ->recordActions([
                 // ═══════════════════════════════════════════════
@@ -174,35 +175,4 @@ class TagihanKasTable
             ])->defaultSort('created_at', 'desc')->striped();
     }
 
-    /**
-     * Generate opsi bulan tagihan: 6 bulan ke belakang + 6 bulan ke depan
-     */
-    private static function getBulanOptions(): array
-    {
-        $bulanIndo = [
-            '01' => 'Januari',
-            '02' => 'Februari',
-            '03' => 'Maret',
-            '04' => 'April',
-            '05' => 'Mei',
-            '06' => 'Juni',
-            '07' => 'Juli',
-            '08' => 'Agustus',
-            '09' => 'September',
-            '10' => 'Oktober',
-            '11' => 'November',
-            '12' => 'Desember',
-        ];
-
-        $options = [];
-        $now = now('Asia/Jayapura');
-
-        for ($i = -6; $i <= 6; $i++) {
-            $date = $now->copy()->addMonths($i)->startOfMonth();
-            $key  = $date->format('Y-m');
-            $options[$key] = $bulanIndo[$date->format('m')] . ' ' . $date->format('Y');
-        }
-
-        return $options;
-    }
 }
