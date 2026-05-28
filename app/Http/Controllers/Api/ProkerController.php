@@ -26,7 +26,7 @@ class ProkerController extends Controller
 
         // Query utama dengan scope yang sudah didefinisikan di Model
         $prokers = ProgramKerja::query()
-            ->untukUser($divisiId)
+            ->forUser($divisiId)
             ->with([
                 'divisi:id,nama,icon',
                 'pic:id,name,email,avatar',
@@ -57,10 +57,10 @@ class ProkerController extends Controller
             // Tanggal
             'tanggal_mulai'        => $p->tanggal_mulai?->translatedFormat('d M Y'),
             'tanggal_selesai'      => $p->tanggal_selesai?->translatedFormat('d M Y'),
-            'is_terlambat'         => $p->isTerlambat(),
+            'is_terlambat'         => $p->isOverdue(),
             'sisa_hari'            => $p->sisaHari(),
             'sisa_hari_label'      => $p->status === 'completed' ? 'Selesai'
-                : ($p->isTerlambat() ? 'Terlambat ' . abs($p->sisaHari()) . ' hari'
+                : ($p->isOverdue() ? 'Terlambat ' . abs($p->sisaHari()) . ' hari'
                     : $p->sisaHari() . ' hari lagi'),
 
             // Klasifikasi
@@ -91,7 +91,7 @@ class ProkerController extends Controller
             'planning'    => $prokers->where('status', 'planning')->count(),
             'active'      => $prokers->where('status', 'active')->count(),
             'completed'   => $prokers->where('status', 'completed')->count(),
-            'terlambat'   => $prokers->filter(fn($p) => $p->isTerlambat())->count(),
+            'terlambat'   => $prokers->filter(fn($p) => $p->isOverdue())->count(),
         ];
 
         return response()->json([
@@ -115,7 +115,7 @@ class ProkerController extends Controller
         $divisiId = $user->divisi_id ?? null;
 
         $proker = ProgramKerja::query()
-            ->untukUser($divisiId)
+            ->forUser($divisiId)
             ->with(['divisi:id,nama,icon', 'pic:id,name,email,avatar', 'tugasProkers'])
             ->find($id);
 
@@ -137,7 +137,7 @@ class ProkerController extends Controller
 
                 'tanggal_mulai'   => $proker->tanggal_mulai?->translatedFormat('d F Y'),
                 'tanggal_selesai' => $proker->tanggal_selesai?->translatedFormat('d F Y'),
-                'is_terlambat'    => $proker->isTerlambat(),
+                'is_terlambat'    => $proker->isOverdue(),
                 'sisa_hari'       => $proker->sisaHari(),
 
                 'divisi' => $proker->divisi ? [

@@ -74,7 +74,7 @@ class ViewAgenda extends ViewRecord
                 ->modalSubmitActionLabel('Ya, Tutup Agenda')
                 ->visible(fn(): bool => (bool) $this->getRecord()->is_active)
                 ->action(function (): void {
-                    $this->getRecord()->tutup();
+                    $this->getRecord()->close();
 
                     Notification::make()
                         ->title('Agenda ditutup')

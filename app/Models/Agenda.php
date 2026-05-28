@@ -41,7 +41,7 @@ class Agenda extends Model
 
         static::retrieved(function (Agenda $agenda): void {
             if ($agenda->is_active && now('Asia/Jayapura')->gt($agenda->waktu_selesai)) {
-                $agenda->tutup();
+                $agenda->close();
             }
         });
     }
@@ -64,7 +64,7 @@ class Agenda extends Model
      * Tutup agenda: catat Absen untuk semua anggota aktif yang belum hadir,
      * lalu set is_active = false.
      */
-    public function tutup(): void
+    public function close(): void
     {
         if (! $this->is_active) {
             return;
@@ -89,9 +89,16 @@ class Agenda extends Model
 
     // ── Scopes ─────────────────────────────────────────────────────
 
-    public function scopeAktif(\Illuminate\Database\Eloquent\Builder $query): \Illuminate\Database\Eloquent\Builder
+    public function scopeActive(\Illuminate\Database\Eloquent\Builder $query): \Illuminate\Database\Eloquent\Builder
     {
         return $query->where('is_active', true);
+    }
+
+    // ── Helpers ────────────────────────────────────────────────────
+
+    public function isActive(): bool
+    {
+        return (bool) $this->is_active;
     }
 
     // ── Accessors ──────────────────────────────────────────────────

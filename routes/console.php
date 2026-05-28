@@ -10,7 +10,7 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote');
 
 Artisan::command('agenda:tutup-otomatis', function () {
-    $agendas = Agenda::aktif()
+    $agendas = Agenda::active()
         ->where('waktu_selesai', '<', now('Asia/Jayapura'))
         ->get();
 
@@ -20,7 +20,7 @@ Artisan::command('agenda:tutup-otomatis', function () {
     }
 
     foreach ($agendas as $agenda) {
-        $agenda->tutup();
+        $agenda->close();
         $this->info("Agenda [{$agenda->nama_agenda}] berhasil ditutup.");
     }
 })->purpose('Tutup otomatis agenda yang sudah melewati waktu selesai');

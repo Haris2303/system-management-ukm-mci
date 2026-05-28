@@ -14,7 +14,7 @@ class PendaftarService
     public function luluskan(Pendaftar $pendaftar): User
     {
         return DB::transaction(function () use ($pendaftar): User {
-            $email = $pendaftar->email ?? $pendaftar->emailDummy();
+            $email = $pendaftar->effectiveEmail();
 
             $user = User::firstOrCreate(
                 ['email' => $email],

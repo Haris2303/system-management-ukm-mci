@@ -54,11 +54,21 @@ class TagihanKas extends Model
 
     // ── Helpers ───────────────────────────────────────────────
 
+    public function isPaid(): bool
+    {
+        return $this->status === 'lunas';
+    }
+
+    public function isUnpaid(): bool
+    {
+        return $this->status === 'belum_dibayar';
+    }
+
     /**
      * Tandai tagihan ini sebagai lunas.
      * Otomatis set tanggal_bayar dengan waktu Asia/Jayapura.
      */
-    public function tandaiLunas(): bool
+    public function markAsPaid(): bool
     {
         return $this->update([
             'status'        => 'lunas',

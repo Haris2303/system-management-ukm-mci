@@ -48,7 +48,7 @@ class KasController extends Controller
             'data' => [
                 'jumlah_tunggakan' => $tagihan->count(),
                 'total_nominal'    => $totalTunggakan,
-                'total_format'     => $this->kasService->formatRupiah($totalTunggakan),
+                'total_format'     => $this->kasService->formatCurrency($totalTunggakan),
                 'tagihan'          => $data,
             ],
         ]);
@@ -89,7 +89,7 @@ class KasController extends Controller
             'data' => [
                 'jumlah_pembayaran'   => $riwayat->count(),
                 'total_dibayar'       => $totalDibayar,
-                'total_dibayar_format' => $this->kasService->formatRupiah($totalDibayar),
+                'total_dibayar_format' => $this->kasService->formatCurrency($totalDibayar),
                 'riwayat'             => $data,
             ],
         ]);
@@ -107,19 +107,19 @@ class KasController extends Controller
             'pesan' => 'Saldo kas organisasi berhasil dimuat.',
             'data' => [
                 'total_saldo'        => $totalSaldo,
-                'total_saldo_format' => $this->kasService->formatRupiah($totalSaldo),
+                'total_saldo_format' => $this->kasService->formatCurrency($totalSaldo),
                 'rincian' => [
                     'iuran_lunas' => [
                         'nominal' => $this->kasService->totalIuranLunas(),
-                        'format'  => $this->kasService->formatRupiah($this->kasService->totalIuranLunas()),
+                        'format'  => $this->kasService->formatCurrency($this->kasService->totalIuranLunas()),
                     ],
                     'kas_masuk' => [
                         'nominal' => $this->kasService->totalKasMasuk(),
-                        'format'  => $this->kasService->formatRupiah($this->kasService->totalKasMasuk()),
+                        'format'  => $this->kasService->formatCurrency($this->kasService->totalKasMasuk()),
                     ],
                     'kas_keluar' => [
                         'nominal' => $this->kasService->totalKasKeluar(),
-                        'format'  => $this->kasService->formatRupiah($this->kasService->totalKasKeluar()),
+                        'format'  => $this->kasService->formatCurrency($this->kasService->totalKasKeluar()),
                     ],
                 ],
                 'diperbarui_pada' => now('Asia/Jayapura')->translatedFormat('d F Y, H:i') . ' WIT',

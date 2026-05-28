@@ -70,7 +70,7 @@ class PendaftarResource extends Resource
     // Badge: jumlah pendaftar menunggu di sidebar nav
     public static function getNavigationBadge(): ?string
     {
-        return (string) static::getModel()::menunggu()->count();
+        return (string) static::getModel()::pending()->count();
     }
 
     public static function getNavigationBadgeColor(): ?string

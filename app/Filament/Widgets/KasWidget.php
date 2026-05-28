@@ -48,14 +48,14 @@ class KasWidget extends BaseWidget
         return [
 
             // ── 💰 SALDO TOTAL (KARTU UTAMA) ──────────────────────
-            Stat::make('Saldo Kas Saat Ini', $kas->formatRupiah($totalSaldo))
+            Stat::make('Saldo Kas Saat Ini', $kas->formatCurrency($totalSaldo))
                 ->description('Iuran Lunas + Kas Masuk − Kas Keluar')
                 ->descriptionIcon($iconSaldo)
                 ->color($warnaSaldo)
                 ->chart($this->getSaldoChart()),
 
             // ── ⚠️ TUNGGAKAN (jika ada) ───────────────────────────
-            Stat::make('Total Tunggakan', $kas->formatRupiah($totalTunggakan))
+            Stat::make('Total Tunggakan', $kas->formatCurrency($totalTunggakan))
                 ->description(
                     $totalTunggakan > 0
                         ? 'Iuran anggota yang belum dibayar'

@@ -17,6 +17,4 @@ class RagDocument extends Model
     {
         return $this->hasMany(RagChunk::class, 'document_id');
     }
-
-
 }

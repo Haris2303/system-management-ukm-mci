@@ -32,7 +32,7 @@ class ViewPendaftar extends ViewRecord
                 ->requiresConfirmation()
                 ->modalHeading('Luluskan Pendaftar?')
                 ->modalDescription(function (Pendaftar $r): string {
-                    $email = $r->email ?? $r->emailDummy();
+                    $email = $r->effectiveEmail();
                     return "Pendaftar {$r->nama} ({$r->nim}) akan dinyatakan LULUS.\n\n"
                         . "Akun anggota akan dibuat otomatis:\n"
                         . "• Email: {$email}\n"
@@ -46,7 +46,7 @@ class ViewPendaftar extends ViewRecord
 
                     \Filament\Notifications\Notification::make()
                         ->title("🎉 {$record->nama} berhasil diluluskan!")
-                        ->body("Akun dibuat dengan email: " . ($record->email ?? $record->emailDummy())
+                        ->body("Akun dibuat dengan email: " . $record->effectiveEmail()
                             . " · Role: Anggota")
                         ->success()
                         ->duration(5000)

@@ -14,7 +14,7 @@ class DaftarController extends Controller
 
         // Tampilkan divisi aktif hanya saat rekrutmen sedang berlangsung
         $divisis = $openRecruitment
-            ? Divisi::aktif()->with(['pertanyaanSeleksis' => fn($q) => $q->aktif()->orderBy('urut')])->get()
+            ? Divisi::active()->with(['pertanyaanSeleksis' => fn($q) => $q->active()->orderBy('urut')])->get()
             : collect();
 
         return view('landing.daftar.index', compact('divisis', 'openRecruitment'));

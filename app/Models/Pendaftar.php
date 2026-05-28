@@ -3,6 +3,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -44,20 +45,43 @@ class Pendaftar extends Model
 
     // ── Scopes ────────────────────────────────────────────────
 
-    public function scopeMenunggu($q)
+    public function scopePending(Builder $q): Builder
     {
         return $q->where('status', 'menunggu');
     }
-    public function scopeLulus($q)
+
+    public function scopeApproved(Builder $q): Builder
     {
         return $q->where('status', 'lulus');
     }
-    public function scopeDitolak($q)
+
+    public function scopeRejected(Builder $q): Builder
     {
         return $q->where('status', 'ditolak');
     }
 
     // ── Helpers ───────────────────────────────────────────────
+
+    public function isPending(): bool
+    {
+        return $this->status === 'menunggu';
+    }
+
+    public function isApproved(): bool
+    {
+        return $this->status === 'lulus';
+    }
+
+    public function isRejected(): bool
+    {
+        return $this->status === 'ditolak';
+    }
+
+    /** Email efektif: gunakan email asli jika ada, fallback ke email dummy berbasis NIM */
+    public function effectiveEmail(): string
+    {
+        return $this->email ?? $this->generateDummyEmail();
+    }
 
     /** Total skor dari semua jawaban yang sudah dinilai */
     public function totalSkor(): int
@@ -74,7 +98,7 @@ class Pendaftar extends Model
     }
 
     /** Email dummy untuk akun user: nim@mci.ac.id */
-    public function emailDummy(): string
+    public function generateDummyEmail(): string
     {
         return strtolower($this->nim) . '@mci.ac.id';
     }

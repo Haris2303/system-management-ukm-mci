@@ -55,7 +55,7 @@ class ProgramKerja extends Model
      * - Proker umum (divisi_id NULL)
      * - Proker yang divisi_id-nya sama dengan divisi user
      */
-    public function scopeUntukUser(Builder $q, ?int $divisiId): Builder
+    public function scopeForUser(Builder $q, ?int $divisiId): Builder
     {
         return $q->where(function (Builder $sub) use ($divisiId): void {
             $sub->whereNull('divisi_id');                // Proker umum
@@ -65,12 +65,12 @@ class ProgramKerja extends Model
         });
     }
 
-    public function scopeAktif($q)
+    public function scopeActive(Builder $q): Builder
     {
         return $q->where('status', 'active');
     }
 
-    public function scopeSelesai($q)
+    public function scopeCompleted(Builder $q): Builder
     {
         return $q->where('status', 'completed');
     }
@@ -78,7 +78,7 @@ class ProgramKerja extends Model
     // ── Helpers ───────────────────────────────────────────────
 
     /** Hitung progress berdasarkan tugas yang selesai */
-    public function hitungProgress(): int
+    public function calculateProgress(): int
     {
         $total = $this->tugasProkers()->count();
         if ($total === 0) return 0;
@@ -90,7 +90,7 @@ class ProgramKerja extends Model
     /** Update kolom progress_persen — dipanggil oleh Observer */
     public function updateProgress(): void
     {
-        $progress = $this->hitungProgress();
+        $progress = $this->calculateProgress();
 
         // Update progress + auto-update status jika 100%
         $this->update([
@@ -103,8 +103,18 @@ class ProgramKerja extends Model
         ]);
     }
 
+    public function isRunning(): bool
+    {
+        return $this->status === 'active';
+    }
+
+    public function isCompleted(): bool
+    {
+        return $this->status === 'completed';
+    }
+
     /** Apakah proker terlambat? (lewat tanggal_selesai tapi belum 100%) */
-    public function isTerlambat(): bool
+    public function isOverdue(): bool
     {
         return now()->isAfter($this->tanggal_selesai)
             && $this->progress_persen < 100;
@@ -131,7 +141,7 @@ class ProgramKerja extends Model
     public function getWarnaProgressAttribute(): string
     {
         if ($this->progress_persen === 100) return 'success';
-        if ($this->isTerlambat())            return 'danger';
+        if ($this->isOverdue())             return 'danger';
         if ($this->progress_persen >= 50)    return 'warning';
         return 'info';
     }

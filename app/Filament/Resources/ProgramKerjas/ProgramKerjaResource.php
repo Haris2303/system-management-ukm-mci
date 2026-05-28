@@ -92,6 +92,6 @@ class ProgramKerjaResource extends Resource
         }
 
         // User lain hanya lihat proker divisinya + proker umum (NULL)
-        return $query->untukUser($user?->divisi_id);
+        return $query->forUser($user?->divisi_id);
     }
 }

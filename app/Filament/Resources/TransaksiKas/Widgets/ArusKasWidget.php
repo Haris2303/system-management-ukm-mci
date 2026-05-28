@@ -55,17 +55,17 @@ class ArusKasWidget extends BaseWidget
         return [
 
             // ── ⬆️ TOTAL PEMASUKAN ────────────────────────────────
-            Stat::make('⬆️ Total Pemasukan', $kas->formatRupiah($totalPemasukan))
+            Stat::make('⬆️ Total Pemasukan', $kas->formatCurrency($totalPemasukan))
                 ->description(
-                    'Iuran: ' . $kas->formatRupiah($totalIuranLunas) .
-                        ' · Donasi: ' . $kas->formatRupiah($totalKasMasuk)
+                    'Iuran: ' . $kas->formatCurrency($totalIuranLunas) .
+                        ' · Donasi: ' . $kas->formatCurrency($totalKasMasuk)
                 )
                 ->descriptionIcon('heroicon-m-arrow-trending-up')
                 ->color('success')
                 ->chart($this->getMonthlyChart('masuk')),
 
             // ── ⬇️ TOTAL PENGELUARAN ──────────────────────────────
-            Stat::make('⬇️ Total Pengeluaran', $kas->formatRupiah($totalKasKeluar))
+            Stat::make('⬇️ Total Pengeluaran', $kas->formatCurrency($totalKasKeluar))
                 ->description(
                     $persenKeluar > 0
                         ? "{$persenKeluar}% dari total pemasukan"
@@ -78,11 +78,11 @@ class ArusKasWidget extends BaseWidget
             // ── 📅 BULAN INI ──────────────────────────────────────
             Stat::make(
                 '📅 Bulan ' . Carbon::now('Asia/Jayapura')->translatedFormat('F Y'),
-                $kas->formatRupiah($masukBulanIni - $keluarBulanIni)
+                $kas->formatCurrency($masukBulanIni - $keluarBulanIni)
             )
                 ->description(
-                    'Masuk: ' . $kas->formatRupiah($masukBulanIni) .
-                        ' · Keluar: ' . $kas->formatRupiah($keluarBulanIni)
+                    'Masuk: ' . $kas->formatCurrency($masukBulanIni) .
+                        ' · Keluar: ' . $kas->formatCurrency($keluarBulanIni)
                 )
                 ->descriptionIcon('heroicon-m-calendar')
                 ->color(($masukBulanIni - $keluarBulanIni) >= 0 ? 'info' : 'warning'),

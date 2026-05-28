@@ -42,7 +42,7 @@ class Materi extends Model
      * - Materi umum (divisi_id NULL), ATAU
      * - Materi khusus divisi user tersebut
      */
-    public function scopeUntukUser(Builder $q, ?int $divisiId): Builder
+    public function scopeForUser(Builder $q, ?int $divisiId): Builder
     {
         return $q->where(function (Builder $sub) use ($divisiId): void {
             $sub->whereNull('divisi_id');                 // Materi umum

@@ -74,9 +74,9 @@ class ProgramKerjasTable
                     ->label('Deadline')
                     ->date('d M Y')
                     ->sortable()
-                    ->color(fn(ProgramKerja $r) => $r->isTerlambat() ? 'danger' : 'gray')
+                    ->color(fn(ProgramKerja $r) => $r->isOverdue() ? 'danger' : 'gray')
                     ->description(
-                        fn(ProgramKerja $r) => $r->isTerlambat()
+                        fn(ProgramKerja $r) => $r->isOverdue()
                             ? '⚠️ Terlambat'
                             : ($r->sisaHari() >= 0 ? "Sisa {$r->sisaHari()} hari" : null)
                     ),

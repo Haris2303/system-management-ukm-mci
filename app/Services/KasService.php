@@ -59,7 +59,7 @@ class KasService
     /**
      * Format integer rupiah ke string "Rp 1.500.000".
      */
-    public function formatRupiah(int $nominal): string
+    public function formatCurrency(int $nominal): string
     {
         return 'Rp ' . number_format($nominal, 0, ',', '.');
     }

@@ -26,7 +26,7 @@ class MateriController extends Controller
 
         // Query utama dengan scope yang sudah didefinisikan di Model
         $materis = Materi::query()
-            ->untukUser($divisiId)
+            ->forUser($divisiId)
             ->with([
                 'divisi:id,nama,icon',
                 'uploader:id,name',

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -38,7 +39,7 @@ class PertanyaanSeleksi extends Model
 
     // ── Scopes ────────────────────────────────────────────────
 
-    public function scopeAktif($q)
+    public function scopeActive(Builder $q): Builder
     {
         return $q->where('is_active', true);
     }

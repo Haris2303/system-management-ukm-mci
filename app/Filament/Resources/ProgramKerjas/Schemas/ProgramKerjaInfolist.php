@@ -46,7 +46,7 @@ class ProgramKerjaInfolist
                     TextEntry::make('tanggal_selesai')
                         ->label('Deadline')
                         ->date('d F Y')
-                        ->color(fn(ProgramKerja $r) => $r->isTerlambat() ? 'danger' : null),
+                        ->color(fn(ProgramKerja $r) => $r->isOverdue() ? 'danger' : null),
 
                     TextEntry::make('deskripsi')
                         ->label('Deskripsi')
@@ -67,7 +67,7 @@ class ProgramKerjaInfolist
 
                             [$barColor, $textColor, $bgColor] = match (true) {
                                 $pct === 100          => ['#10b981', '#059669', '#ecfdf5'],
-                                $r->isTerlambat()     => ['#ef4444', '#dc2626', '#fef2f2'],
+                                $r->isOverdue()     => ['#ef4444', '#dc2626', '#fef2f2'],
                                 $pct >= 50            => ['#f59e0b', '#d97706', '#fffbeb'],
                                 default               => ['#3b82f6', '#2563eb', '#eff6ff'],
                             };
@@ -75,7 +75,7 @@ class ProgramKerjaInfolist
                             $badge = match (true) {
                                 $r->status === 'completed' =>
                                 "<span style='background:{$bgColor};color:{$textColor}' class='inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold'>✅ Selesai</span>",
-                                $r->isTerlambat() =>
+                                $r->isOverdue() =>
                                 "<span class='inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-red-50 text-red-600'>⚠️ Terlambat " . abs($r->sisaHari()) . " hari</span>",
                                 $r->sisaHari() <= 7 && $r->sisaHari() >= 0 =>
                                 "<span class='inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-600'>⏰ {$r->sisaHari()} hari lagi</span>",
@@ -100,19 +100,19 @@ class ProgramKerjaInfolist
                         ->label('Sisa Waktu')
                         ->state(function (ProgramKerja $r): string {
                             if ($r->status === 'completed') return '🎉 Sudah selesai';
-                            if ($r->isTerlambat())          return '⚠️ Terlambat ' . abs($r->sisaHari()) . ' hari';
+                            if ($r->isOverdue())          return '⚠️ Terlambat ' . abs($r->sisaHari()) . ' hari';
                             return $r->sisaHari() . ' hari lagi';
                         })
                         ->color(
                             fn(ProgramKerja $r) =>
-                            $r->isTerlambat() ? 'danger'
+                            $r->isOverdue() ? 'danger'
                                 : ($r->status === 'completed' ? 'success' : 'info')
                         ),
 
                     TextEntry::make('tanggal_selesai')
                         ->label('Deadline')
                         ->date('d F Y')
-                        ->color(fn(ProgramKerja $r) => $r->isTerlambat() ? 'danger' : 'gray'),
+                        ->color(fn(ProgramKerja $r) => $r->isOverdue() ? 'danger' : 'gray'),
 
                 ])->columns(2),
         ]);
