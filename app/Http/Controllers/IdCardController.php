@@ -89,6 +89,7 @@ class IdCardController extends Controller
                 'role_label' => $user->role_label ?? ($user->roles->first()?->name ?? 'Anggota'),
             ],
             'member_id'            => $memberId,
+            'avatar'               => $user->avatar,
             'foto_url'             => $fotoUrl,
             'background_image_url' => $backgroundImage,
             'card_url'             => $cardUrl,
