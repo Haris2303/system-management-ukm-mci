@@ -6,8 +6,6 @@ namespace App\Models;
 use App\Traits\HasAvatar;
 use Database\Factories\UserFactory;
 use Filament\Panel;
-use Illuminate\Database\Eloquent\Attributes\Fillable;
-use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -17,12 +15,20 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 
-#[Fillable(['name', 'email', 'password', 'divisi_id', 'no_hp', 'avatar', 'last_photo_path', 'photo_uploaded_at', 'kicked_at', 'kicked_by', 'kicked_reason', 'public_id'])]
-#[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
     use HasAvatar, HasFactory, Notifiable, HasApiTokens, HasRoles;
+
+    protected $fillable = [
+        'name', 'email', 'password', 'divisi_id', 'no_hp', 'avatar',
+        'last_photo_path', 'photo_uploaded_at', 'kicked_at', 'kicked_by',
+        'kicked_reason', 'public_id',
+    ];
+
+    protected $hidden = [
+        'password', 'remember_token',
+    ];
 
     protected static function booted(): void
     {
