@@ -2,8 +2,10 @@
 
 namespace App\Filament\Widgets;
 
+use App\Models\TransaksiKas;
 use App\Models\User;
 use App\Services\KasService;
+use Carbon\Carbon;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 
@@ -75,22 +77,21 @@ class KasWidget extends BaseWidget
     }
 
     /**
-     * Generate data chart sederhana untuk visualisasi trend saldo.
+     * Saldo harian (kas masuk − kas keluar) untuk 7 hari terakhir.
      */
     private function getSaldoChart(): array
     {
-        $saldo = app(KasService::class)->totalSaldo();
-
-        if ($saldo <= 0) {
-            return [0, 0, 0, 0, 0, 0, 0];
-        }
-
         $points = [];
+
         for ($i = 6; $i >= 0; $i--) {
-            $variance = (float) random_int(-15, 15) / 100;
-            $points[] = max(0, (int) ($saldo * (0.85 + $variance)));
+            $tanggal = Carbon::today()->subDays($i);
+
+            $masuk  = TransaksiKas::masuk()->whereDate('tanggal', $tanggal)->sum('nominal');
+            $keluar = TransaksiKas::keluar()->whereDate('tanggal', $tanggal)->sum('nominal');
+
+            $points[] = max(0, $masuk - $keluar);
         }
-        $points[] = $saldo;
-        return array_slice($points, -7);
+
+        return $points;
     }
 }

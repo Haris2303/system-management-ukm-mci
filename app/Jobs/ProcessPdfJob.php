@@ -42,7 +42,7 @@ class ProcessPdfJob implements ShouldQueue
         PdfParserService $parser,
         EmbeddingService $embedding,
     ): void {
-        $document = RagDocument::find($this->documentId);
+        $document = RagDocument::find($this->documentId, ['*']);
 
         if (! $document) {
             Log::warning("ProcessPdfJob: Document #{$this->documentId} tidak ditemukan.");
