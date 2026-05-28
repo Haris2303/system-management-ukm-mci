@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -128,7 +129,7 @@ class ProfileController extends Controller
         ]);
     }
 
-    private function buildProfileData($user): array
+    private function buildProfileData(User $user): array
     {
         return [
             'id'               => $user->id,
@@ -138,7 +139,7 @@ class ProfileController extends Controller
             'divisi'           => $user->divisi?->nama,
             'role_label'       => $user->role_label,
             'avatar'           => $user->avatar,
-            'avatar_url'       => $this->resolveAvatarUrl($user->avatar),
+            'avatar_url'       => User::resolveAvatarUrl($user->avatar),
             'last_photo_url'   => $user->last_photo_path
                 ? Storage::disk(self::STORAGE_DISK)->url($user->last_photo_path)
                 : null,
@@ -147,12 +148,4 @@ class ProfileController extends Controller
         ];
     }
 
-    private function resolveAvatarUrl(?string $avatar): ?string
-    {
-        if (! $avatar) return null;
-        if (str_starts_with($avatar, 'emoji:')) return null;
-        if (str_starts_with($avatar, 'http://') || str_starts_with($avatar, 'https://')) return $avatar;
-
-        return Storage::disk(self::STORAGE_DISK)->url($avatar);
-    }
 }
