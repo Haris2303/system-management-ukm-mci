@@ -4,12 +4,10 @@ namespace App\Filament\Resources\Pendaftars\Pages;
 
 use App\Filament\Resources\Pendaftars\PendaftarResource;
 use App\Models\Pendaftar;
-use App\Models\User;
+use App\Services\PendaftarService;
 use Filament\Actions\Action;
 use Filament\Actions\EditAction;
-use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
-use Illuminate\Support\Facades\Hash;
 
 class ViewPendaftar extends ViewRecord
 {
@@ -44,33 +42,7 @@ class ViewPendaftar extends ViewRecord
                 })
                 ->modalSubmitActionLabel('Ya, Luluskan & Buat Akun')
                 ->action(function (Pendaftar $record): void {
-                    \Illuminate\Support\Facades\DB::transaction(function () use ($record): void {
-
-                        $email = $record->email ?? $record->emailDummy();
-
-                        // Buat user baru atau ambil yang sudah ada
-                        $user = \App\Models\User::firstOrCreate(
-                            ['email' => $email],
-                            [
-                                'name'      => $record->nama,
-                                'email'     => $email,
-                                'password'  => \Illuminate\Support\Facades\Hash::make('password123'),
-                                'divisi_id' => $record->divisi_id,    // ⭐ ikat user ke divisinya
-                                'no_hp'     => $record->no_hp,
-                            ]
-                        );
-
-                        // ⭐ Assign role 'anggota' agar bisa akses mobile API
-                        if (! $user->hasRole('anggota')) {
-                            $user->assignRole('anggota');
-                        }
-
-                        // Update status pendaftar + simpan referensi user_id
-                        $record->update([
-                            'status'  => 'lulus',
-                            'user_id' => $user->id,
-                        ]);
-                    });
+                    app(PendaftarService::class)->luluskan($record);
 
                     \Filament\Notifications\Notification::make()
                         ->title("🎉 {$record->nama} berhasil diluluskan!")

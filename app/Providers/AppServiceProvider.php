@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Models\TugasProker;
 use App\Observers\TugasProkerObserver;
+use App\Services\PendaftarService;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 
@@ -14,7 +15,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->singleton(PendaftarService::class);
     }
 
     /**
