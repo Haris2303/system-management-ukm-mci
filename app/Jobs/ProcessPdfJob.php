@@ -67,6 +67,7 @@ class ProcessPdfJob implements ShouldQueue
 
             // 3. Split text → chunks dengan overlap
             $chunks = $this->splitIntoChunks($text);
+            $totalChunks = count($chunks);
             Log::info("Document #{$document->id} dipecah jadi " . count($chunks) . " chunks.");
 
             // 4. Embed & save tiap chunk ke tabel rag_chunks
