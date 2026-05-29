@@ -32,12 +32,14 @@ class ElectionsTable
                         'aktif'   => 'success',
                         'draft'   => 'gray',
                         'selesai' => 'info',
+                        'tie'     => 'warning',
                         default   => 'gray',
                     })
                     ->formatStateUsing(fn(string $state) => match ($state) {
                         'aktif'   => '🟢 Aktif',
                         'draft'   => '📝 Draft',
                         'selesai' => '🏁 Selesai',
+                        'tie'     => '⚖️ Seri',
                         default   => $state,
                     }),
 
@@ -55,7 +57,7 @@ class ElectionsTable
             ])
             ->filters([
                 SelectFilter::make('status')
-                    ->options(['draft' => 'Draft', 'aktif' => 'Aktif', 'selesai' => 'Selesai']),
+                    ->options(['draft' => 'Draft', 'aktif' => 'Aktif', 'selesai' => 'Selesai', 'tie' => '⚖️ Seri']),
             ])
             ->recordActions([
                 ViewAction::make(),
@@ -85,7 +87,16 @@ class ElectionsTable
                     ->modalDescription('Voting akan ditutup dan hasil final akan ditampilkan.')
                     ->action(function (Election $record): void {
                         $record->update(['status' => 'selesai']);
-                        Notification::make()->title('Pemilihan telah ditutup!')->success()->send();
+
+                        if ($record->detectAndHandleTie()) {
+                            Notification::make()
+                                ->title('Hasil SERI!')
+                                ->body('Pemilihan ditutup dengan hasil SERI. Silakan pilih metode resolusi di halaman detail.')
+                                ->warning()
+                                ->send();
+                        } else {
+                            Notification::make()->title('Pemilihan telah ditutup!')->success()->send();
+                        }
                     }),
             ])
             ->toolbarActions([

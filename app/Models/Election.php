@@ -102,6 +102,28 @@ class Election extends Model
             || $this->status === 'tie';
     }
 
+    /**
+     * Deteksi dan tangani hasil seri otomatis.
+     * Dipanggil setelah status diubah ke 'selesai'.
+     * Jika lebih dari satu kandidat berbagi suara tertinggi, ubah status ke 'tie' dan return true.
+     */
+    public function detectAndHandleTie(): bool
+    {
+        $candidates = $this->candidates()->withCount('votes as jumlah_suara')->get();
+        $maxVotes   = $candidates->max('jumlah_suara');
+
+        if (! $maxVotes) {
+            return false;
+        }
+
+        if ($candidates->where('jumlah_suara', $maxVotes)->count() > 1) {
+            $this->update(['status' => 'tie']);
+            return true;
+        }
+
+        return false;
+    }
+
     /** Apakah election berakhir seri? */
     public function isTie(): bool
     {

@@ -79,6 +79,7 @@ class VoteController extends Controller
         }
         if (now()->gt($election->waktu_selesai)) {
             $election->updateQuietly(['status' => 'selesai']);
+            $election->detectAndHandleTie();
             return response()->json(['pesan' => 'Waktu voting telah berakhir.'], 400);
         }
 

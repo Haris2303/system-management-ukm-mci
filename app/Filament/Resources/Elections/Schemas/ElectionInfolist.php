@@ -20,10 +20,11 @@ class ElectionInfolist
                         TextEntry::make('posisi')->label('Posisi')->badge()->color('primary'),
                         TextEntry::make('status')->label('Status')->badge()
                             ->color(fn(string $state) => match ($state) {
-                                'aktif' => 'success',
-                                'draft' => 'gray',
+                                'aktif'   => 'success',
+                                'draft'   => 'gray',
                                 'selesai' => 'info',
-                                default => 'gray',
+                                'tie'     => 'warning',
+                                default   => 'gray',
                             }),
                         TextEntry::make('waktu_mulai')->label('Mulai')->dateTime('d M Y, H:i'),
                         TextEntry::make('waktu_selesai')->label('Selesai')->dateTime('d M Y, H:i'),
