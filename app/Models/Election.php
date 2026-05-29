@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Collection;
 
 class Election extends Model
 {
@@ -21,11 +22,18 @@ class Election extends Model
         'is_anonim',
         'tampil_realtime',
         'created_by',
+        'tie_resolved_at',
+        'tie_resolution_type',
+        'tie_winner_candidate_id',
+        'tie_resolution_notes',
+        'tie_casting_voter_id',
+        'parent_election_id',
     ];
 
     protected $casts = [
         'waktu_mulai'     => 'datetime',
         'waktu_selesai'   => 'datetime',
+        'tie_resolved_at' => 'datetime',
         'is_anonim'       => 'boolean',
         'tampil_realtime' => 'boolean',
     ];
@@ -57,6 +65,26 @@ class Election extends Model
         return $this->belongsTo(User::class, 'created_by');
     }
 
+    public function tieWinnerCandidate(): BelongsTo
+    {
+        return $this->belongsTo(Candidate::class, 'tie_winner_candidate_id');
+    }
+
+    public function tieCastingVoter(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'tie_casting_voter_id');
+    }
+
+    public function parentElection(): BelongsTo
+    {
+        return $this->belongsTo(Election::class, 'parent_election_id');
+    }
+
+    public function revoteElections(): HasMany
+    {
+        return $this->hasMany(Election::class, 'parent_election_id');
+    }
+
     // ── Helpers ───────────────────────────────────────────────
 
     /** Apakah pemilihan sedang berlangsung? */
@@ -69,9 +97,30 @@ class Election extends Model
     /** Apakah hasil boleh ditampilkan? */
     public function hasilBolehDitampilkan(): bool
     {
-        // Tampil realtime: selalu tampil saat aktif
-        // Tidak realtime: hanya tampil setelah selesai
-        return $this->tampil_realtime || $this->status === 'selesai';
+        return $this->tampil_realtime
+            || $this->status === 'selesai'
+            || $this->status === 'tie';
+    }
+
+    /** Apakah election berakhir seri? */
+    public function isTie(): bool
+    {
+        return $this->status === 'tie';
+    }
+
+    /** Apakah seri sudah diselesaikan? */
+    public function isTieResolved(): bool
+    {
+        return $this->tie_resolved_at !== null;
+    }
+
+    /** Kandidat-kandidat yang seri (berbagi suara terbanyak) saat status adalah 'tie' */
+    public function getTiedCandidates(): Collection
+    {
+        $candidates = $this->candidates()->withCount('votes as jumlah_suara')->get();
+        $maxVotes   = $candidates->max('jumlah_suara');
+
+        return $candidates->where('jumlah_suara', $maxVotes)->values();
     }
 
     /** Cek apakah user sudah vote (via hash) */
