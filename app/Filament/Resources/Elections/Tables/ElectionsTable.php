@@ -61,7 +61,8 @@ class ElectionsTable
             ])
             ->recordActions([
                 ViewAction::make(),
-                EditAction::make(),
+                EditAction::make()
+                    ->hidden(fn(Election $r) => in_array($r->status, ['selesai', 'tie'])),
 
                 Action::make('aktifkan')
                     ->label('Aktifkan')

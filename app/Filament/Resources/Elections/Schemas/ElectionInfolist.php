@@ -53,7 +53,6 @@ class ElectionInfolist
                             ->formatStateUsing(fn(?string $state) => match ($state) {
                                 'revote'       => '🔄 Revote',
                                 'deliberation' => '🤝 Musyawarah',
-                                'casting_vote' => '🗳️ Casting Vote',
                                 default        => '—',
                             })
                             ->hidden(fn(Election $record) => $record->tie_resolved_at === null),

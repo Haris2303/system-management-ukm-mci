@@ -32,11 +32,19 @@ class ElectionRealtimePage extends Component
             $this->dispatch('election-winner-declared');
         }
 
+        $tieBannerDescription = match($election->tie_resolution_type) {
+            'revote'       => 'Telah dijadwalkan Putaran Kedua. Pantau pengumuman selanjutnya.',
+            'deliberation' => 'Pemenang telah ditetapkan melalui musyawarah mufakat.',
+            default        => 'Pemilihan sedang ditunda. Presidium sedang bermusyawarah untuk menentukan langkah selanjutnya.',
+        };
+
         return view('livewire.election-realtime-page', [
-            'election'        => $election,
-            'totalSuara'      => $totalSuara,
-            'candidates'      => $candidates,
-            'hasUniqueLeader' => $hasUniqueLeader,
+            'election'             => $election,
+            'totalSuara'           => $totalSuara,
+            'candidates'           => $candidates,
+            'hasUniqueLeader'      => $hasUniqueLeader,
+            'topVotes'             => $topVotes,
+            'tieBannerDescription' => $tieBannerDescription,
         ]);
     }
 }

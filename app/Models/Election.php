@@ -26,7 +26,6 @@ class Election extends Model
         'tie_resolution_type',
         'tie_winner_candidate_id',
         'tie_resolution_notes',
-        'tie_casting_voter_id',
         'parent_election_id',
     ];
 
@@ -44,6 +43,7 @@ class Election extends Model
         static::retrieved(function (Election $election): void {
             if ($election->status === 'aktif' && now()->gt($election->waktu_selesai)) {
                 $election->updateQuietly(['status' => 'selesai']);
+                $election->detectAndHandleTie();
             }
         });
     }
@@ -68,11 +68,6 @@ class Election extends Model
     public function tieWinnerCandidate(): BelongsTo
     {
         return $this->belongsTo(Candidate::class, 'tie_winner_candidate_id');
-    }
-
-    public function tieCastingVoter(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'tie_casting_voter_id');
     }
 
     public function parentElection(): BelongsTo

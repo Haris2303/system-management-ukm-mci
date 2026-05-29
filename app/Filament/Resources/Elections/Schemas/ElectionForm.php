@@ -47,9 +47,9 @@ class ElectionForm
                     Section::make('Jadwal Pemilihan')
                         ->schema([
                             DateTimePicker::make('waktu_mulai')
-                                ->label('Waktu Mulai')->required()->seconds(false),
+                                ->label('Waktu Mulai')->required()->seconds(false)->native(false)->displayFormat('d/m/Y H:i'),
                             DateTimePicker::make('waktu_selesai')
-                                ->label('Waktu Selesai')->required()->seconds(false)->after('waktu_mulai'),
+                                ->label('Waktu Selesai')->required()->seconds(false)->after('waktu_mulai')->native(false)->displayFormat('d/m/Y H:i'),
                         ])->columns(2),
                     Section::make('Pengaturan Keamanan')
                         ->schema([

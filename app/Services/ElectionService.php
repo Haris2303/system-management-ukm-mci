@@ -6,7 +6,6 @@ use App\Models\Candidate;
 use App\Models\Election;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use InvalidArgumentException;
 
 class ElectionService
 {
@@ -20,17 +19,19 @@ class ElectionService
         return DB::transaction(function () use ($parentElection): Election {
             $tiedCandidates = $parentElection->getTiedCandidates();
 
+            $now = now();
+
             $newElection = Election::create([
                 'judul'              => $parentElection->judul . ' — Putaran Kedua',
                 'deskripsi'          => 'Pemilihan putaran kedua akibat hasil seri pada putaran pertama.',
                 'posisi'             => $parentElection->posisi,
-                'status'             => 'draft',
+                'status'             => 'aktif',
                 'is_anonim'          => $parentElection->is_anonim,
                 'tampil_realtime'    => $parentElection->tampil_realtime,
                 'created_by'         => Auth::id(),
                 'parent_election_id' => $parentElection->id,
-                'waktu_mulai'        => null,
-                'waktu_selesai'      => null,
+                'waktu_mulai'        => $now,
+                'waktu_selesai'      => $now->copy()->addMinutes(10),
             ]);
 
             foreach ($tiedCandidates as $candidate) {
@@ -40,7 +41,6 @@ class ElectionService
                     'visi'        => $candidate->visi,
                     'misi'        => $candidate->misi,
                     'foto'        => $candidate->foto,
-                    // urut di-auto-assign oleh Candidate::booted()
                 ]);
             }
 
@@ -52,30 +52,5 @@ class ElectionService
 
             return $newElection;
         });
-    }
-
-    /**
-     * Tetapkan presidium sidang sebagai pemegang casting vote.
-     * Casting vote digunakan melalui endpoint vote reguler — tidak ada token khusus.
-     * Syarat: pengguna belum pernah vote pada putaran ini.
-     */
-    public function grantCastingVote(Election $election, int $userId): void
-    {
-        if ($election->status !== 'tie') {
-            throw new InvalidArgumentException(
-                'Casting vote hanya dapat diberikan pada pemilihan yang berstatus seri.'
-            );
-        }
-
-        if ($election->sudahDivote($userId)) {
-            throw new InvalidArgumentException(
-                'Pengguna ini sudah memberikan suara pada putaran reguler.'
-            );
-        }
-
-        $election->update([
-            'tie_casting_voter_id' => $userId,
-            'tie_resolution_type'  => 'casting_vote',
-        ]);
     }
 }

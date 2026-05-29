@@ -38,6 +38,10 @@
                         <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium bg-brand-50 border border-brand-100 text-brand-700">
                             Pemilihan Selesai
                         </div>
+                    @elseif($election->status === 'tie')
+                        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium bg-amber-50 border border-amber-200 text-amber-700">
+                            ⚖️ Menunggu Keputusan Presidium
+                        </div>
                     @else
                         <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium bg-slate-100 border border-slate-200 text-slate-500">
                             Belum Dimulai
@@ -56,8 +60,27 @@
         </div>
     </header>
 
-    {{-- ── WINNER SECTION (hanya saat selesai & ada pemenang jelas) ── --}}
-    @if($election->status === 'selesai' && $hasUniqueLeader)
+    {{-- ── TIE BANNER (hanya saat status 'tie') ──────────────────── --}}
+    @if($election->status === 'tie')
+        <div class="bg-amber-50 border-b border-amber-200">
+            <div class="max-w-7xl mx-auto px-6 lg:px-8 py-5">
+                <div class="flex items-start gap-4">
+                    <div class="text-3xl shrink-0 mt-0.5" aria-hidden="true">⚖️</div>
+                    <div>
+                        <h2 class="font-display font-bold text-amber-900 text-lg leading-snug mb-1">
+                            Hasil Pemilihan: SERI
+                        </h2>
+                        <p class="text-amber-700 text-sm leading-relaxed">
+                            {{ $tieBannerDescription }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    {{-- ── WINNER SECTION (hanya saat selesai, ada pemenang jelas, dan bukan diselesaikan via revote) ── --}}
+    @if($election->status === 'selesai' && $hasUniqueLeader && $election->tie_resolution_type !== 'revote')
         @php $winner = $candidates->first(); @endphp
 
         <section class="relative overflow-hidden py-16 lg:py-24"
@@ -177,11 +200,18 @@
 
                 <div class="grid gap-6 {{ $gridClass }}">
                     @foreach($candidates as $index => $candidate)
-                        @php $isLeading = $index === 0 && $hasUniqueLeader; @endphp
+                        @php
+                            $isLeading = $index === 0 && $hasUniqueLeader;
+                            $isTied    = $election->status === 'tie'
+                                && $totalSuara > 0
+                                && $candidate['jumlah_suara'] === $topVotes;
+                        @endphp
 
                         <div class="tech-card bg-white rounded-2xl overflow-hidden border flex flex-col shadow-sm group
-                            {{ $isLeading ? 'border-brand-200' : 'border-slate-100' }}"
-                             style="{{ $isLeading ? 'box-shadow:0 4px 32px rgba(26,79,245,0.12);' : '' }}">
+                            {{ $isLeading ? 'border-brand-200' : ($isTied ? 'border-amber-300' : 'border-slate-100') }}"
+                             style="{{ $isLeading
+                                 ? 'box-shadow:0 4px 32px rgba(26,79,245,0.12);'
+                                 : ($isTied ? 'box-shadow:0 4px 32px rgba(245,158,11,0.15);' : '') }}">
 
                             {{-- Foto kandidat --}}
                             <div class="relative w-full overflow-hidden gallery-item" style="aspect-ratio:1/1;">
@@ -202,8 +232,15 @@
                                     </div>
                                 @endif
 
-                                {{-- Leading badge --}}
-                                @if($isLeading)
+                                {{-- Badge: seri / terdepan --}}
+                                @if($isTied)
+                                    <div class="absolute top-3 right-3">
+                                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-amber-500 text-white shadow-lg"
+                                              style="box-shadow:0 4px 12px rgba(245,158,11,0.4);">
+                                            ⚖️ Seri
+                                        </span>
+                                    </div>
+                                @elseif($isLeading)
                                     <div class="absolute top-3 right-3">
                                         <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-brand-600 text-white shadow-lg"
                                               style="box-shadow:0 4px 12px rgba(26,79,245,0.35);">
@@ -230,13 +267,13 @@
                                 {{-- Persentase + suara --}}
                                 <div class="flex items-end justify-between">
                                     <div>
-                                        <p class="font-display font-bold text-5xl leading-none {{ $isLeading ? 'gradient-text' : 'text-slate-900' }}">
+                                        <p class="font-display font-bold text-5xl leading-none {{ $isLeading ? 'gradient-text' : ($isTied ? 'text-amber-600' : 'text-slate-900') }}">
                                             {{ $candidate['persentase'] }}%
                                         </p>
                                         <p class="text-xs text-slate-400 mt-1">persentase suara</p>
                                     </div>
                                     <div class="text-right">
-                                        <p class="text-2xl font-bold {{ $isLeading ? 'text-brand-600' : 'text-slate-900' }}">
+                                        <p class="text-2xl font-bold {{ $isLeading ? 'text-brand-600' : ($isTied ? 'text-amber-600' : 'text-slate-900') }}">
                                             {{ number_format($candidate['jumlah_suara']) }}
                                         </p>
                                         <p class="text-xs text-slate-400">suara</p>
@@ -251,8 +288,10 @@
                                              transition:width .9s cubic-bezier(.4,0,.2,1);
                                              background:{{ $isLeading
                                                  ? 'linear-gradient(90deg,#1340e1,#3671ff,#0ff4c6)'
-                                                 : 'linear-gradient(90deg,#bdd8ff,#5c98ff)' }};
-                                             {{ $isLeading ? 'box-shadow:0 0 10px rgba(26,79,245,0.3);' : '' }}
+                                                 : ($isTied
+                                                     ? 'linear-gradient(90deg,#f59e0b,#fbbf24)'
+                                                     : 'linear-gradient(90deg,#bdd8ff,#5c98ff)') }};
+                                             {{ $isLeading ? 'box-shadow:0 0 10px rgba(26,79,245,0.3);' : ($isTied ? 'box-shadow:0 0 10px rgba(245,158,11,0.25);' : '') }}
                                          ">
                                     </div>
                                 </div>

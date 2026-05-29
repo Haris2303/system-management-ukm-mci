@@ -20,7 +20,7 @@ class VoteController extends Controller
     public function index(): JsonResponse
     {
         $elections = Election::with(['candidates.user:id,name'])
-            ->whereIn('status', ['aktif', 'selesai'])
+            ->whereIn('status', ['aktif', 'selesai', 'tie'])
             ->orderByDesc('waktu_mulai')
             ->get()
             ->map(fn(Election $e) => $this->formatElection($e));
@@ -60,9 +60,16 @@ class VoteController extends Controller
         ]);
 
         $election = Election::with('candidates')->findOrFail($id);
+        $userId   = Auth::id();
 
         // 1. Cek status pemilihan
         if ($election->status !== 'aktif') {
+            if ($election->status === 'tie') {
+                return response()->json([
+                    'pesan' => 'Pemilihan sedang dalam proses musyawarah. Voting reguler ditutup sementara.',
+                ], 400);
+            }
+
             return response()->json([
                 'pesan' => $election->status === 'draft'
                     ? 'Pemilihan belum dibuka. Silakan tunggu hingga waktu voting dimulai.'
@@ -91,7 +98,6 @@ class VoteController extends Controller
             ], 404);
         }
 
-        $userId    = Auth::id();
         $voterHash = hash('sha256', $userId . '-' . $election->id . '-ukm-mci-secret');
 
         // 4. Cek duplikasi suara
@@ -101,18 +107,18 @@ class VoteController extends Controller
             ], 422);
         }
 
-        // 5. Simpan suara dalam transaksi
+        // 5. Simpan suara
         DB::transaction(function () use ($election, $candidate, $voterHash): void {
             Vote::create([
                 'election_id'  => $election->id,
                 'candidate_id' => $candidate->id,
-                'voter_hash'   => $voterHash,   // identitas anonim
+                'voter_hash'   => $voterHash,
             ]);
         });
 
         return response()->json([
-            'pesan'   => 'Suara Anda berhasil dicatat. Terima kasih telah berpartisipasi!',
-            'status'  => 'berhasil',
+            'pesan'  => 'Suara Anda berhasil dicatat. Terima kasih telah berpartisipasi!',
+            'status' => 'berhasil',
         ], 201);
     }
 
@@ -127,7 +133,7 @@ class VoteController extends Controller
         if (! $election->hasilBolehDitampilkan()) {
             return response()->json([
                 'pesan'         => 'Hasil pemilihan akan ditampilkan setelah voting ditutup.',
-                'waktu_selesai' => $election->waktu_selesai->format('d M Y, H:i'),
+                'waktu_selesai' => $election->waktu_selesai?->format('d M Y, H:i'),
             ], 403);
         }
 
@@ -137,26 +143,54 @@ class VoteController extends Controller
             ->sortByDesc(fn(Candidate $c) => $c->jumlahSuara())
             ->values()
             ->map(fn(Candidate $c, int $rank) => [
-                'nama'          => $c->user->name,
-                'jumlah_suara'  => $c->jumlahSuara(),
-                'persentase'    => $c->persentase($totalSuara),
-                'peringkat'     => $rank + 1,
+                'id'           => $c->id,
+                'nama'         => $c->user->name,
+                'jumlah_suara' => $c->jumlahSuara(),
+                'persentase'   => $c->persentase($totalSuara),
+                'peringkat'    => $rank + 1,
             ]);
 
-        $pemenang = $hasil->first();
+        $pemenang = match (true) {
+            // Pemenang ditetapkan lewat musyawarah — gunakan tie_winner_candidate_id
+            $election->tie_resolution_type === 'deliberation'
+            => $hasil->firstWhere('id', $election->tie_winner_candidate_id),
+            // Dilanjutkan ke putaran kedua — belum ada pemenang dari putaran ini
+            $election->tie_resolution_type === 'revote'
+            => null,
+            // Masih menunggu resolusi tie
+            $election->status === 'tie'
+            => null,
+            // Election normal atau aktif — kandidat suara terbanyak
+            default
+            => $hasil->first(),
+        };
+
+        $catatan = match (true) {
+            $election->status === 'tie'
+            => 'Hasil sementara — pemilihan berakhir seri dan sedang menunggu resolusi dari presidium.',
+            $election->tie_resolution_type === 'revote'
+            => 'Pemilihan ini dilanjutkan ke Putaran Kedua. Pemenang ditentukan dari hasil putaran selanjutnya.',
+            $election->tie_resolution_type === 'deliberation'
+            => 'Pemenang ditetapkan melalui musyawarah mufakat.',
+            default => null,
+        };
 
         return response()->json([
-            'pesan'        => 'Hasil pemilihan berhasil dimuat.',
-            'data' => [
-                'election'    => [
-                    'id'     => $election->id,
-                    'judul'  => $election->judul,
-                    'posisi' => $election->posisi,
-                    'status' => $election->status,
+            'pesan' => 'Hasil pemilihan berhasil dimuat.',
+            'data'  => [
+                'election' => [
+                    'id'                  => $election->id,
+                    'judul'               => $election->judul,
+                    'posisi'              => $election->posisi,
+                    'status'              => $election->status,
+                    'tie_resolution_type' => $election->tie_resolution_type,
                 ],
-                'total_suara' => $totalSuara,
-                'pemenang'    => $pemenang,
-                'kandidat'    => $hasil,
+                'total_suara'          => $totalSuara,
+                'pemenang'             => $pemenang,
+                'kandidat'             => $hasil,
+                'is_tie'               => $election->status === 'tie',
+                'tie_resolution_notes' => $election->tie_resolution_notes,
+                'catatan'              => $catatan,
             ],
         ]);
     }
@@ -179,7 +213,6 @@ class VoteController extends Controller
                 'misi' => $c->misi,
                 'foto' => $c->foto_url,
             ];
-            // Tampilkan hasil hanya jika diizinkan
             if ($withHasil && $e->hasilBolehDitampilkan()) {
                 $data['jumlah_suara'] = $c->jumlahSuara();
                 $data['persentase']   = $c->persentase($totalSuara);
@@ -193,13 +226,19 @@ class VoteController extends Controller
             'deskripsi'       => $e->deskripsi,
             'posisi'          => $e->posisi,
             'status'          => $e->status,
-            'waktu_mulai'     => $e->waktu_mulai->format('d M Y, H:i'),
-            'waktu_selesai'   => $e->waktu_selesai->format('d M Y, H:i'),
+            'waktu_mulai'     => $e->waktu_mulai?->format('d M Y, H:i'),
+            'waktu_selesai'   => $e->waktu_selesai?->format('d M Y, H:i'),
             'is_anonim'       => $e->is_anonim,
             'tampil_realtime' => $e->tampil_realtime,
             'total_suara'     => $totalSuara,
             'sudah_vote'      => $sudahVote,
             'hasil_tersedia'  => $e->hasilBolehDitampilkan(),
+            'is_tie'          => $e->status === 'tie',
+            'tie_status_label' => $e->status === 'tie' ? match ($e->tie_resolution_type) {
+                'revote'       => 'Telah dijadwalkan Putaran Kedua. Pantau pengumuman selanjutnya.',
+                'deliberation' => 'Pemenang telah ditetapkan melalui musyawarah mufakat.',
+                default        => 'Pemilihan sedang ditunda. Presidium sedang bermusyawarah untuk menentukan langkah selanjutnya.',
+            } : null,
             'kandidat'        => $candidates,
         ];
     }
