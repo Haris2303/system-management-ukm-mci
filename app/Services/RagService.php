@@ -60,26 +60,26 @@ class RagService
         $queryEmbedding = $this->embedding->embedQuery($question);
 
         // ⭐ Query ke tabel rag_chunks, bukan rag_documents
-        $allChunks = RagChunk::with('document')
+        return RagChunk::with('document')
             ->whereNotNull('embedding')
-            ->get();
+            ->whereHas('document', fn($q) => $q->where('status', 'ready'))
+            ->lazy()
+            ->map(function (RagChunk $chunk) use ($queryEmbedding) {
+                // Karena $casts['embedding'] = 'array', otomatis array — tidak perlu json_decode
+                $vec = $chunk->embedding;
 
-        $scored = $allChunks->map(function (RagChunk $chunk) use ($queryEmbedding) {
-            // Karena $casts['embedding'] = 'array', otomatis array — tidak perlu json_decode
-            $vec = $chunk->embedding;
+                if (! is_array($vec) || count($vec) !== EmbeddingService::DIMENSION) {
+                    return null;
+                }
 
-            if (! is_array($vec) || count($vec) !== EmbeddingService::DIMENSION) {
-                return null;
-            }
-
-            $chunk->similarity = EmbeddingService::cosineSimilarity($queryEmbedding, $vec);
-            return $chunk;
-        })->filter();
-
-        return $scored
+                $chunk->similarity = EmbeddingService::cosineSimilarity($queryEmbedding, $vec);
+                return $chunk;
+            })
+            ->filter()
             ->sortByDesc('similarity')
             ->filter(fn($c) => $c->similarity >= self::MIN_SIMILARITY)
             ->take(self::TOP_K)
+            ->collect()
             ->values();
     }
 
