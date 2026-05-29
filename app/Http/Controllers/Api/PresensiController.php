@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\PresensiStoreRequest;
 use App\Models\Agenda;
 use App\Models\Presensi;
 use Illuminate\Http\JsonResponse;
@@ -22,19 +23,10 @@ class PresensiController extends Controller
      *  5. Simpan data presensi
      *  6. Return response sukses
      */
-    public function store(Request $request): JsonResponse
+    public function store(PresensiStoreRequest $request): JsonResponse
     {
-        // ── 1. Validasi Input ──────────────────────────────────────
-        $validated = $request->validate([
-            'token' => ['required', 'string', 'size:32'],
-        ], [
-            'token.required' => 'Token QR Code wajib disertakan.',
-            'token.string'   => 'Format token tidak valid.',
-            'token.size'     => 'Panjang token tidak sesuai. Pastikan QR Code yang Anda scan benar.',
-        ]);
-
         // ── 2. Cari Agenda berdasarkan Token & Status Aktif ────────
-        $agenda = Agenda::where('qr_code_token', $validated['token'])
+        $agenda = Agenda::where('qr_code_token', $request->validated('token'))
             ->where('is_active', true)
             ->first();
 

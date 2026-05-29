@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\UpdateAvatarRequest;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -27,7 +28,7 @@ class ProfileController extends Controller
     }
 
     // POST /api/profile/avatar
-    public function updateAvatar(Request $request): JsonResponse
+    public function updateAvatar(UpdateAvatarRequest $request): JsonResponse
     {
         $mode = $request->input('mode');
 
@@ -76,10 +77,6 @@ class ProfileController extends Controller
             ], 422);
         }
 
-        $request->validate([
-            'foto' => ['required', 'image', 'mimes:jpeg,png,webp', 'max:' . self::MAX_SIZE_KB],
-        ]);
-
         $path = $request->file('foto')->store(self::AVATAR_DIR, self::STORAGE_DISK);
 
         $user->update([
@@ -96,11 +93,6 @@ class ProfileController extends Controller
 
     private function handleEmojiAvatar(Request $request): JsonResponse
     {
-        $request->validate([
-            'emoji' => ['required', 'string', 'max:10'],
-            'bg'    => ['required', 'string', 'regex:/^[0-9a-fA-F]{6}$/'],
-        ]);
-
         $user = $request->user();
         $user->update(['avatar' => "emoji:{$request->emoji}:{$request->bg}"]);
 
