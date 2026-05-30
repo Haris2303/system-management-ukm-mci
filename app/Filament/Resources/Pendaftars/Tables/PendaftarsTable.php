@@ -107,7 +107,7 @@ class PendaftarsTable
                             . "• Email: {$email}\n"
                             . "• Password default: password123\n"
                             . "• Role: 👥 Anggota (akses mobile app)\n"
-                            . "• Divisi: {$r->divisi->nama}";
+                            . "• Divisi: " . ($r->divisi?->nama ?? '(tidak ada)');
                     })
                     ->modalSubmitActionLabel('Ya, Luluskan & Buat Akun')
                     ->action(function (Pendaftar $record): void {

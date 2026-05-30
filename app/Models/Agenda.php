@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class Agenda extends Model
@@ -66,25 +67,25 @@ class Agenda extends Model
      */
     public function close(): void
     {
-        if (! $this->is_active) {
-            return;
-        }
+        if (! $this->is_active) return;
 
-        $jamAbsen = $this->waktu_selesai ?? Carbon::now('Asia/Jayapura');
+        DB::transaction(function (): void {
+            $jamAbsen = $this->waktu_selesai ?? Carbon::now('Asia/Jayapura');
 
-        $sudahHadirIds = $this->presensis()->pluck('user_id');
+            $sudahHadirIds = $this->presensis()->pluck('user_id');
 
-        User::whereDoesntHave('roles', fn ($q) => $q->whereIn('name', ['super_admin', 'demisioner']))
-            ->whereNotIn('id', $sudahHadirIds)
-            ->pluck('id')
-            ->each(fn ($userId) => Presensi::create([
-                'user_id'   => $userId,
-                'agenda_id' => $this->id,
-                'status'    => 'Absen',
-                'jam_hadir' => $jamAbsen,
-            ]));
+            User::whereDoesntHave('roles', fn($q) => $q->whereIn('name', ['super_admin', 'demisioner']))
+                ->whereNotIn('id', $sudahHadirIds)
+                ->pluck('id')
+                ->each(fn($userId) => Presensi::create([
+                    'user_id'   => $userId,
+                    'agenda_id' => $this->id,
+                    'status'    => 'Absen',
+                    'jam_hadir' => $jamAbsen,
+                ]));
 
-        $this->update(['is_active' => false]);
+            $this->update(['is_active' => false]);
+        });
     }
 
     // ── Scopes ─────────────────────────────────────────────────────

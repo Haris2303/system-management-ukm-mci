@@ -41,7 +41,9 @@ class Election extends Model
     protected static function booted(): void
     {
         static::retrieved(function (Election $election): void {
-            if ($election->status === 'aktif' && now()->gt($election->waktu_selesai)) {
+            if ($election->status === 'aktif'
+                && $election->waktu_selesai !== null
+                && now()->gt($election->waktu_selesai)) {
                 $election->updateQuietly(['status' => 'selesai']);
                 $election->detectAndHandleTie();
             }
@@ -86,6 +88,8 @@ class Election extends Model
     public function isAktif(): bool
     {
         return $this->status === 'aktif'
+            && $this->waktu_mulai !== null
+            && $this->waktu_selesai !== null
             && now()->between($this->waktu_mulai, $this->waktu_selesai);
     }
 

@@ -55,8 +55,8 @@ class TagihanKasForm
                             ->default('belum_dibayar')
                             ->required()
                             ->live()
-                            ->afterStateUpdated(function ($state, Set $set) {
-                                if ($state === 'lunas') {
+                            ->afterStateUpdated(function ($state, Set $set, Get $get) {
+                                if ($state === 'lunas' && !$get('tanggal_bayar')) {
                                     $set('tanggal_bayar', now('Asia/Jayapura')->format('Y-m-d H:i:s'));
                                 }
                             }),
@@ -76,5 +76,4 @@ class TagihanKasForm
                     ])->columns(1),
             ]);
     }
-
 }

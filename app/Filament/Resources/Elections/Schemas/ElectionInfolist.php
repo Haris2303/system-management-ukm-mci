@@ -34,6 +34,14 @@ class ElectionInfolist
                         IconEntry::make('tampil_realtime')->label('Real-time')->boolean(),
                     ])->columns(2),
 
+                // Rekap Suara Realtime
+                Section::make('Rekap Hasil Suara')
+                    ->schema([
+                        ViewEntry::make('rekap_suara')
+                            ->view('filament.infolists.components.election-results')
+                            ->columnSpanFull(),
+                    ]),
+
                 // ── Hasil Seri & Resolusi ─────────────────────────────
                 Section::make('Hasil Seri & Resolusi')
                     ->schema([
@@ -77,14 +85,6 @@ class ElectionInfolist
                     ])
                     ->columns(2)
                     ->hidden(fn(Election $record) => $record->status !== 'tie' && $record->tie_resolved_at === null),
-
-                // Rekap Suara Realtime
-                Section::make('Rekap Hasil Suara')
-                    ->schema([
-                        ViewEntry::make('rekap_suara')
-                            ->view('filament.infolists.components.election-results')
-                            ->columnSpanFull(),
-                    ]),
             ]);
     }
 }

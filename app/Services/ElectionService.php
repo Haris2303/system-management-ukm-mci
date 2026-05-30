@@ -41,6 +41,7 @@ class ElectionService
                     'visi'        => $candidate->visi,
                     'misi'        => $candidate->misi,
                     'foto'        => $candidate->foto,
+                    'urut'        => $candidate->urut,
                 ]);
             }
 

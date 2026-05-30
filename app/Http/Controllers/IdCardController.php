@@ -39,7 +39,13 @@ class IdCardController extends Controller
         $fotoUrl = $user->avatar_url;
 
         return view('id-card.show', compact(
-            'user', 'template', 'backgroundImage', 'qrCode', 'memberId', 'fotoUrl', 'profileUrl'
+            'user',
+            'template',
+            'backgroundImage',
+            'qrCode',
+            'memberId',
+            'fotoUrl',
+            'profileUrl'
         ));
     }
 
@@ -82,8 +88,6 @@ class IdCardController extends Controller
             'user' => [
                 'id'         => $user->id,
                 'name'       => $user->name,
-                'email'      => $user->email,
-                'no_hp'      => $user->no_hp,
                 'divisi'     => $user->divisi?->nama,
                 'role'       => $user->roles->first()?->name,
                 'role_label' => $user->role_label ?? ($user->roles->first()?->name ?? 'Anggota'),

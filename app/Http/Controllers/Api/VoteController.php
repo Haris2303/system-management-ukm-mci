@@ -78,15 +78,20 @@ class VoteController extends Controller
         }
 
         // 2. Cek waktu
-        if (now()->lt($election->waktu_mulai)) {
+        if ($election->waktu_mulai !== null && now()->lt($election->waktu_mulai)) {
             return response()->json([
                 'pesan'       => 'Pemilihan belum dimulai.',
                 'waktu_mulai' => $election->waktu_mulai->format('d M Y, H:i'),
             ], 400);
         }
-        if (now()->gt($election->waktu_selesai)) {
-            $election->updateQuietly(['status' => 'selesai']);
-            $election->detectAndHandleTie();
+        if ($election->waktu_selesai !== null && now()->gt($election->waktu_selesai)) {
+            DB::transaction(function () use ($election): void {
+                $fresh = Election::lockForUpdate()->find($election->id);
+                if ($fresh && $fresh->status === 'aktif') {
+                    $fresh->updateQuietly(['status' => 'selesai']);
+                    $fresh->detectAndHandleTie();
+                }
+            });
             return response()->json(['pesan' => 'Waktu voting telah berakhir.'], 400);
         }
 
@@ -184,6 +189,9 @@ class VoteController extends Controller
                     'posisi'              => $election->posisi,
                     'status'              => $election->status,
                     'tie_resolution_type' => $election->tie_resolution_type,
+                    'revote_election_id'  => $election->tie_resolution_type === 'revote'
+                        ? $election->revoteElections()->latest()->value('id')
+                        : null,
                 ],
                 'total_suara'          => $totalSuara,
                 'pemenang'             => $pemenang,

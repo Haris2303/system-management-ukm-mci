@@ -16,6 +16,12 @@ class PendaftarService
         return DB::transaction(function () use ($pendaftar): User {
             $email = $pendaftar->effectiveEmail();
 
+            // pastikan tidak ada user lain yang sudah pakai email ini
+            $existing = User::where('email', $email)->first();
+            if ($existing && $existing->id !== optional($pendaftar->user)->id) {
+                throw new \RuntimeException("Email {$email} sudah digunakan akun lain.");
+            }
+
             $user = User::firstOrCreate(
                 ['email' => $email],
                 [

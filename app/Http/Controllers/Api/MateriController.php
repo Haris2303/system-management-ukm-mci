@@ -52,11 +52,10 @@ class MateriController extends Controller
             // Klasifikasi materi
             'is_umum'     => $m->isUmum(),
             'jenis'       => $m->isUmum() ? 'umum' : 'divisi',
-            'jenis_label' => $m->isUmum() ? '🌐 Umum' : ($m->divisi->icon . ' ' . $m->divisi->nama),
+            'jenis_label' => $m->isUmum() ? '🌐 Umum' : (($m->divisi?->icon ?? '') . ' ' . ($m->divisi?->nama ?? '')),
 
             // Detail divisi (jika ada)
-            'divisi'      => $m->divisi ? [
-                'id'   => $m->divisi->id,
+            'divisi'   => $m->divisi ? [
                 'nama' => $m->divisi->nama,
                 'icon' => $m->divisi->icon,
             ] : null,
