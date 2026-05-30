@@ -57,7 +57,7 @@ class PendaftarAdminTest extends TestCase
             'divisi_id' => $divisi->id,
             'nama'      => 'Budi Santoso',
             'nim'       => '2023' . rand(1000, 9999),
-            'email'     => null,
+            'email'     => 'pendaftar@example.com',
             'no_hp'     => '081234567890',
             'angkatan'  => '2023',
             'status'    => 'menunggu',
@@ -165,37 +165,39 @@ class PendaftarAdminTest extends TestCase
     public function test_luluskan_membuat_akun_user_baru(): void
     {
         $divisi    = $this->buatDivisi();
-        $pendaftar = $this->buatPendaftar($divisi, ['nim' => '20230001']);
+        $pendaftar = $this->buatPendaftar($divisi, ['email' => 'budi.baru@example.com']);
 
-        $this->assertDatabaseMissing('users', ['email' => '20230001@mci.ac.id']);
+        $this->assertDatabaseMissing('users', ['email' => 'budi.baru@example.com']);
 
         app(PendaftarService::class)->luluskan($pendaftar);
 
-        $this->assertDatabaseHas('users', ['email' => '20230001@mci.ac.id']);
+        $this->assertDatabaseHas('users', ['email' => 'budi.baru@example.com']);
     }
 
-    public function test_luluskan_menggunakan_email_asli_jika_ada(): void
+    public function test_luluskan_akun_menggunakan_email_dari_formulir_pendaftaran(): void
     {
         $divisi    = $this->buatDivisi();
         $pendaftar = $this->buatPendaftar($divisi, [
-            'email' => 'budi@example.com',
+            'email' => 'budi.formulir@example.com',
             'nim'   => '20230001',
         ]);
 
         app(PendaftarService::class)->luluskan($pendaftar);
 
-        $this->assertDatabaseHas('users', ['email' => 'budi@example.com']);
+        // Akun dibuat dengan email formulir — bukan dummy NIM@mci.ac.id
+        $this->assertDatabaseHas('users', ['email' => 'budi.formulir@example.com']);
         $this->assertDatabaseMissing('users', ['email' => '20230001@mci.ac.id']);
     }
 
-    public function test_luluskan_menggunakan_email_dummy_nim_jika_tidak_ada_email(): void
+    public function test_luluskan_gagal_jika_pendaftar_tidak_memiliki_email(): void
     {
         $divisi    = $this->buatDivisi();
         $pendaftar = $this->buatPendaftar($divisi, ['email' => null, 'nim' => '20230002']);
 
-        app(PendaftarService::class)->luluskan($pendaftar);
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('tidak memiliki email');
 
-        $this->assertDatabaseHas('users', ['email' => '20230002@mci.ac.id']);
+        app(PendaftarService::class)->luluskan($pendaftar);
     }
 
     public function test_luluskan_memberi_role_anggota_pada_user_baru(): void
@@ -240,11 +242,11 @@ class PendaftarAdminTest extends TestCase
         app(PendaftarService::class)->luluskan($pendaftar);
     }
 
-    public function test_luluskan_gagal_jika_dummy_email_nim_sudah_dipakai_user_lain(): void
+    public function test_luluskan_gagal_jika_email_formulir_sudah_dipakai_akun_lain(): void
     {
         $divisi    = $this->buatDivisi();
-        User::factory()->create(['email' => '20230006@mci.ac.id']); // user tak terkait
-        $pendaftar = $this->buatPendaftar($divisi, ['email' => null, 'nim' => '20230006']);
+        User::factory()->create(['email' => 'pakai.lain@example.com']); // user tak terkait
+        $pendaftar = $this->buatPendaftar($divisi, ['email' => 'pakai.lain@example.com']);
 
         $this->expectException(\RuntimeException::class);
         $this->expectExceptionMessage('sudah digunakan akun lain');
@@ -592,7 +594,11 @@ class PendaftarAdminTest extends TestCase
     {
         $divisi    = $this->buatDivisi();
         $admin     = $this->buatUser('ketua_ukm');
-        $pendaftar = $this->buatPendaftar($divisi, ['nim' => '20239999', 'status' => 'menunggu']);
+        $pendaftar = $this->buatPendaftar($divisi, [
+            'nim'    => '20239999',
+            'email'  => 'peserta.lulus@example.com',
+            'status' => 'menunggu',
+        ]);
 
         Livewire::actingAs($admin)
                 ->test(ListPendaftars::class)
@@ -600,7 +606,8 @@ class PendaftarAdminTest extends TestCase
                 ->assertHasNoTableActionErrors();
 
         $this->assertEquals('lulus', $pendaftar->fresh()->status);
-        $this->assertDatabaseHas('users', ['email' => '20239999@mci.ac.id']);
+        // Akun dibuat dengan email yang diinput di formulir
+        $this->assertDatabaseHas('users', ['email' => 'peserta.lulus@example.com']);
     }
 
     public function test_eksekusi_aksi_tolak_dari_tabel(): void

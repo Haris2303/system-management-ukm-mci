@@ -2,10 +2,13 @@
 
 namespace App\Services;
 
+use App\Mail\PendaftarDitolak;
+use App\Mail\PendaftarLulus;
 use App\Models\Pendaftar;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 
 class PendaftarService
 {
@@ -13,10 +16,18 @@ class PendaftarService
 
     public function luluskan(Pendaftar $pendaftar): User
     {
-        return DB::transaction(function () use ($pendaftar): User {
-            $email = $pendaftar->effectiveEmail();
+        // Wajib ada email dari formulir pendaftaran
+        if (empty($pendaftar->email)) {
+            throw new \RuntimeException(
+                "Pendaftar {$pendaftar->nama} tidak memiliki email. "
+                . 'Lengkapi email di formulir sebelum meluluskan.'
+            );
+        }
 
-            // pastikan tidak ada user lain yang sudah pakai email ini
+        $email = $pendaftar->email;
+
+        $user = DB::transaction(function () use ($pendaftar, $email): User {
+            // Pastikan tidak ada user lain yang sudah pakai email ini
             $existing = User::where('email', $email)->first();
             if ($existing && $existing->id !== optional($pendaftar->user)->id) {
                 throw new \RuntimeException("Email {$email} sudah digunakan akun lain.");
@@ -44,10 +55,20 @@ class PendaftarService
 
             return $user;
         });
+
+        // Kirim notifikasi ke email yang pendaftar inputkan di formulir
+        Mail::to($email)->send(new PendaftarLulus($pendaftar));
+
+        return $user;
     }
 
     public function tolak(Pendaftar $pendaftar): void
     {
         $pendaftar->update(['status' => 'ditolak']);
+
+        // Kirim notifikasi email hanya jika pendaftar memiliki email asli
+        if ($pendaftar->email) {
+            Mail::to($pendaftar->email)->send(new PendaftarDitolak($pendaftar));
+        }
     }
 }
