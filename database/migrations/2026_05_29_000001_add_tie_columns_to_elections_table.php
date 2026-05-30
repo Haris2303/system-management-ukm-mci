@@ -9,7 +9,9 @@ return new class extends Migration
 {
     public function up(): void
     {
-        DB::statement("ALTER TABLE elections MODIFY COLUMN status ENUM('draft','aktif','selesai','tie') NOT NULL DEFAULT 'draft'");
+        if (DB::getDriverName() !== 'sqlite') {
+            DB::statement("ALTER TABLE elections MODIFY COLUMN status ENUM('draft','aktif','selesai','tie') NOT NULL DEFAULT 'draft'");
+        }
 
         Schema::table('elections', function (Blueprint $table) {
             $table->timestamp('tie_resolved_at')->nullable()->after('status');
@@ -40,6 +42,8 @@ return new class extends Migration
             ]);
         });
 
-        DB::statement("ALTER TABLE elections MODIFY COLUMN status ENUM('draft','aktif','selesai') NOT NULL DEFAULT 'draft'");
+        if (DB::getDriverName() !== 'sqlite') {
+            DB::statement("ALTER TABLE elections MODIFY COLUMN status ENUM('draft','aktif','selesai') NOT NULL DEFAULT 'draft'");
+        }
     }
 };

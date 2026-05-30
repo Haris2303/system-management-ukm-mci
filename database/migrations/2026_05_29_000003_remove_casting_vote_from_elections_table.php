@@ -14,12 +14,16 @@ return new class extends Migration
             $table->dropColumn('tie_casting_voter_id');
         });
 
-        DB::statement("ALTER TABLE elections MODIFY COLUMN tie_resolution_type ENUM('revote','deliberation') NULL");
+        if (DB::getDriverName() !== 'sqlite') {
+            DB::statement("ALTER TABLE elections MODIFY COLUMN tie_resolution_type ENUM('revote','deliberation') NULL");
+        }
     }
 
     public function down(): void
     {
-        DB::statement("ALTER TABLE elections MODIFY COLUMN tie_resolution_type ENUM('revote','deliberation','casting_vote') NULL");
+        if (DB::getDriverName() !== 'sqlite') {
+            DB::statement("ALTER TABLE elections MODIFY COLUMN tie_resolution_type ENUM('revote','deliberation','casting_vote') NULL");
+        }
 
         Schema::table('elections', function (Blueprint $table) {
             $table->foreignId('tie_casting_voter_id')->nullable()->after('tie_resolution_notes')
