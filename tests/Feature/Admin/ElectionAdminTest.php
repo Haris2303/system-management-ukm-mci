@@ -29,14 +29,6 @@ class ElectionAdminTest extends TestCase
 
     // ─── helpers ───────────────────────────────────────────────
 
-    private function buatUser(string $role, array $attrs = []): User
-    {
-        /** @var User $user */
-        $user = User::factory()->create($attrs);
-        $user->assignRole($role);
-        return $user;
-    }
-
     private function buatElection(array $attrs = []): Election
     {
         return Election::create(array_merge([
@@ -80,8 +72,8 @@ class ElectionAdminTest extends TestCase
         foreach (['super_admin', 'ketua_ukm', 'sekretaris', 'bendahara', 'ketua_divisi'] as $role) {
             $admin = $this->buatUser($role);
             Livewire::actingAs($admin)
-                    ->test(ListElections::class)
-                    ->assertSuccessful();
+                ->test(ListElections::class)
+                ->assertSuccessful();
         }
     }
 
@@ -91,8 +83,8 @@ class ElectionAdminTest extends TestCase
         $election = $this->buatElection(['status' => 'selesai', 'waktu_selesai' => now()->subHour()]);
 
         Livewire::actingAs($admin)
-                ->test(ListElections::class)
-                ->assertTableActionHidden('edit', $election);
+            ->test(ListElections::class)
+            ->assertTableActionHidden('edit', $election);
     }
 
     public function test_aksi_edit_tersembunyi_untuk_election_tie(): void
@@ -101,8 +93,8 @@ class ElectionAdminTest extends TestCase
         $election = $this->buatElection(['status' => 'tie', 'waktu_selesai' => now()->subHour()]);
 
         Livewire::actingAs($admin)
-                ->test(ListElections::class)
-                ->assertTableActionHidden('edit', $election);
+            ->test(ListElections::class)
+            ->assertTableActionHidden('edit', $election);
     }
 
     public function test_aksi_edit_tersedia_untuk_election_draft(): void
@@ -111,8 +103,8 @@ class ElectionAdminTest extends TestCase
         $election = $this->buatElection(['status' => 'draft']);
 
         Livewire::actingAs($admin)
-                ->test(ListElections::class)
-                ->assertTableActionVisible('edit', $election);
+            ->test(ListElections::class)
+            ->assertTableActionVisible('edit', $election);
     }
 
     public function test_aksi_aktifkan_tersedia_hanya_untuk_draft(): void
@@ -122,9 +114,9 @@ class ElectionAdminTest extends TestCase
         $aktif    = $this->buatElection(['status' => 'aktif', 'judul' => 'Aktif']);
 
         Livewire::actingAs($admin)
-                ->test(ListElections::class)
-                ->assertTableActionVisible('aktifkan', $draft)
-                ->assertTableActionHidden('aktifkan', $aktif);
+            ->test(ListElections::class)
+            ->assertTableActionVisible('aktifkan', $draft)
+            ->assertTableActionHidden('aktifkan', $aktif);
     }
 
     public function test_aksi_tutup_tersedia_hanya_untuk_aktif(): void
@@ -134,9 +126,9 @@ class ElectionAdminTest extends TestCase
         $draft    = $this->buatElection(['status' => 'draft', 'judul' => 'Draft']);
 
         Livewire::actingAs($admin)
-                ->test(ListElections::class)
-                ->assertTableActionVisible('tutup', $aktif)
-                ->assertTableActionHidden('tutup', $draft);
+            ->test(ListElections::class)
+            ->assertTableActionVisible('tutup', $aktif)
+            ->assertTableActionHidden('tutup', $draft);
     }
 
     public function test_eksekusi_aktifkan_mengubah_status_ke_aktif(): void
@@ -145,9 +137,9 @@ class ElectionAdminTest extends TestCase
         $election = $this->buatElection(['status' => 'draft']);
 
         Livewire::actingAs($admin)
-                ->test(ListElections::class)
-                ->callTableAction('aktifkan', $election)
-                ->assertHasNoTableActionErrors();
+            ->test(ListElections::class)
+            ->callTableAction('aktifkan', $election)
+            ->assertHasNoTableActionErrors();
 
         $this->assertEquals('aktif', $election->fresh()->status);
     }
@@ -165,9 +157,9 @@ class ElectionAdminTest extends TestCase
         $this->buatSuara($election, $kandidat2, $this->buatUser('anggota'));
 
         Livewire::actingAs($admin)
-                ->test(ListElections::class)
-                ->callTableAction('tutup', $election)
-                ->assertHasNoTableActionErrors();
+            ->test(ListElections::class)
+            ->callTableAction('tutup', $election)
+            ->assertHasNoTableActionErrors();
 
         $this->assertEquals('selesai', $election->fresh()->status);
     }
@@ -186,9 +178,9 @@ class ElectionAdminTest extends TestCase
         $this->buatSuara($election, $kandidat2, $this->buatUser('anggota'));
 
         Livewire::actingAs($admin)
-                ->test(ListElections::class)
-                ->callTableAction('tutup', $election)
-                ->assertHasNoTableActionErrors();
+            ->test(ListElections::class)
+            ->callTableAction('tutup', $election)
+            ->assertHasNoTableActionErrors();
 
         $this->assertEquals('tie', $election->fresh()->status);
     }
@@ -203,9 +195,9 @@ class ElectionAdminTest extends TestCase
         $election = $this->buatElection(['status' => 'draft']);
 
         Livewire::actingAs($admin)
-                ->test(EditElection::class, ['record' => $election->getKey()])
-                ->assertSuccessful()
-                ->assertNoRedirect();
+            ->test(EditElection::class, ['record' => $election->getKey()])
+            ->assertSuccessful()
+            ->assertNoRedirect();
     }
 
     public function test_edit_page_redirect_untuk_election_selesai(): void
@@ -214,8 +206,8 @@ class ElectionAdminTest extends TestCase
         $election = $this->buatElection(['status' => 'selesai', 'waktu_selesai' => now()->subHour()]);
 
         Livewire::actingAs($admin)
-                ->test(EditElection::class, ['record' => $election->getKey()])
-                ->assertRedirect();
+            ->test(EditElection::class, ['record' => $election->getKey()])
+            ->assertRedirect();
     }
 
     public function test_edit_page_redirect_untuk_election_tie(): void
@@ -224,8 +216,8 @@ class ElectionAdminTest extends TestCase
         $election = $this->buatElection(['status' => 'tie', 'waktu_selesai' => now()->subHour()]);
 
         Livewire::actingAs($admin)
-                ->test(EditElection::class, ['record' => $election->getKey()])
-                ->assertRedirect();
+            ->test(EditElection::class, ['record' => $election->getKey()])
+            ->assertRedirect();
     }
 
     // ══════════════════════════════════════════════════════════════
@@ -238,9 +230,9 @@ class ElectionAdminTest extends TestCase
         $election = $this->buatElection(['judul' => 'Pemilihan Test View']);
 
         Livewire::actingAs($admin)
-                ->test(ViewElection::class, ['record' => $election->getKey()])
-                ->assertSuccessful()
-                ->assertSee('Pemilihan Test View');
+            ->test(ViewElection::class, ['record' => $election->getKey()])
+            ->assertSuccessful()
+            ->assertSee('Pemilihan Test View');
     }
 
     public function test_tombol_edit_tersembunyi_di_view_page_untuk_selesai(): void
@@ -249,8 +241,8 @@ class ElectionAdminTest extends TestCase
         $election = $this->buatElection(['status' => 'selesai', 'waktu_selesai' => now()->subHour()]);
 
         Livewire::actingAs($admin)
-                ->test(ViewElection::class, ['record' => $election->getKey()])
-                ->assertActionHidden('edit');
+            ->test(ViewElection::class, ['record' => $election->getKey()])
+            ->assertActionHidden('edit');
     }
 
     public function test_tombol_edit_tersedia_di_view_page_untuk_draft(): void
@@ -259,8 +251,8 @@ class ElectionAdminTest extends TestCase
         $election = $this->buatElection(['status' => 'draft']);
 
         Livewire::actingAs($admin)
-                ->test(ViewElection::class, ['record' => $election->getKey()])
-                ->assertActionVisible('edit');
+            ->test(ViewElection::class, ['record' => $election->getKey()])
+            ->assertActionVisible('edit');
     }
 
     // ── Resolusi Seri ───────────────────────────────────────────
@@ -276,12 +268,12 @@ class ElectionAdminTest extends TestCase
         $this->buatSuara($election, $kandidat2, $this->buatUser('anggota'));
 
         Livewire::actingAs($admin)
-                ->test(ViewElection::class, ['record' => $election->getKey()])
-                ->callAction('musyawarah', data: [
-                    'tie_winner_candidate_id' => $kandidat1->id,
-                    'tie_resolution_notes'    => 'Kandidat 1 dipilih melalui musyawarah.',
-                ])
-                ->assertHasNoActionErrors();
+            ->test(ViewElection::class, ['record' => $election->getKey()])
+            ->callAction('musyawarah', data: [
+                'tie_winner_candidate_id' => $kandidat1->id,
+                'tie_resolution_notes'    => 'Kandidat 1 dipilih melalui musyawarah.',
+            ])
+            ->assertHasNoActionErrors();
 
         $fresh = $election->fresh();
         $this->assertEquals('selesai',       $fresh->status);
@@ -299,12 +291,12 @@ class ElectionAdminTest extends TestCase
         $this->buatSuara($election, $kandidat, $this->buatUser('anggota'));
 
         Livewire::actingAs($admin)
-                ->test(ViewElection::class, ['record' => $election->getKey()])
-                ->callAction('musyawarah', data: [
-                    'tie_winner_candidate_id' => $kandidat->id,
-                    // tie_resolution_notes tidak diisi
-                ])
-                ->assertHasActionErrors(['tie_resolution_notes']);
+            ->test(ViewElection::class, ['record' => $election->getKey()])
+            ->callAction('musyawarah', data: [
+                'tie_winner_candidate_id' => $kandidat->id,
+                // tie_resolution_notes tidak diisi
+            ])
+            ->assertHasActionErrors(['tie_resolution_notes']);
     }
 
     public function test_aksi_musyawarah_gagal_validasi_tanpa_kandidat_pemenang(): void
@@ -313,11 +305,11 @@ class ElectionAdminTest extends TestCase
         $election = $this->buatElection(['status' => 'tie', 'waktu_selesai' => now()->subHour()]);
 
         Livewire::actingAs($admin)
-                ->test(ViewElection::class, ['record' => $election->getKey()])
-                ->callAction('musyawarah', data: [
-                    'tie_resolution_notes' => 'Ada catatan tapi kandidat tidak dipilih',
-                ])
-                ->assertHasActionErrors(['tie_winner_candidate_id']);
+            ->test(ViewElection::class, ['record' => $election->getKey()])
+            ->callAction('musyawarah', data: [
+                'tie_resolution_notes' => 'Ada catatan tapi kandidat tidak dipilih',
+            ])
+            ->assertHasActionErrors(['tie_winner_candidate_id']);
     }
 
     // ══════════════════════════════════════════════════════════════
@@ -429,9 +421,9 @@ class ElectionAdminTest extends TestCase
         $this->buatSuara($election, $kandidat2, $this->buatUser('anggota'));
 
         Livewire::actingAs($admin)
-                ->test(ViewElection::class, ['record' => $election->getKey()])
-                ->callAction('mulai_revote')
-                ->assertHasNoActionErrors();
+            ->test(ViewElection::class, ['record' => $election->getKey()])
+            ->callAction('mulai_revote')
+            ->assertHasNoActionErrors();
 
         // Election baru telah dibuat
         $this->assertDatabaseCount('elections', 2);

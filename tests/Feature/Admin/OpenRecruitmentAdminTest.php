@@ -24,14 +24,6 @@ class OpenRecruitmentAdminTest extends TestCase
 
     // ─── helpers ───────────────────────────────────────────────
 
-    private function buatUser(string $role): User
-    {
-        /** @var User $user */
-        $user = User::factory()->create();
-        $user->assignRole($role);
-        return $user;
-    }
-
     private function buatOR(array $attrs = []): OpenRecruitment
     {
         return OpenRecruitment::create(array_merge([
@@ -87,8 +79,8 @@ class OpenRecruitmentAdminTest extends TestCase
         $admin = $this->buatUser('ketua_ukm');
 
         Livewire::actingAs($admin)
-                ->test(OpenRecruitmentPage::class)
-                ->assertSuccessful();
+            ->test(OpenRecruitmentPage::class)
+            ->assertSuccessful();
     }
 
     public function test_simpan_data_rekrutmen_baru(): void
@@ -96,17 +88,17 @@ class OpenRecruitmentAdminTest extends TestCase
         $admin = $this->buatUser('ketua_ukm');
 
         Livewire::actingAs($admin)
-                ->test(OpenRecruitmentPage::class)
-                ->fillForm([
-                    'judul'         => 'OR 2026',
-                    'gelombang'     => 'Gelombang 1',
-                    'deskripsi'     => 'Rekrutmen tahun baru',
-                    'waktu_mulai'   => now()->subHour()->format('Y-m-d H:i'),
-                    'waktu_selesai' => now()->addDays(14)->format('Y-m-d H:i'),
-                    'is_active'     => true,
-                ])
-                ->call('save')
-                ->assertHasNoErrors();
+            ->test(OpenRecruitmentPage::class)
+            ->fillForm([
+                'judul'         => 'OR 2026',
+                'gelombang'     => 'Gelombang 1',
+                'deskripsi'     => 'Rekrutmen tahun baru',
+                'waktu_mulai'   => now()->subHour()->format('Y-m-d H:i'),
+                'waktu_selesai' => now()->addDays(14)->format('Y-m-d H:i'),
+                'is_active'     => true,
+            ])
+            ->call('save')
+            ->assertHasNoErrors();
 
         $this->assertDatabaseHas('open_recruitments', ['judul' => 'OR 2026']);
     }
@@ -118,16 +110,16 @@ class OpenRecruitmentAdminTest extends TestCase
         $this->assertDatabaseCount('open_recruitments', 0);
 
         Livewire::actingAs($admin)
-                ->test(OpenRecruitmentPage::class)
-                ->fillForm([
-                    'judul'         => 'OR Test',
-                    'gelombang'     => 'Gelombang 1',
-                    'waktu_mulai'   => now()->subHour()->format('Y-m-d H:i'),
-                    'waktu_selesai' => now()->addDays(7)->format('Y-m-d H:i'),
-                    'is_active'     => false,
-                ])
-                ->call('save')
-                ->assertHasNoErrors();
+            ->test(OpenRecruitmentPage::class)
+            ->fillForm([
+                'judul'         => 'OR Test',
+                'gelombang'     => 'Gelombang 1',
+                'waktu_mulai'   => now()->subHour()->format('Y-m-d H:i'),
+                'waktu_selesai' => now()->addDays(7)->format('Y-m-d H:i'),
+                'is_active'     => false,
+            ])
+            ->call('save')
+            ->assertHasNoErrors();
 
         $this->assertDatabaseCount('open_recruitments', 1);
     }
@@ -138,16 +130,16 @@ class OpenRecruitmentAdminTest extends TestCase
         $admin = $this->buatUser('ketua_ukm');
 
         Livewire::actingAs($admin)
-                ->test(OpenRecruitmentPage::class)
-                ->fillForm([
-                    'judul'         => 'OR Baru',
-                    'gelombang'     => 'Gelombang 2',
-                    'waktu_mulai'   => now()->subHour()->format('Y-m-d H:i'),
-                    'waktu_selesai' => now()->addDays(14)->format('Y-m-d H:i'),
-                    'is_active'     => true,
-                ])
-                ->call('save')
-                ->assertHasNoErrors();
+            ->test(OpenRecruitmentPage::class)
+            ->fillForm([
+                'judul'         => 'OR Baru',
+                'gelombang'     => 'Gelombang 2',
+                'waktu_mulai'   => now()->subHour()->format('Y-m-d H:i'),
+                'waktu_selesai' => now()->addDays(14)->format('Y-m-d H:i'),
+                'is_active'     => true,
+            ])
+            ->call('save')
+            ->assertHasNoErrors();
 
         // Tetap 1 record, bukan membuat baru
         $this->assertDatabaseCount('open_recruitments', 1);

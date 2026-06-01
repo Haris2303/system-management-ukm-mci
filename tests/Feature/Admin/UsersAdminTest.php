@@ -23,16 +23,6 @@ class UsersAdminTest extends TestCase
         $this->seed(RolePermissionSeeder::class);
     }
 
-    // ─── helpers ───────────────────────────────────────────────
-
-    private function buatUser(string $role, array $attrs = []): User
-    {
-        /** @var User $user */
-        $user = User::factory()->create($attrs);
-        $user->assignRole($role);
-        return $user;
-    }
-
     // ══════════════════════════════════════════════════════════════
     // HAK AKSES — UserResource (kelola_users → hanya super_admin)
     // ══════════════════════════════════════════════════════════════
@@ -54,8 +44,8 @@ class UsersAdminTest extends TestCase
     {
         $admin = $this->buatUser('super_admin');
         Livewire::actingAs($admin)
-                ->test(ListUsers::class)
-                ->assertSuccessful();
+            ->test(ListUsers::class)
+            ->assertSuccessful();
     }
 
     // ══════════════════════════════════════════════════════════════
@@ -75,9 +65,9 @@ class UsersAdminTest extends TestCase
         $target = $this->buatUser('anggota');
 
         Livewire::actingAs($admin)
-                ->test(ListUsers::class)
-                ->assertTableActionVisible('delete', $target)
-                ->assertTableActionHidden('delete', $admin);
+            ->test(ListUsers::class)
+            ->assertTableActionVisible('delete', $target)
+            ->assertTableActionHidden('delete', $admin);
     }
 
     public function test_aksi_demisionerkan_tersembunyi_untuk_diri_sendiri(): void
@@ -86,9 +76,9 @@ class UsersAdminTest extends TestCase
         $target = $this->buatUser('anggota');
 
         Livewire::actingAs($admin)
-                ->test(ListUsers::class)
-                ->assertTableActionVisible('demisionerkan', $target)
-                ->assertTableActionHidden('demisionerkan', $admin);
+            ->test(ListUsers::class)
+            ->assertTableActionVisible('demisionerkan', $target)
+            ->assertTableActionHidden('demisionerkan', $admin);
     }
 
     public function test_aksi_kick_tersembunyi_untuk_diri_sendiri(): void
@@ -97,9 +87,9 @@ class UsersAdminTest extends TestCase
         $target = $this->buatUser('anggota');
 
         Livewire::actingAs($admin)
-                ->test(ListUsers::class)
-                ->assertTableActionVisible('kick', $target)
-                ->assertTableActionHidden('kick', $admin);
+            ->test(ListUsers::class)
+            ->assertTableActionVisible('kick', $target)
+            ->assertTableActionHidden('kick', $admin);
     }
 
     // ══════════════════════════════════════════════════════════════
@@ -112,9 +102,9 @@ class UsersAdminTest extends TestCase
         $target = $this->buatUser('anggota', ['password' => 'passwordlama']);
 
         Livewire::actingAs($admin)
-                ->test(ListUsers::class)
-                ->callTableAction('reset_password', $target)
-                ->assertHasNoTableActionErrors();
+            ->test(ListUsers::class)
+            ->callTableAction('reset_password', $target)
+            ->assertHasNoTableActionErrors();
 
         // Login dengan password baru harus berhasil
         $this->assertTrue(Hash::check('password123', $target->fresh()->password));
@@ -130,9 +120,9 @@ class UsersAdminTest extends TestCase
         $target = $this->buatUser('anggota');
 
         Livewire::actingAs($admin)
-                ->test(ListUsers::class)
-                ->callTableAction('demisionerkan', $target)
-                ->assertHasNoTableActionErrors();
+            ->test(ListUsers::class)
+            ->callTableAction('demisionerkan', $target)
+            ->assertHasNoTableActionErrors();
 
         $this->assertTrue($target->fresh()->hasRole('demisioner'));
         $this->assertFalse($target->fresh()->hasRole('anggota'));
@@ -147,8 +137,8 @@ class UsersAdminTest extends TestCase
         $this->assertDatabaseCount('personal_access_tokens', 1);
 
         Livewire::actingAs($admin)
-                ->test(ListUsers::class)
-                ->callTableAction('demisionerkan', $target);
+            ->test(ListUsers::class)
+            ->callTableAction('demisionerkan', $target);
 
         $this->assertDatabaseCount('personal_access_tokens', 0);
     }
@@ -159,8 +149,8 @@ class UsersAdminTest extends TestCase
         $demisioner = $this->buatUser('demisioner');
 
         Livewire::actingAs($admin)
-                ->test(ListUsers::class)
-                ->assertTableActionHidden('demisionerkan', $demisioner);
+            ->test(ListUsers::class)
+            ->assertTableActionHidden('demisionerkan', $demisioner);
     }
 
     // ══════════════════════════════════════════════════════════════
@@ -174,11 +164,11 @@ class UsersAdminTest extends TestCase
         $target->createToken('mobile');
 
         Livewire::actingAs($admin)
-                ->test(ListUsers::class)
-                ->callTableAction('kick', $target, data: [
-                    'kicked_reason' => 'Melanggar aturan organisasi.',
-                ])
-                ->assertHasNoTableActionErrors();
+            ->test(ListUsers::class)
+            ->callTableAction('kick', $target, data: [
+                'kicked_reason' => 'Melanggar aturan organisasi.',
+            ])
+            ->assertHasNoTableActionErrors();
 
         $fresh = $target->fresh();
         $this->assertNotNull($fresh->kicked_at);
@@ -193,9 +183,9 @@ class UsersAdminTest extends TestCase
         $target = $this->buatUser('anggota');
 
         Livewire::actingAs($admin)
-                ->test(ListUsers::class)
-                ->callTableAction('kick', $target, data: ['kicked_reason' => null])
-                ->assertHasNoTableActionErrors();
+            ->test(ListUsers::class)
+            ->callTableAction('kick', $target, data: ['kicked_reason' => null])
+            ->assertHasNoTableActionErrors();
 
         $this->assertNotNull($target->fresh()->kicked_at);
         $this->assertNull($target->fresh()->kicked_reason);
@@ -207,8 +197,8 @@ class UsersAdminTest extends TestCase
         $sudahDikick = $this->buatUser('anggota', ['kicked_at' => now()]);
 
         Livewire::actingAs($admin)
-                ->test(ListUsers::class)
-                ->assertTableActionHidden('kick', $sudahDikick);
+            ->test(ListUsers::class)
+            ->assertTableActionHidden('kick', $sudahDikick);
     }
 
     // ══════════════════════════════════════════════════════════════
@@ -225,9 +215,9 @@ class UsersAdminTest extends TestCase
         ]);
 
         Livewire::actingAs($admin)
-                ->test(ListUsers::class)
-                ->callTableAction('pulihkan_kick', $sudahDikick)
-                ->assertHasNoTableActionErrors();
+            ->test(ListUsers::class)
+            ->callTableAction('pulihkan_kick', $sudahDikick)
+            ->assertHasNoTableActionErrors();
 
         $fresh = $sudahDikick->fresh();
         $this->assertNull($fresh->kicked_at);
@@ -242,9 +232,9 @@ class UsersAdminTest extends TestCase
         $dikick   = $this->buatUser('anggota', ['kicked_at' => now()]);
 
         Livewire::actingAs($admin)
-                ->test(ListUsers::class)
-                ->assertTableActionHidden('pulihkan_kick', $normal)
-                ->assertTableActionVisible('pulihkan_kick', $dikick);
+            ->test(ListUsers::class)
+            ->assertTableActionHidden('pulihkan_kick', $normal)
+            ->assertTableActionVisible('pulihkan_kick', $dikick);
     }
 
     // ══════════════════════════════════════════════════════════════

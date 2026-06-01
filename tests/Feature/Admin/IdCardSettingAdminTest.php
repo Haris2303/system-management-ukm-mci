@@ -26,16 +26,6 @@ class IdCardSettingAdminTest extends TestCase
         Storage::fake('public');
     }
 
-    // ─── helpers ───────────────────────────────────────────────
-
-    private function buatUser(string $role): User
-    {
-        /** @var User $user */
-        $user = User::factory()->create();
-        $user->assignRole($role);
-        return $user;
-    }
-
     // ══════════════════════════════════════════════════════════════
     // HAK AKSES — canAccess (hanya super_admin)
     // ══════════════════════════════════════════════════════════════
@@ -79,8 +69,8 @@ class IdCardSettingAdminTest extends TestCase
         $admin = $this->buatUser('super_admin');
 
         Livewire::actingAs($admin)
-                ->test(IdCardSettingPage::class)
-                ->assertSuccessful();
+            ->test(IdCardSettingPage::class)
+            ->assertSuccessful();
     }
 
     public function test_mount_memuat_template_aktif_dari_database(): void
@@ -89,7 +79,7 @@ class IdCardSettingAdminTest extends TestCase
         IdCardSetting::current()->update(['border_template' => 'teknologi']);
 
         $component = Livewire::actingAs($admin)
-                             ->test(IdCardSettingPage::class);
+            ->test(IdCardSettingPage::class);
 
         $this->assertEquals('teknologi', $component->get('activeTemplate'));
     }
@@ -100,7 +90,7 @@ class IdCardSettingAdminTest extends TestCase
         IdCardSetting::current()->update(['background_image' => 'id-card-backgrounds/bg.jpg']);
 
         $component = Livewire::actingAs($admin)
-                             ->test(IdCardSettingPage::class);
+            ->test(IdCardSettingPage::class);
 
         $this->assertNotNull($component->get('backgroundImage'));
         $this->assertStringContainsString('id-card-backgrounds/bg.jpg', $component->get('backgroundImage'));
@@ -112,7 +102,7 @@ class IdCardSettingAdminTest extends TestCase
         IdCardSetting::current()->update(['background_image' => null]);
 
         $component = Livewire::actingAs($admin)
-                             ->test(IdCardSettingPage::class);
+            ->test(IdCardSettingPage::class);
 
         $this->assertNull($component->get('backgroundImage'));
     }
@@ -126,8 +116,8 @@ class IdCardSettingAdminTest extends TestCase
         $admin = $this->buatUser('super_admin');
 
         Livewire::actingAs($admin)
-                ->test(IdCardSettingPage::class)
-                ->call('selectTemplate', 'teknologi');
+            ->test(IdCardSettingPage::class)
+            ->call('selectTemplate', 'teknologi');
 
         $this->assertEquals('teknologi', IdCardSetting::activeTemplate());
     }
@@ -137,9 +127,9 @@ class IdCardSettingAdminTest extends TestCase
         $admin = $this->buatUser('super_admin');
 
         Livewire::actingAs($admin)
-                ->test(IdCardSettingPage::class)
-                ->call('selectTemplate', 'elegan-emas')
-                ->assertSet('activeTemplate', 'elegan-emas');
+            ->test(IdCardSettingPage::class)
+            ->call('selectTemplate', 'elegan-emas')
+            ->assertSet('activeTemplate', 'elegan-emas');
     }
 
     public function test_select_template_mencatat_updated_by(): void
@@ -147,8 +137,8 @@ class IdCardSettingAdminTest extends TestCase
         $admin = $this->buatUser('super_admin');
 
         Livewire::actingAs($admin)
-                ->test(IdCardSettingPage::class)
-                ->call('selectTemplate', 'ungu-gradien');
+            ->test(IdCardSettingPage::class)
+            ->call('selectTemplate', 'ungu-gradien');
 
         $this->assertEquals($admin->id, IdCardSetting::current()->updated_by);
     }
@@ -160,8 +150,8 @@ class IdCardSettingAdminTest extends TestCase
 
         foreach ($slugs as $slug) {
             Livewire::actingAs($admin)
-                    ->test(IdCardSettingPage::class)
-                    ->call('selectTemplate', $slug);
+                ->test(IdCardSettingPage::class)
+                ->call('selectTemplate', $slug);
 
             $this->assertEquals($slug, IdCardSetting::activeTemplate(), "Gagal set template: {$slug}");
         }
@@ -177,8 +167,8 @@ class IdCardSettingAdminTest extends TestCase
         IdCardSetting::current()->update(['background_image' => 'id-card-backgrounds/bg.jpg']);
 
         Livewire::actingAs($admin)
-                ->test(IdCardSettingPage::class)
-                ->assertActionVisible('removeBackground');
+            ->test(IdCardSettingPage::class)
+            ->assertActionVisible('removeBackground');
     }
 
     public function test_remove_background_tersembunyi_jika_tidak_ada_background(): void
@@ -187,8 +177,8 @@ class IdCardSettingAdminTest extends TestCase
         IdCardSetting::current()->update(['background_image' => null]);
 
         Livewire::actingAs($admin)
-                ->test(IdCardSettingPage::class)
-                ->assertActionHidden('removeBackground');
+            ->test(IdCardSettingPage::class)
+            ->assertActionHidden('removeBackground');
     }
 
     public function test_eksekusi_remove_background_menghapus_dari_database(): void
@@ -197,9 +187,9 @@ class IdCardSettingAdminTest extends TestCase
         IdCardSetting::current()->update(['background_image' => 'id-card-backgrounds/bg.jpg']);
 
         Livewire::actingAs($admin)
-                ->test(IdCardSettingPage::class)
-                ->callAction('removeBackground')
-                ->assertHasNoActionErrors();
+            ->test(IdCardSettingPage::class)
+            ->callAction('removeBackground')
+            ->assertHasNoActionErrors();
 
         $this->assertNull(IdCardSetting::current()->fresh()->background_image);
     }
@@ -210,9 +200,9 @@ class IdCardSettingAdminTest extends TestCase
         IdCardSetting::current()->update(['background_image' => 'id-card-backgrounds/bg.jpg']);
 
         Livewire::actingAs($admin)
-                ->test(IdCardSettingPage::class)
-                ->callAction('removeBackground')
-                ->assertSet('backgroundImage', null);
+            ->test(IdCardSettingPage::class)
+            ->callAction('removeBackground')
+            ->assertSet('backgroundImage', null);
     }
 
     // ══════════════════════════════════════════════════════════════

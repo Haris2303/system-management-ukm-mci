@@ -29,41 +29,6 @@ class PendaftarAdminTest extends TestCase
         $this->seed(RolePermissionSeeder::class);
     }
 
-    // ─── helpers ───────────────────────────────────────────────
-
-    private function buatDivisi(string $nama = 'Web Dev'): Divisi
-    {
-        static $urut = 1;
-        return Divisi::create([
-            'nama'      => $nama,
-            'slug'      => Str::slug($nama . '-' . $urut++),
-            'icon'      => '💻',
-            'is_active' => true,
-            'urut'      => $urut,
-        ]);
-    }
-
-    private function buatUser(string $role, array $attrs = []): User
-    {
-        /** @var User $user */
-        $user = User::factory()->create($attrs);
-        $user->assignRole($role);
-        return $user;
-    }
-
-    private function buatPendaftar(Divisi $divisi, array $attrs = []): Pendaftar
-    {
-        return Pendaftar::create(array_merge([
-            'divisi_id' => $divisi->id,
-            'nama'      => 'Budi Santoso',
-            'nim'       => '2023' . rand(1000, 9999),
-            'email'     => 'pendaftar@example.com',
-            'no_hp'     => '081234567890',
-            'angkatan'  => '2023',
-            'status'    => 'menunggu',
-        ], $attrs));
-    }
-
     // ══════════════════════════════════════════════════════════════
     // HAK AKSES — canViewAny & getEloquentQuery
     // ══════════════════════════════════════════════════════════════
@@ -454,19 +419,29 @@ class PendaftarAdminTest extends TestCase
         $pendaftar = $this->buatPendaftar($divisi);
 
         $p1 = PertanyaanSeleksi::create([
-            'divisi_id' => $divisi->id, 'pertanyaan_teks' => 'P1', 'is_active' => true, 'urut' => 1,
+            'divisi_id' => $divisi->id,
+            'pertanyaan_teks' => 'P1',
+            'is_active' => true,
+            'urut' => 1,
         ]);
         $p2 = PertanyaanSeleksi::create([
-            'divisi_id' => $divisi->id, 'pertanyaan_teks' => 'P2', 'is_active' => true, 'urut' => 2,
+            'divisi_id' => $divisi->id,
+            'pertanyaan_teks' => 'P2',
+            'is_active' => true,
+            'urut' => 2,
         ]);
 
         JawabanPendaftar::create([
-            'pendaftar_id' => $pendaftar->id, 'pertanyaan_id' => $p1->id,
-            'jawaban_teks' => 'J1', 'nilai_skor' => 80,
+            'pendaftar_id' => $pendaftar->id,
+            'pertanyaan_id' => $p1->id,
+            'jawaban_teks' => 'J1',
+            'nilai_skor' => 80,
         ]);
         JawabanPendaftar::create([
-            'pendaftar_id' => $pendaftar->id, 'pertanyaan_id' => $p2->id,
-            'jawaban_teks' => 'J2', 'nilai_skor' => 90,
+            'pendaftar_id' => $pendaftar->id,
+            'pertanyaan_id' => $p2->id,
+            'jawaban_teks' => 'J2',
+            'nilai_skor' => 90,
         ]);
 
         $this->assertEquals(85.0, $pendaftar->rataSkor());
@@ -511,8 +486,8 @@ class PendaftarAdminTest extends TestCase
         $admin = $this->buatUser('ketua_ukm');
 
         Livewire::actingAs($admin)
-                ->test(ListPendaftars::class)
-                ->assertSuccessful();
+            ->test(ListPendaftars::class)
+            ->assertSuccessful();
     }
 
     public function test_list_page_menampilkan_semua_pendaftar_untuk_ketua_ukm(): void
@@ -525,8 +500,8 @@ class PendaftarAdminTest extends TestCase
         $p2 = $this->buatPendaftar($divisiB, ['nama' => 'Sari']);
 
         Livewire::actingAs($admin)
-                ->test(ListPendaftars::class)
-                ->assertCanSeeTableRecords([$p1, $p2]);
+            ->test(ListPendaftars::class)
+            ->assertCanSeeTableRecords([$p1, $p2]);
     }
 
     public function test_list_page_ketua_divisi_hanya_lihat_divisinya(): void
@@ -539,9 +514,9 @@ class PendaftarAdminTest extends TestCase
         $p2 = $this->buatPendaftar($divisiB, ['nama' => 'Anggota B']);
 
         Livewire::actingAs($ketuaDivisi)
-                ->test(ListPendaftars::class)
-                ->assertCanSeeTableRecords([$p1])
-                ->assertCanNotSeeTableRecords([$p2]);
+            ->test(ListPendaftars::class)
+            ->assertCanSeeTableRecords([$p1])
+            ->assertCanNotSeeTableRecords([$p2]);
     }
 
     public function test_aksi_luluskan_tersedia_untuk_pendaftar_menunggu(): void
@@ -551,9 +526,9 @@ class PendaftarAdminTest extends TestCase
         $pendaftar = $this->buatPendaftar($divisi, ['status' => 'menunggu']);
 
         Livewire::actingAs($admin)
-                ->test(ListPendaftars::class)
-                ->assertTableActionExists('luluskan')
-                ->assertTableActionVisible('luluskan', $pendaftar);
+            ->test(ListPendaftars::class)
+            ->assertTableActionExists('luluskan')
+            ->assertTableActionVisible('luluskan', $pendaftar);
     }
 
     public function test_aksi_tolak_tersedia_untuk_pendaftar_menunggu(): void
@@ -563,9 +538,9 @@ class PendaftarAdminTest extends TestCase
         $pendaftar = $this->buatPendaftar($divisi, ['status' => 'menunggu']);
 
         Livewire::actingAs($admin)
-                ->test(ListPendaftars::class)
-                ->assertTableActionExists('tolak')
-                ->assertTableActionVisible('tolak', $pendaftar);
+            ->test(ListPendaftars::class)
+            ->assertTableActionExists('tolak')
+            ->assertTableActionVisible('tolak', $pendaftar);
     }
 
     public function test_aksi_luluskan_tidak_tersedia_untuk_yang_sudah_lulus(): void
@@ -575,8 +550,8 @@ class PendaftarAdminTest extends TestCase
         $pendaftar = $this->buatPendaftar($divisi, ['status' => 'lulus', 'nim' => '2023A']);
 
         Livewire::actingAs($admin)
-                ->test(ListPendaftars::class)
-                ->assertTableActionHidden('luluskan', $pendaftar);
+            ->test(ListPendaftars::class)
+            ->assertTableActionHidden('luluskan', $pendaftar);
     }
 
     public function test_aksi_tolak_tidak_tersedia_untuk_yang_sudah_ditolak(): void
@@ -586,8 +561,8 @@ class PendaftarAdminTest extends TestCase
         $pendaftar = $this->buatPendaftar($divisi, ['status' => 'ditolak', 'nim' => '2023A']);
 
         Livewire::actingAs($admin)
-                ->test(ListPendaftars::class)
-                ->assertTableActionHidden('tolak', $pendaftar);
+            ->test(ListPendaftars::class)
+            ->assertTableActionHidden('tolak', $pendaftar);
     }
 
     public function test_eksekusi_aksi_luluskan_dari_tabel(): void
@@ -601,9 +576,9 @@ class PendaftarAdminTest extends TestCase
         ]);
 
         Livewire::actingAs($admin)
-                ->test(ListPendaftars::class)
-                ->callTableAction('luluskan', $pendaftar)
-                ->assertHasNoTableActionErrors();
+            ->test(ListPendaftars::class)
+            ->callTableAction('luluskan', $pendaftar)
+            ->assertHasNoTableActionErrors();
 
         $this->assertEquals('lulus', $pendaftar->fresh()->status);
         // Akun dibuat dengan email yang diinput di formulir
@@ -617,9 +592,9 @@ class PendaftarAdminTest extends TestCase
         $pendaftar = $this->buatPendaftar($divisi, ['status' => 'menunggu']);
 
         Livewire::actingAs($admin)
-                ->test(ListPendaftars::class)
-                ->callTableAction('tolak', $pendaftar)
-                ->assertHasNoTableActionErrors();
+            ->test(ListPendaftars::class)
+            ->callTableAction('tolak', $pendaftar)
+            ->assertHasNoTableActionErrors();
 
         $this->assertEquals('ditolak', $pendaftar->fresh()->status);
     }
@@ -631,8 +606,25 @@ class PendaftarAdminTest extends TestCase
         $pendaftar = $this->buatPendaftar($divisi, ['nama' => 'Detail Test']);
 
         Livewire::actingAs($admin)
-                ->test(ViewPendaftar::class, ['record' => $pendaftar->getKey()])
-                ->assertSuccessful()
-                ->assertSee('Detail Test');
+            ->test(ViewPendaftar::class, ['record' => $pendaftar->getKey()])
+            ->assertSuccessful()
+            ->assertSee('Detail Test');
+    }
+
+    // ══════════════════════════════════════════════════════════════
+    // MODEL PENDAFTAR — uniqueSlug & scope
+    // ══════════════════════════════════════════════════════════════
+
+    public function test_pendaftar_scope_pending_hanya_mengembalikan_yang_menunggu(): void
+    {
+        $divisi = $this->buatDivisi();
+
+        Pendaftar::create(['divisi_id' => $divisi->id, 'nama' => 'A', 'nim' => '001', 'status' => 'menunggu', 'angkatan' => '2023']);
+        Pendaftar::create(['divisi_id' => $divisi->id, 'nama' => 'B', 'nim' => '002', 'status' => 'lulus',    'angkatan' => '2023']);
+        Pendaftar::create(['divisi_id' => $divisi->id, 'nama' => 'C', 'nim' => '003', 'status' => 'ditolak',  'angkatan' => '2023']);
+
+        $this->assertCount(1, Pendaftar::pending()->get());
+        $this->assertCount(1, Pendaftar::approved()->get());
+        $this->assertCount(1, Pendaftar::rejected()->get());
     }
 }

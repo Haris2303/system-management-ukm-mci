@@ -27,53 +27,6 @@ class PostBeritaAdminTest extends TestCase
         $this->seed(RolePermissionSeeder::class);
     }
 
-    // ─── helpers ───────────────────────────────────────────────
-
-    private function buatUser(string $role, array $attrs = []): User
-    {
-        /** @var User $user */
-        $user = User::factory()->create($attrs);
-        $user->assignRole($role);
-        return $user;
-    }
-
-    private function buatDivisi(string $nama = 'Web Dev'): Divisi
-    {
-        static $urut = 1;
-        return Divisi::create([
-            'nama'      => $nama,
-            'slug'      => Str::slug($nama . '-' . $urut++),
-            'icon'      => '💻',
-            'is_active' => true,
-            'urut'      => $urut,
-        ]);
-    }
-
-    private function buatPost(array $attrs = []): Post
-    {
-        return Post::create(array_merge([
-            'judul'     => 'Berita Test',
-            'konten'    => 'Isi berita yang panjang untuk testing...',
-            'ringkasan' => 'Ringkasan berita',
-            'kategori'  => 'Berita',
-            'status'    => 'draft',
-            'author_id' => User::factory()->create()->id,
-        ], $attrs));
-    }
-
-    private function buatProker(array $attrs = []): ProgramKerja
-    {
-        return ProgramKerja::create(array_merge([
-            'divisi_id'       => null,
-            'nama_proker'     => 'Proker Test',
-            'deskripsi'       => 'Deskripsi',
-            'tanggal_mulai'   => now()->subDays(10)->toDateString(),
-            'tanggal_selesai' => now()->addDays(20)->toDateString(),
-            'status'          => 'active',
-            'progress_persen' => 0,
-        ], $attrs));
-    }
-
     // ══════════════════════════════════════════════════════════════
     // HAK AKSES — PostResource (kelola_berita)
     // ══════════════════════════════════════════════════════════════
@@ -113,8 +66,8 @@ class PostBeritaAdminTest extends TestCase
         $admin = $this->buatUser('sekretaris');
 
         Livewire::actingAs($admin)
-                ->test(ListPosts::class)
-                ->assertSuccessful();
+            ->test(ListPosts::class)
+            ->assertSuccessful();
     }
 
     public function test_list_posts_menampilkan_semua_post(): void
@@ -124,8 +77,8 @@ class PostBeritaAdminTest extends TestCase
         $p2    = $this->buatPost(['judul' => 'Berita B']);
 
         Livewire::actingAs($admin)
-                ->test(ListPosts::class)
-                ->assertCanSeeTableRecords([$p1, $p2]);
+            ->test(ListPosts::class)
+            ->assertCanSeeTableRecords([$p1, $p2]);
     }
 
     // ══════════════════════════════════════════════════════════════

@@ -32,16 +32,6 @@ class ChatbotKnowledgeTest extends TestCase
         Queue::fake();
     }
 
-    // ─── helpers ───────────────────────────────────────────────
-
-    private function buatUser(string $role): User
-    {
-        /** @var User $user */
-        $user = User::factory()->create();
-        $user->assignRole($role);
-        return $user;
-    }
-
     private function buatDokumen(array $attrs = []): RagDocument
     {
         return RagDocument::create(array_merge([
@@ -107,8 +97,8 @@ class ChatbotKnowledgeTest extends TestCase
         $admin = $this->buatUser('ketua_ukm');
 
         Livewire::actingAs($admin)
-                ->test(ListRagDocuments::class)
-                ->assertSuccessful();
+            ->test(ListRagDocuments::class)
+            ->assertSuccessful();
     }
 
     public function test_aksi_lihat_isi_tersedia_untuk_dokumen_ready(): void
@@ -117,8 +107,8 @@ class ChatbotKnowledgeTest extends TestCase
         $dok   = $this->buatDokumen(['status' => 'ready']);
 
         Livewire::actingAs($admin)
-                ->test(ListRagDocuments::class)
-                ->assertTableActionVisible('lihat_isi', $dok);
+            ->test(ListRagDocuments::class)
+            ->assertTableActionVisible('lihat_isi', $dok);
     }
 
     public function test_aksi_lihat_isi_tersembunyi_untuk_dokumen_processing(): void
@@ -127,8 +117,8 @@ class ChatbotKnowledgeTest extends TestCase
         $dok   = $this->buatDokumen(['status' => 'processing']);
 
         Livewire::actingAs($admin)
-                ->test(ListRagDocuments::class)
-                ->assertTableActionHidden('lihat_isi', $dok);
+            ->test(ListRagDocuments::class)
+            ->assertTableActionHidden('lihat_isi', $dok);
     }
 
     public function test_aksi_lihat_progress_tersedia_untuk_dokumen_processing(): void
@@ -137,8 +127,8 @@ class ChatbotKnowledgeTest extends TestCase
         $dok   = $this->buatDokumen(['status' => 'processing']);
 
         Livewire::actingAs($admin)
-                ->test(ListRagDocuments::class)
-                ->assertTableActionVisible('lihat_progress', $dok);
+            ->test(ListRagDocuments::class)
+            ->assertTableActionVisible('lihat_progress', $dok);
     }
 
     public function test_aksi_lihat_progress_tersembunyi_untuk_dokumen_ready(): void
@@ -147,8 +137,8 @@ class ChatbotKnowledgeTest extends TestCase
         $dok   = $this->buatDokumen(['status' => 'ready']);
 
         Livewire::actingAs($admin)
-                ->test(ListRagDocuments::class)
-                ->assertTableActionHidden('lihat_progress', $dok);
+            ->test(ListRagDocuments::class)
+            ->assertTableActionHidden('lihat_progress', $dok);
     }
 
     public function test_aksi_reprocess_tersedia_untuk_dokumen_error(): void
@@ -157,8 +147,8 @@ class ChatbotKnowledgeTest extends TestCase
         $dok   = $this->buatDokumen(['status' => 'error']);
 
         Livewire::actingAs($admin)
-                ->test(ListRagDocuments::class)
-                ->assertTableActionVisible('reprocess', $dok);
+            ->test(ListRagDocuments::class)
+            ->assertTableActionVisible('reprocess', $dok);
     }
 
     public function test_aksi_reprocess_tersembunyi_untuk_dokumen_ready(): void
@@ -167,8 +157,8 @@ class ChatbotKnowledgeTest extends TestCase
         $dok   = $this->buatDokumen(['status' => 'ready']);
 
         Livewire::actingAs($admin)
-                ->test(ListRagDocuments::class)
-                ->assertTableActionHidden('reprocess', $dok);
+            ->test(ListRagDocuments::class)
+            ->assertTableActionHidden('reprocess', $dok);
     }
 
     public function test_eksekusi_reprocess_menghapus_chunks_lama_dan_dispatch_job(): void
@@ -182,9 +172,9 @@ class ChatbotKnowledgeTest extends TestCase
         $this->assertDatabaseCount('rag_chunks', 2);
 
         Livewire::actingAs($admin)
-                ->test(ListRagDocuments::class)
-                ->callTableAction('reprocess', $dok)
-                ->assertHasNoTableActionErrors();
+            ->test(ListRagDocuments::class)
+            ->callTableAction('reprocess', $dok)
+            ->assertHasNoTableActionErrors();
 
         // Chunks lama dihapus
         $this->assertDatabaseCount('rag_chunks', 0);
@@ -208,9 +198,9 @@ class ChatbotKnowledgeTest extends TestCase
         $dok   = $this->buatDokumen(['nama_file' => 'dokumen-penting.pdf']);
 
         Livewire::actingAs($admin)
-                ->test(ViewRagDocument::class, ['record' => $dok->getKey()])
-                ->assertSuccessful()
-                ->assertSee('dokumen-penting.pdf');
+            ->test(ViewRagDocument::class, ['record' => $dok->getKey()])
+            ->assertSuccessful()
+            ->assertSee('dokumen-penting.pdf');
     }
 
     public function test_view_page_menampilkan_chunks_dokumen(): void
@@ -223,9 +213,9 @@ class ChatbotKnowledgeTest extends TestCase
         $this->buatChunk($dok, 3);
 
         Livewire::actingAs($admin)
-                ->test(ViewRagDocument::class, ['record' => $dok->getKey()])
-                ->assertSuccessful()
-                ->assertCountTableRecords(3);
+            ->test(ViewRagDocument::class, ['record' => $dok->getKey()])
+            ->assertSuccessful()
+            ->assertCountTableRecords(3);
     }
 
     // ══════════════════════════════════════════════════════════════
@@ -237,8 +227,8 @@ class ChatbotKnowledgeTest extends TestCase
         $response = $this->getJson('/chatbot/suggested');
 
         $response->assertOk()
-                 ->assertJsonStructure(['suggestions'])
-                 ->assertJsonCount(6, 'suggestions');
+            ->assertJsonStructure(['suggestions'])
+            ->assertJsonCount(6, 'suggestions');
     }
 
     public function test_status_mengembalikan_info_dokumen(): void
@@ -250,10 +240,10 @@ class ChatbotKnowledgeTest extends TestCase
         ]);
 
         $this->getJson("/chatbot/status/{$dok->id}")
-             ->assertOk()
-             ->assertJsonPath('status', 'ready')
-             ->assertJsonPath('total_chunks', 10)
-             ->assertJsonPath('nama_file', 'panduan.pdf');
+            ->assertOk()
+            ->assertJsonPath('status', 'ready')
+            ->assertJsonPath('total_chunks', 10)
+            ->assertJsonPath('nama_file', 'panduan.pdf');
     }
 
     public function test_status_mengembalikan_404_untuk_dokumen_tidak_ada(): void
@@ -273,13 +263,13 @@ class ChatbotKnowledgeTest extends TestCase
         $user = $this->buatUser('ketua_ukm');
 
         $this->actingAs($user)
-             ->postJson('/chatbot/upload', [
-                 'pdf'       => UploadedFile::fake()->create('panduan.pdf', 500, 'application/pdf'),
-                 'deskripsi' => 'Panduan anggota UKM MCI',
-             ])
-             ->assertStatus(202)
-             ->assertJsonPath('status', 'processing')
-             ->assertJsonStructure(['document_id']);
+            ->postJson('/chatbot/upload', [
+                'pdf'       => UploadedFile::fake()->create('panduan.pdf', 500, 'application/pdf'),
+                'deskripsi' => 'Panduan anggota UKM MCI',
+            ])
+            ->assertStatus(202)
+            ->assertJsonPath('status', 'processing')
+            ->assertJsonStructure(['document_id']);
 
         $this->assertDatabaseHas('rag_documents', [
             'status'    => 'processing',
@@ -294,11 +284,11 @@ class ChatbotKnowledgeTest extends TestCase
         $user = $this->buatUser('ketua_ukm');
 
         $this->actingAs($user)
-             ->postJson('/chatbot/upload', [
-                 'pdf' => UploadedFile::fake()->create('gambar.jpg', 100, 'image/jpeg'),
-             ])
-             ->assertUnprocessable()
-             ->assertJsonValidationErrors(['pdf']);
+            ->postJson('/chatbot/upload', [
+                'pdf' => UploadedFile::fake()->create('gambar.jpg', 100, 'image/jpeg'),
+            ])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors(['pdf']);
     }
 
     public function test_upload_gagal_validasi_jika_tidak_ada_file(): void
@@ -306,9 +296,9 @@ class ChatbotKnowledgeTest extends TestCase
         $user = $this->buatUser('ketua_ukm');
 
         $this->actingAs($user)
-             ->postJson('/chatbot/upload', [])
-             ->assertUnprocessable()
-             ->assertJsonValidationErrors(['pdf']);
+            ->postJson('/chatbot/upload', [])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors(['pdf']);
     }
 
     // ══════════════════════════════════════════════════════════════
@@ -446,10 +436,10 @@ class ChatbotKnowledgeTest extends TestCase
         $user = $this->buatUser('ketua_ukm');
 
         $this->actingAs($user)
-             ->postJson('/chatbot/upload', [
-                 'pdf' => UploadedFile::fake()->create('test.pdf', 100, 'application/pdf'),
-             ])
-             ->assertStatus(202);
+            ->postJson('/chatbot/upload', [
+                'pdf' => UploadedFile::fake()->create('test.pdf', 100, 'application/pdf'),
+            ])
+            ->assertStatus(202);
 
         Queue::assertPushed(ProcessPdfJob::class);
         Queue::assertPushedOn(null, ProcessPdfJob::class); // default queue

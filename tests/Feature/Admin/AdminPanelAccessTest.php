@@ -3,6 +3,7 @@
 namespace Tests\Feature\Admin;
 
 use App\Filament\Resources\Divisis\DivisiResource;
+use App\Filament\Resources\Galleries\Pages\ListGalleries;
 use App\Filament\Resources\Materis\MateriResource;
 use App\Filament\Resources\Pendaftars\PendaftarResource;
 use App\Filament\Resources\PertanyaanSeleksis\PertanyaanSeleksiResource;
@@ -11,6 +12,8 @@ use App\Filament\Resources\RagDocuments\RagDocumentResource;
 use App\Filament\Resources\TagihanKas\TagihanKasResource;
 use App\Filament\Resources\TransaksiKas\TransaksiKasResource;
 use App\Filament\Resources\Users\UserResource;
+use App\Models\Materi;
+use App\Models\PertanyaanSeleksi;
 use App\Models\User;
 use Database\Seeders\RolePermissionSeeder;
 use Filament\Facades\Filament;
@@ -29,22 +32,6 @@ class AdminPanelAccessTest extends TestCase
 
         // Seed semua role & permission sesuai konfigurasi produksi
         $this->seed(RolePermissionSeeder::class);
-    }
-
-    // ─── helpers ───────────────────────────────────────────────
-
-    private function buatUser(string $role, array $attrs = []): User
-    {
-        /** @var User $user */
-        $user = User::factory()->create($attrs);
-        $user->assignRole($role);
-        return $user;
-    }
-
-    private function aktingAs(User $user): static
-    {
-        $this->actingAs($user);
-        return $this;
     }
 
     // ══════════════════════════════════════════════════════════════
@@ -124,7 +111,7 @@ class AdminPanelAccessTest extends TestCase
     public function test_tamu_diarahkan_ke_halaman_login_panel(): void
     {
         $this->get('/administrasi')
-             ->assertRedirect('/administrasi/login');
+            ->assertRedirect('/administrasi/login');
     }
 
     public function test_anggota_tidak_dapat_akses_panel_via_http(): void
@@ -401,6 +388,148 @@ class AdminPanelAccessTest extends TestCase
     {
         $this->aktingAs($this->buatUser('ketua_divisi'));
         $this->assertFalse(RagDocumentResource::canViewAny());
+    }
+
+    // ══════════════════════════════════════════════════════════════
+    // PERTANYAAN SELEKSI RESOURCE — kelola_pertanyaan_seleksi + scoping
+    // ══════════════════════════════════════════════════════════════
+
+    public function test_ketua_ukm_dapat_akses_pertanyaan_seleksi(): void
+    {
+        $this->actingAs($this->buatUser('ketua_ukm'));
+        $this->assertTrue(PertanyaanSeleksiResource::canViewAny());
+    }
+
+    public function test_ketua_divisi_dapat_akses_pertanyaan_seleksi(): void
+    {
+        $this->actingAs($this->buatUser('ketua_divisi'));
+        $this->assertTrue(PertanyaanSeleksiResource::canViewAny());
+    }
+
+    public function test_sekretaris_tidak_dapat_akses_pertanyaan_seleksi(): void
+    {
+        $this->actingAs($this->buatUser('sekretaris'));
+        $this->assertFalse(PertanyaanSeleksiResource::canViewAny());
+    }
+
+    public function test_bendahara_tidak_dapat_akses_pertanyaan_seleksi(): void
+    {
+        $this->actingAs($this->buatUser('bendahara'));
+        $this->assertFalse(PertanyaanSeleksiResource::canViewAny());
+    }
+
+    public function test_ketua_divisi_hanya_melihat_pertanyaan_divisinya(): void
+    {
+        $divisiA     = $this->buatDivisi('A');
+        $divisiB     = $this->buatDivisi('B');
+        $ketuaDivisi = $this->buatUser('ketua_divisi', ['divisi_id' => $divisiA->id]);
+
+        PertanyaanSeleksi::create(['divisi_id' => $divisiA->id, 'pertanyaan_teks' => 'PA1', 'is_active' => true, 'urut' => 1]);
+        PertanyaanSeleksi::create(['divisi_id' => $divisiA->id, 'pertanyaan_teks' => 'PA2', 'is_active' => true, 'urut' => 2]);
+        PertanyaanSeleksi::create(['divisi_id' => $divisiB->id, 'pertanyaan_teks' => 'PB1', 'is_active' => true, 'urut' => 1]);
+
+        $this->actingAs($ketuaDivisi);
+        $result = PertanyaanSeleksiResource::getEloquentQuery()->pluck('pertanyaan_teks');
+
+        $this->assertCount(2, $result);
+        $this->assertContains('PA1', $result);
+        $this->assertContains('PA2', $result);
+        $this->assertNotContains('PB1', $result);
+    }
+
+    public function test_ketua_ukm_melihat_semua_pertanyaan(): void
+    {
+        $divisiA   = $this->buatDivisi('A');
+        $divisiB   = $this->buatDivisi('B');
+        $ketuaUkm  = $this->buatUser('ketua_ukm');
+
+        PertanyaanSeleksi::create(['divisi_id' => $divisiA->id, 'pertanyaan_teks' => 'PA', 'is_active' => true, 'urut' => 1]);
+        PertanyaanSeleksi::create(['divisi_id' => $divisiB->id, 'pertanyaan_teks' => 'PB', 'is_active' => true, 'urut' => 1]);
+
+        $this->actingAs($ketuaUkm);
+        $this->assertEquals(2, PertanyaanSeleksiResource::getEloquentQuery()->count());
+    }
+
+    // ══════════════════════════════════════════════════════════════
+    // MATERI RESOURCE (ADMIN) — kelola_materi + query scoping
+    // ══════════════════════════════════════════════════════════════
+
+    public function test_sekretaris_dapat_akses_materi_resource(): void
+    {
+        $this->actingAs($this->buatUser('sekretaris'));
+        $this->assertTrue(MateriResource::canViewAny());
+    }
+
+    public function test_ketua_divisi_dapat_akses_materi_resource(): void
+    {
+        $this->actingAs($this->buatUser('ketua_divisi'));
+        $this->assertTrue(MateriResource::canViewAny());
+    }
+
+    public function test_bendahara_tidak_dapat_akses_materi_resource(): void
+    {
+        $this->actingAs($this->buatUser('bendahara'));
+        $this->assertFalse(MateriResource::canViewAny());
+    }
+
+    public function test_sekretaris_melihat_semua_materi(): void
+    {
+        $divisi    = $this->buatDivisi();
+        $sekretaris = $this->buatUser('sekretaris');
+
+        Materi::create(['judul' => 'Umum',  'divisi_id' => null,       'uploaded_by' => $sekretaris->id]);
+        Materi::create(['judul' => 'Divisi', 'divisi_id' => $divisi->id, 'uploaded_by' => $sekretaris->id]);
+
+        $this->actingAs($sekretaris);
+        $this->assertEquals(2, MateriResource::getEloquentQuery()->count());
+    }
+
+    public function test_ketua_divisi_hanya_melihat_materi_divisinya_dan_umum(): void
+    {
+        $divisiA     = $this->buatDivisi('A');
+        $divisiB     = $this->buatDivisi('B');
+        $ketuaDivisi = $this->buatUser('ketua_divisi', ['divisi_id' => $divisiA->id]);
+        $author      = User::factory()->create();
+
+        Materi::create(['judul' => 'Umum',     'divisi_id' => null,        'uploaded_by' => $author->id]);
+        Materi::create(['judul' => 'Divisi A', 'divisi_id' => $divisiA->id, 'uploaded_by' => $author->id]);
+        Materi::create(['judul' => 'Divisi B', 'divisi_id' => $divisiB->id, 'uploaded_by' => $author->id]);
+
+        $this->actingAs($ketuaDivisi);
+        $result = MateriResource::getEloquentQuery()->pluck('judul');
+
+        $this->assertCount(2, $result);
+        $this->assertContains('Umum',     $result);
+        $this->assertContains('Divisi A', $result);
+        $this->assertNotContains('Divisi B', $result);
+    }
+
+    // ══════════════════════════════════════════════════════════════
+    // TRANSAKSI KAS RESOURCE — kelola_tagihan_kas
+    // ══════════════════════════════════════════════════════════════
+
+    public function test_bendahara_dapat_akses_transaksi_kas(): void
+    {
+        $this->actingAs($this->buatUser('bendahara'));
+        $this->assertTrue(TransaksiKasResource::canViewAny());
+    }
+
+    public function test_ketua_ukm_dapat_akses_transaksi_kas(): void
+    {
+        $this->actingAs($this->buatUser('ketua_ukm'));
+        $this->assertTrue(TransaksiKasResource::canViewAny());
+    }
+
+    public function test_sekretaris_tidak_dapat_akses_transaksi_kas(): void
+    {
+        $this->actingAs($this->buatUser('sekretaris'));
+        $this->assertFalse(TransaksiKasResource::canViewAny());
+    }
+
+    public function test_ketua_divisi_tidak_dapat_akses_transaksi_kas(): void
+    {
+        $this->actingAs($this->buatUser('ketua_divisi'));
+        $this->assertFalse(TransaksiKasResource::canViewAny());
     }
 
     // ══════════════════════════════════════════════════════════════

@@ -25,14 +25,6 @@ class TagihanKasAdminTest extends TestCase
 
     // ─── helpers ───────────────────────────────────────────────
 
-    private function buatUser(string $role, array $attrs = []): User
-    {
-        /** @var User $user */
-        $user = User::factory()->create($attrs);
-        $user->assignRole($role);
-        return $user;
-    }
-
     private function buatTagihan(User $user, string $bulan, string $status = 'belum_dibayar', int $nominal = 50000, array $extra = []): TagihanKas
     {
         return TagihanKas::create(array_merge([
@@ -86,8 +78,8 @@ class TagihanKasAdminTest extends TestCase
         $bendahara = $this->buatUser('bendahara');
 
         Livewire::actingAs($bendahara)
-                ->test(ListTagihanKas::class)
-                ->assertSuccessful();
+            ->test(ListTagihanKas::class)
+            ->assertSuccessful();
     }
 
     public function test_list_page_menampilkan_semua_tagihan(): void
@@ -99,8 +91,8 @@ class TagihanKasAdminTest extends TestCase
         $t2 = $this->buatTagihan($anggota, '2025-02');
 
         Livewire::actingAs($bendahara)
-                ->test(ListTagihanKas::class)
-                ->assertCanSeeTableRecords([$t1, $t2]);
+            ->test(ListTagihanKas::class)
+            ->assertCanSeeTableRecords([$t1, $t2]);
     }
 
     // ══════════════════════════════════════════════════════════════
@@ -114,8 +106,8 @@ class TagihanKasAdminTest extends TestCase
         $tagihan   = $this->buatTagihan($anggota, '2025-01', 'belum_dibayar');
 
         Livewire::actingAs($bendahara)
-                ->test(ListTagihanKas::class)
-                ->assertTableActionVisible('tandai_lunas', $tagihan);
+            ->test(ListTagihanKas::class)
+            ->assertTableActionVisible('tandai_lunas', $tagihan);
     }
 
     public function test_aksi_tandai_lunas_tersembunyi_untuk_yang_sudah_lunas(): void
@@ -127,8 +119,8 @@ class TagihanKasAdminTest extends TestCase
         ]);
 
         Livewire::actingAs($bendahara)
-                ->test(ListTagihanKas::class)
-                ->assertTableActionHidden('tandai_lunas', $tagihan);
+            ->test(ListTagihanKas::class)
+            ->assertTableActionHidden('tandai_lunas', $tagihan);
     }
 
     public function test_eksekusi_tandai_lunas_mengubah_status_ke_lunas(): void
@@ -138,9 +130,9 @@ class TagihanKasAdminTest extends TestCase
         $tagihan   = $this->buatTagihan($anggota, '2025-01', 'belum_dibayar');
 
         Livewire::actingAs($bendahara)
-                ->test(ListTagihanKas::class)
-                ->callTableAction('tandai_lunas', $tagihan)
-                ->assertHasNoTableActionErrors();
+            ->test(ListTagihanKas::class)
+            ->callTableAction('tandai_lunas', $tagihan)
+            ->assertHasNoTableActionErrors();
 
         $this->assertEquals('lunas', $tagihan->fresh()->status);
         $this->assertNotNull($tagihan->fresh()->tanggal_bayar);
@@ -159,8 +151,8 @@ class TagihanKasAdminTest extends TestCase
         ]);
 
         Livewire::actingAs($bendahara)
-                ->test(ListTagihanKas::class)
-                ->assertTableActionVisible('batalkan_lunas', $tagihan);
+            ->test(ListTagihanKas::class)
+            ->assertTableActionVisible('batalkan_lunas', $tagihan);
     }
 
     public function test_aksi_batalkan_lunas_tersembunyi_untuk_belum_dibayar(): void
@@ -170,8 +162,8 @@ class TagihanKasAdminTest extends TestCase
         $tagihan   = $this->buatTagihan($anggota, '2025-01', 'belum_dibayar');
 
         Livewire::actingAs($bendahara)
-                ->test(ListTagihanKas::class)
-                ->assertTableActionHidden('batalkan_lunas', $tagihan);
+            ->test(ListTagihanKas::class)
+            ->assertTableActionHidden('batalkan_lunas', $tagihan);
     }
 
     public function test_eksekusi_batalkan_lunas_mengembalikan_status_ke_belum_dibayar(): void
@@ -183,9 +175,9 @@ class TagihanKasAdminTest extends TestCase
         ]);
 
         Livewire::actingAs($bendahara)
-                ->test(ListTagihanKas::class)
-                ->callTableAction('batalkan_lunas', $tagihan)
-                ->assertHasNoTableActionErrors();
+            ->test(ListTagihanKas::class)
+            ->callTableAction('batalkan_lunas', $tagihan)
+            ->assertHasNoTableActionErrors();
 
         $fresh = $tagihan->fresh();
         $this->assertEquals('belum_dibayar', $fresh->status);
@@ -206,9 +198,9 @@ class TagihanKasAdminTest extends TestCase
         $t3 = $this->buatTagihan($anggota, '2025-03', 'lunas', 50000, ['tanggal_bayar' => now()]);
 
         Livewire::actingAs($bendahara)
-                ->test(ListTagihanKas::class)
-                ->callTableBulkAction('tandai_lunas_massal', [$t1, $t2, $t3])
-                ->assertHasNoErrors();
+            ->test(ListTagihanKas::class)
+            ->callTableBulkAction('tandai_lunas_massal', [$t1, $t2, $t3])
+            ->assertHasNoErrors();
 
         $this->assertEquals('lunas', $t1->fresh()->status);
         $this->assertEquals('lunas', $t2->fresh()->status);
@@ -227,8 +219,8 @@ class TagihanKasAdminTest extends TestCase
         $tanggalLama = $sudahLunas->tanggal_bayar;
 
         Livewire::actingAs($bendahara)
-                ->test(ListTagihanKas::class)
-                ->callTableBulkAction('tandai_lunas_massal', [$sudahLunas]);
+            ->test(ListTagihanKas::class)
+            ->callTableBulkAction('tandai_lunas_massal', [$sudahLunas]);
 
         // Tanggal bayar tidak berubah karena sudah lunas
         $this->assertEquals(
