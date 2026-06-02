@@ -6,7 +6,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
 
 class Election extends Model
 {
@@ -41,11 +43,19 @@ class Election extends Model
     protected static function booted(): void
     {
         static::retrieved(function (Election $election): void {
-            if ($election->status === 'aktif'
+            if (
+                $election->status === 'aktif'
                 && $election->waktu_selesai !== null
-                && now()->gt($election->waktu_selesai)) {
+                && now()->gt($election->waktu_selesai)
+            ) {
                 $election->updateQuietly(['status' => 'selesai']);
                 $election->detectAndHandleTie();
+            }
+        });
+
+        static::addGlobalScope('new_users_only', function (Builder $builder) {
+            if (Auth::check()) {
+                $builder->where('created_at', '>=', Auth::user()->created_at);
             }
         });
     }
