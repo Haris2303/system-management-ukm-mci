@@ -89,7 +89,7 @@ class AgendaPresensiAdminTest extends TestCase
         Livewire::actingAs($admin)
             ->test(ViewAgenda::class, ['record' => $agenda->getKey()])
             ->callAction('tutup_agenda')
-            ->assertHasNoActionErrors();
+            ->assertHasNoFormErrors();
 
         // Agenda ditutup
         $this->assertFalse($agenda->fresh()->is_active);
@@ -131,7 +131,7 @@ class AgendaPresensiAdminTest extends TestCase
         Livewire::actingAs($admin)
             ->test(ViewAgenda::class, ['record' => $agenda->getKey()])
             ->callAction('catat_izin', data: ['user_ids' => [$anggota->id]])
-            ->assertHasNoActionErrors();
+            ->assertHasNoFormErrors();
 
         $this->assertDatabaseHas('presensis', [
             'user_id'   => $anggota->id,

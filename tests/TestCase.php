@@ -89,4 +89,17 @@ abstract class TestCase extends BaseTestCase
             'status'    => 'menunggu',
         ], $attrs));
     }
+
+    public function tokenFor(User $user): string
+    {
+        return $user->createToken('test')->plainTextToken;
+    }
+
+    public function aktifUser(array $attrs = []): User
+    {
+        /** @var User $user */
+        $user = User::factory()->create($attrs);
+        $user->assignRole('anggota');
+        return $user;
+    }
 }

@@ -57,7 +57,7 @@ class MailtrapIntegrationTest extends TestCase
         ) {
             $this->markTestSkipped(
                 'Mailtrap belum dikonfigurasi. Pastikan MAIL_HOST, MAIL_USERNAME, '
-                . 'dan MAIL_PASSWORD di .env sudah diisi dengan kredensial Mailtrap.'
+                    . 'dan MAIL_PASSWORD di .env sudah diisi dengan kredensial Mailtrap.'
             );
         }
     }
@@ -90,33 +90,6 @@ class MailtrapIntegrationTest extends TestCase
         // Jeda tambahan setelah setiap test agar koneksi SMTP Mailtrap tuntas
         sleep(1);
         parent::tearDown();
-    }
-
-    // ─── helpers ───────────────────────────────────────────────
-
-    private function buatDivisi(string $nama = 'Web Dev'): Divisi
-    {
-        static $urut = 1;
-        return Divisi::create([
-            'nama'      => $nama,
-            'slug'      => Str::slug($nama . '-' . $urut++),
-            'icon'      => '💻',
-            'is_active' => true,
-            'urut'      => $urut,
-        ]);
-    }
-
-    private function buatPendaftar(Divisi $divisi, array $attrs = []): Pendaftar
-    {
-        return Pendaftar::create(array_merge([
-            'divisi_id' => $divisi->id,
-            'nama'      => 'Budi Santoso',
-            'nim'       => '2023' . rand(1000, 9999),
-            'email'     => 'test@example.com',
-            'no_hp'     => '081234567890',
-            'angkatan'  => '2023',
-            'status'    => 'menunggu',
-        ], $attrs));
     }
 
     // ══════════════════════════════════════════════════════════════

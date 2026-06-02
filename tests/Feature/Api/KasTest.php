@@ -26,25 +26,12 @@ class KasTest extends TestCase
 
     // ─── helpers ───────────────────────────────────────────────
 
-    private function aktifUser(array $attrs = []): User
-    {
-        /** @var User $user */
-        $user = User::factory()->create($attrs);
-        $user->assignRole('anggota');
-        return $user;
-    }
-
     private function demisionerUser(): User
     {
         /** @var User $user */
         $user = User::factory()->create();
         $user->assignRole('demisioner');
         return $user;
-    }
-
-    private function tokenFor(User $user): string
-    {
-        return $user->createToken('test')->plainTextToken;
     }
 
     private function buatTagihan(User $user, string $bulan, string $status = 'belum_dibayar', int $nominal = 50000, array $extra = []): TagihanKas
@@ -78,11 +65,11 @@ class KasTest extends TestCase
         $this->buatTagihan($user, '2025-02', 'belum_dibayar', 50000);
 
         $this->withToken($this->tokenFor($user))
-             ->getJson('/api/kas/tunggakan')
-             ->assertOk()
-             ->assertJsonPath('data.jumlah_tunggakan', 2)
-             ->assertJsonPath('data.total_nominal', 100000)
-             ->assertJsonCount(2, 'data.tagihan');
+            ->getJson('/api/kas/tunggakan')
+            ->assertOk()
+            ->assertJsonPath('data.jumlah_tunggakan', 2)
+            ->assertJsonPath('data.total_nominal', 100000)
+            ->assertJsonCount(2, 'data.tagihan');
     }
 
     public function test_tunggakan_tidak_mengembalikan_tagihan_yang_sudah_lunas(): void
@@ -92,8 +79,8 @@ class KasTest extends TestCase
         $this->buatTagihan($user, '2025-02', 'lunas');
 
         $response = $this->withToken($this->tokenFor($user))
-                         ->getJson('/api/kas/tunggakan')
-                         ->assertOk();
+            ->getJson('/api/kas/tunggakan')
+            ->assertOk();
 
         $this->assertEquals(1, $response->json('data.jumlah_tunggakan'));
         $this->assertEquals('belum_dibayar', $response->json('data.tagihan.0.status'));
@@ -108,8 +95,8 @@ class KasTest extends TestCase
         $this->buatTagihan($userB, '2025-01');
 
         $response = $this->withToken($this->tokenFor($userA))
-                         ->getJson('/api/kas/tunggakan')
-                         ->assertOk();
+            ->getJson('/api/kas/tunggakan')
+            ->assertOk();
 
         // Hanya 1 tagihan milik userA yang dikembalikan, bukan milik userB
         $this->assertEquals(1, $response->json('data.jumlah_tunggakan'));
@@ -123,8 +110,8 @@ class KasTest extends TestCase
         $this->buatTagihan($user, '2025-02');
 
         $response = $this->withToken($this->tokenFor($user))
-                         ->getJson('/api/kas/tunggakan')
-                         ->assertOk();
+            ->getJson('/api/kas/tunggakan')
+            ->assertOk();
 
         $tagihan = $response->json('data.tagihan');
         $this->assertEquals('2025-01', $tagihan[0]['bulan_tagihan']);
@@ -140,8 +127,8 @@ class KasTest extends TestCase
         $this->buatTagihan($user, '2025-03', 'belum_dibayar', 25000);
 
         $response = $this->withToken($this->tokenFor($user))
-                         ->getJson('/api/kas/tunggakan')
-                         ->assertOk();
+            ->getJson('/api/kas/tunggakan')
+            ->assertOk();
 
         $this->assertEquals(150000, $response->json('data.total_nominal'));
         $this->assertEquals('Rp 150.000', $response->json('data.total_format'));
@@ -153,8 +140,8 @@ class KasTest extends TestCase
         $this->buatTagihan($user, '2025-01', 'belum_dibayar', 1500000);
 
         $response = $this->withToken($this->tokenFor($user))
-                         ->getJson('/api/kas/tunggakan')
-                         ->assertOk();
+            ->getJson('/api/kas/tunggakan')
+            ->assertOk();
 
         $this->assertEquals('Rp 1.500.000', $response->json('data.tagihan.0.nominal_format'));
     }
@@ -165,8 +152,8 @@ class KasTest extends TestCase
         $this->buatTagihan($user, '2025-01');
 
         $response = $this->withToken($this->tokenFor($user))
-                         ->getJson('/api/kas/tunggakan')
-                         ->assertOk();
+            ->getJson('/api/kas/tunggakan')
+            ->assertOk();
 
         $this->assertEquals('Januari 2025', $response->json('data.tagihan.0.bulan_tagihan_format'));
     }
@@ -176,8 +163,8 @@ class KasTest extends TestCase
         $user = $this->aktifUser();
 
         $response = $this->withToken($this->tokenFor($user))
-                         ->getJson('/api/kas/tunggakan')
-                         ->assertOk();
+            ->getJson('/api/kas/tunggakan')
+            ->assertOk();
 
         $this->assertStringContainsString('tidak memiliki tunggakan', $response->json('pesan'));
         $this->assertEquals(0, $response->json('data.jumlah_tunggakan'));
@@ -191,8 +178,8 @@ class KasTest extends TestCase
         $this->buatTagihan($user, '2025-02');
 
         $response = $this->withToken($this->tokenFor($user))
-                         ->getJson('/api/kas/tunggakan')
-                         ->assertOk();
+            ->getJson('/api/kas/tunggakan')
+            ->assertOk();
 
         $this->assertStringContainsString('2', $response->json('pesan'));
     }
@@ -209,9 +196,9 @@ class KasTest extends TestCase
         $user = $this->demisionerUser();
 
         $this->withToken($this->tokenFor($user))
-             ->getJson('/api/kas/tunggakan')
-             ->assertForbidden()
-             ->assertJsonPath('kode', 'AKUN_DEMISIONER');
+            ->getJson('/api/kas/tunggakan')
+            ->assertForbidden()
+            ->assertJsonPath('kode', 'AKUN_DEMISIONER');
     }
 
     // ══════════════════════════════════════════════════════════════
@@ -229,11 +216,11 @@ class KasTest extends TestCase
         ]);
 
         $this->withToken($this->tokenFor($user))
-             ->getJson('/api/kas/riwayat')
-             ->assertOk()
-             ->assertJsonPath('data.jumlah_pembayaran', 2)
-             ->assertJsonPath('data.total_dibayar', 100000)
-             ->assertJsonCount(2, 'data.riwayat');
+            ->getJson('/api/kas/riwayat')
+            ->assertOk()
+            ->assertJsonPath('data.jumlah_pembayaran', 2)
+            ->assertJsonPath('data.total_dibayar', 100000)
+            ->assertJsonCount(2, 'data.riwayat');
     }
 
     public function test_riwayat_tidak_mengembalikan_tagihan_belum_dibayar(): void
@@ -243,8 +230,8 @@ class KasTest extends TestCase
         $this->buatTagihan($user, '2025-02', 'belum_dibayar');
 
         $response = $this->withToken($this->tokenFor($user))
-                         ->getJson('/api/kas/riwayat')
-                         ->assertOk();
+            ->getJson('/api/kas/riwayat')
+            ->assertOk();
 
         $this->assertEquals(1, $response->json('data.jumlah_pembayaran'));
         $this->assertEquals('lunas', $response->json('data.riwayat.0.status'));
@@ -259,8 +246,8 @@ class KasTest extends TestCase
         $this->buatTagihan($userB, '2025-01', 'lunas', 50000, ['tanggal_bayar' => now()]);
 
         $response = $this->withToken($this->tokenFor($userA))
-                         ->getJson('/api/kas/riwayat')
-                         ->assertOk();
+            ->getJson('/api/kas/riwayat')
+            ->assertOk();
 
         $this->assertEquals(1, $response->json('data.jumlah_pembayaran'));
     }
@@ -272,8 +259,8 @@ class KasTest extends TestCase
         $this->buatTagihan($user, '2025-02', 'lunas', 50000, ['tanggal_bayar' => now()->subDay()]);
 
         $response = $this->withToken($this->tokenFor($user))
-                         ->getJson('/api/kas/riwayat')
-                         ->assertOk();
+            ->getJson('/api/kas/riwayat')
+            ->assertOk();
 
         $riwayat = $response->json('data.riwayat');
         $this->assertEquals('2025-02', $riwayat[0]['bulan_tagihan']);
@@ -288,8 +275,8 @@ class KasTest extends TestCase
         ]);
 
         $response = $this->withToken($this->tokenFor($user))
-                         ->getJson('/api/kas/riwayat')
-                         ->assertOk();
+            ->getJson('/api/kas/riwayat')
+            ->assertOk();
 
         $this->assertNotNull($response->json('data.riwayat.0.tanggal_bayar_format'));
         $this->assertNotNull($response->json('data.riwayat.0.tanggal_bayar'));
@@ -302,8 +289,8 @@ class KasTest extends TestCase
         $this->buatTagihan($user, '2025-02', 'lunas', 75000, ['tanggal_bayar' => now()]);
 
         $response = $this->withToken($this->tokenFor($user))
-                         ->getJson('/api/kas/riwayat')
-                         ->assertOk();
+            ->getJson('/api/kas/riwayat')
+            ->assertOk();
 
         $this->assertEquals(125000, $response->json('data.total_dibayar'));
         $this->assertEquals('Rp 125.000', $response->json('data.total_dibayar_format'));
@@ -314,8 +301,8 @@ class KasTest extends TestCase
         $user = $this->aktifUser();
 
         $response = $this->withToken($this->tokenFor($user))
-                         ->getJson('/api/kas/riwayat')
-                         ->assertOk();
+            ->getJson('/api/kas/riwayat')
+            ->assertOk();
 
         $this->assertStringContainsString('belum memiliki riwayat', $response->json('pesan'));
         $this->assertEquals(0, $response->json('data.jumlah_pembayaran'));
@@ -333,9 +320,9 @@ class KasTest extends TestCase
         $user = $this->demisionerUser();
 
         $this->withToken($this->tokenFor($user))
-             ->getJson('/api/kas/riwayat')
-             ->assertForbidden()
-             ->assertJsonPath('kode', 'AKUN_DEMISIONER');
+            ->getJson('/api/kas/riwayat')
+            ->assertForbidden()
+            ->assertJsonPath('kode', 'AKUN_DEMISIONER');
     }
 
     // ══════════════════════════════════════════════════════════════
@@ -358,8 +345,8 @@ class KasTest extends TestCase
 
         // Total = 200.000 + 300.000 - 150.000 = 350.000
         $response = $this->withToken($this->tokenFor($user))
-                         ->getJson('/api/kas/saldo-transparansi')
-                         ->assertOk();
+            ->getJson('/api/kas/saldo-transparansi')
+            ->assertOk();
 
         $this->assertEquals(350000, $response->json('data.total_saldo'));
         $this->assertEquals('Rp 350.000', $response->json('data.total_saldo_format'));
@@ -372,8 +359,8 @@ class KasTest extends TestCase
         $this->buatTagihan($user, '2025-02', 'belum_dibayar', 50000);
 
         $response = $this->withToken($this->tokenFor($user))
-                         ->getJson('/api/kas/saldo-transparansi')
-                         ->assertOk();
+            ->getJson('/api/kas/saldo-transparansi')
+            ->assertOk();
 
         // Hanya tagihan lunas yang masuk ke iuran_lunas
         $this->assertEquals(50000, $response->json('data.rincian.iuran_lunas.nominal'));
@@ -387,8 +374,8 @@ class KasTest extends TestCase
         $this->buatTransaksi('keluar', 100000);
 
         $response = $this->withToken($this->tokenFor($user))
-                         ->getJson('/api/kas/saldo-transparansi')
-                         ->assertOk();
+            ->getJson('/api/kas/saldo-transparansi')
+            ->assertOk();
 
         $this->assertEquals(500000, $response->json('data.rincian.kas_masuk.nominal'));
         $this->assertEquals(100000, $response->json('data.rincian.kas_keluar.nominal'));
@@ -399,8 +386,8 @@ class KasTest extends TestCase
         $user = $this->aktifUser();
 
         $response = $this->withToken($this->tokenFor($user))
-                         ->getJson('/api/kas/saldo-transparansi')
-                         ->assertOk();
+            ->getJson('/api/kas/saldo-transparansi')
+            ->assertOk();
 
         $this->assertEquals(0, $response->json('data.total_saldo'));
         $this->assertEquals('Rp 0', $response->json('data.total_saldo_format'));
@@ -411,20 +398,20 @@ class KasTest extends TestCase
         $user = $this->aktifUser();
 
         $this->withToken($this->tokenFor($user))
-             ->getJson('/api/kas/saldo-transparansi')
-             ->assertOk()
-             ->assertJsonStructure([
-                 'data' => [
-                     'total_saldo',
-                     'total_saldo_format',
-                     'rincian' => [
-                         'iuran_lunas' => ['nominal', 'format'],
-                         'kas_masuk'   => ['nominal', 'format'],
-                         'kas_keluar'  => ['nominal', 'format'],
-                     ],
-                     'diperbarui_pada',
-                 ],
-             ]);
+            ->getJson('/api/kas/saldo-transparansi')
+            ->assertOk()
+            ->assertJsonStructure([
+                'data' => [
+                    'total_saldo',
+                    'total_saldo_format',
+                    'rincian' => [
+                        'iuran_lunas' => ['nominal', 'format'],
+                        'kas_masuk'   => ['nominal', 'format'],
+                        'kas_keluar'  => ['nominal', 'format'],
+                    ],
+                    'diperbarui_pada',
+                ],
+            ]);
     }
 
     // ── Hak Akses: Saldo ────────────────────────────────────────
@@ -439,9 +426,9 @@ class KasTest extends TestCase
         $user = $this->demisionerUser();
 
         $this->withToken($this->tokenFor($user))
-             ->getJson('/api/kas/saldo-transparansi')
-             ->assertForbidden()
-             ->assertJsonPath('kode', 'AKUN_DEMISIONER');
+            ->getJson('/api/kas/saldo-transparansi')
+            ->assertForbidden()
+            ->assertJsonPath('kode', 'AKUN_DEMISIONER');
     }
 
     // ══════════════════════════════════════════════════════════════
@@ -608,8 +595,8 @@ class KasTest extends TestCase
         $user = $this->aktifUser(['name' => 'Budi Santoso']);
 
         $response = $this->withToken($this->tokenFor($user))
-                         ->getJson('/api/kas/user')
-                         ->assertOk();
+            ->getJson('/api/kas/user')
+            ->assertOk();
 
         $this->assertEquals('Budi Santoso', $response->json('data.name'));
         $this->assertEquals($user->id, $response->json('data.id'));
@@ -621,8 +608,8 @@ class KasTest extends TestCase
         $userB = $this->aktifUser(['name' => 'User B']);
 
         $response = $this->withToken($this->tokenFor($userA))
-                         ->getJson('/api/kas/user')
-                         ->assertOk();
+            ->getJson('/api/kas/user')
+            ->assertOk();
 
         $this->assertEquals('User A', $response->json('data.name'));
         $this->assertNotEquals($userB->id, $response->json('data.id'));
@@ -638,8 +625,8 @@ class KasTest extends TestCase
         $user = $this->demisionerUser();
 
         $this->withToken($this->tokenFor($user))
-             ->getJson('/api/kas/user')
-             ->assertForbidden()
-             ->assertJsonPath('kode', 'AKUN_DEMISIONER');
+            ->getJson('/api/kas/user')
+            ->assertForbidden()
+            ->assertJsonPath('kode', 'AKUN_DEMISIONER');
     }
 }

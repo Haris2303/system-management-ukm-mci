@@ -26,19 +26,6 @@ class VotingTest extends TestCase
 
     // ─── helpers ───────────────────────────────────────────────
 
-    private function aktifUser(array $attrs = []): User
-    {
-        /** @var User $user */
-        $user = User::factory()->create($attrs);
-        $user->assignRole('anggota');
-        return $user;
-    }
-
-    private function tokenFor(User $user): string
-    {
-        return $user->createToken('test')->plainTextToken;
-    }
-
     /** Election aktif dengan waktu valid (tidak akan di-auto-close oleh retrieved hook). */
     private function buatElection(array $attrs = []): Election
     {
@@ -87,9 +74,9 @@ class VotingTest extends TestCase
         $user = $this->aktifUser();
 
         $this->withToken($this->tokenFor($user))
-             ->getJson('/api/elections')
-             ->assertOk()
-             ->assertJsonCount(3, 'data');
+            ->getJson('/api/elections')
+            ->assertOk()
+            ->assertJsonCount(3, 'data');
     }
 
     public function test_index_tidak_mengembalikan_election_draft(): void
@@ -100,8 +87,8 @@ class VotingTest extends TestCase
         $user = $this->aktifUser();
 
         $response = $this->withToken($this->tokenFor($user))
-                         ->getJson('/api/elections')
-                         ->assertOk();
+            ->getJson('/api/elections')
+            ->assertOk();
 
         $this->assertCount(1, $response->json('data'));
         $this->assertEquals('aktif', $response->json('data.0.status'));
@@ -115,8 +102,8 @@ class VotingTest extends TestCase
         $user = $this->aktifUser();
 
         $response = $this->withToken($this->tokenFor($user))
-                         ->getJson('/api/elections')
-                         ->assertOk();
+            ->getJson('/api/elections')
+            ->assertOk();
 
         $this->assertEquals($baru->id,  $response->json('data.0.id'));
         $this->assertEquals($lama->id,  $response->json('data.1.id'));
@@ -131,8 +118,8 @@ class VotingTest extends TestCase
         $this->buatSuara($election, $kandidat, $voter);
 
         $response = $this->withToken($this->tokenFor($voter))
-                         ->getJson('/api/elections')
-                         ->assertOk();
+            ->getJson('/api/elections')
+            ->assertOk();
 
         $this->assertTrue($response->json('data.0.sudah_vote'));
     }
@@ -143,8 +130,8 @@ class VotingTest extends TestCase
         $user = $this->aktifUser();
 
         $response = $this->withToken($this->tokenFor($user))
-                         ->getJson('/api/elections')
-                         ->assertOk();
+            ->getJson('/api/elections')
+            ->assertOk();
 
         $this->assertFalse($response->json('data.0.sudah_vote'));
     }
@@ -167,11 +154,11 @@ class VotingTest extends TestCase
         $user = $this->aktifUser();
 
         $this->withToken($this->tokenFor($user))
-             ->getJson("/api/elections/{$election->id}")
-             ->assertOk()
-             ->assertJsonPath('data.id', $election->id)
-             ->assertJsonPath('data.judul', $election->judul)
-             ->assertJsonCount(2, 'data.kandidat');
+            ->getJson("/api/elections/{$election->id}")
+            ->assertOk()
+            ->assertJsonPath('data.id', $election->id)
+            ->assertJsonPath('data.judul', $election->judul)
+            ->assertJsonCount(2, 'data.kandidat');
     }
 
     public function test_show_mengembalikan_404_untuk_election_tidak_ada(): void
@@ -179,8 +166,8 @@ class VotingTest extends TestCase
         $user = $this->aktifUser();
 
         $this->withToken($this->tokenFor($user))
-             ->getJson('/api/elections/99999')
-             ->assertNotFound();
+            ->getJson('/api/elections/99999')
+            ->assertNotFound();
     }
 
     public function test_show_menyertakan_jumlah_suara_jika_realtime_aktif(): void
@@ -193,8 +180,8 @@ class VotingTest extends TestCase
         $user = $this->aktifUser();
 
         $response = $this->withToken($this->tokenFor($user))
-                         ->getJson("/api/elections/{$election->id}")
-                         ->assertOk();
+            ->getJson("/api/elections/{$election->id}")
+            ->assertOk();
 
         $this->assertArrayHasKey('jumlah_suara', $response->json('data.kandidat.0'));
     }
@@ -207,8 +194,8 @@ class VotingTest extends TestCase
         $user = $this->aktifUser();
 
         $response = $this->withToken($this->tokenFor($user))
-                         ->getJson("/api/elections/{$election->id}")
-                         ->assertOk();
+            ->getJson("/api/elections/{$election->id}")
+            ->assertOk();
 
         $this->assertArrayNotHasKey('jumlah_suara', $response->json('data.kandidat.0'));
     }
@@ -230,11 +217,11 @@ class VotingTest extends TestCase
         $voter    = $this->aktifUser();
 
         $this->withToken($this->tokenFor($voter))
-             ->postJson("/api/elections/{$election->id}/vote", [
-                 'candidate_id' => $kandidat->id,
-             ])
-             ->assertCreated()
-             ->assertJsonPath('status', 'berhasil');
+            ->postJson("/api/elections/{$election->id}/vote", [
+                'candidate_id' => $kandidat->id,
+            ])
+            ->assertCreated()
+            ->assertJsonPath('status', 'berhasil');
     }
 
     public function test_vote_tersimpan_di_database_secara_anonim(): void
@@ -244,10 +231,10 @@ class VotingTest extends TestCase
         $voter    = $this->aktifUser();
 
         $this->withToken($this->tokenFor($voter))
-             ->postJson("/api/elections/{$election->id}/vote", [
-                 'candidate_id' => $kandidat->id,
-             ])
-             ->assertCreated();
+            ->postJson("/api/elections/{$election->id}/vote", [
+                'candidate_id' => $kandidat->id,
+            ])
+            ->assertCreated();
 
         $expectedHash = hash('sha256', $voter->id . '-' . $election->id . '-ukm-mci-secret');
 
@@ -271,10 +258,10 @@ class VotingTest extends TestCase
         $this->assertEquals(0, $kandidat->jumlahSuara());
 
         $this->withToken($this->tokenFor($voter))
-             ->postJson("/api/elections/{$election->id}/vote", [
-                 'candidate_id' => $kandidat->id,
-             ])
-             ->assertCreated();
+            ->postJson("/api/elections/{$election->id}/vote", [
+                'candidate_id' => $kandidat->id,
+            ])
+            ->assertCreated();
 
         $this->assertEquals(1, $kandidat->fresh()->jumlahSuara());
     }
@@ -288,11 +275,11 @@ class VotingTest extends TestCase
         $voter    = $this->aktifUser();
 
         $this->withToken($this->tokenFor($voter))
-             ->postJson("/api/elections/{$election->id}/vote", [
-                 'candidate_id' => $kandidat->id,
-             ])
-             ->assertStatus(400)
-             ->assertJsonFragment(['pesan' => 'Pemilihan belum dibuka. Silakan tunggu hingga waktu voting dimulai.']);
+            ->postJson("/api/elections/{$election->id}/vote", [
+                'candidate_id' => $kandidat->id,
+            ])
+            ->assertStatus(400)
+            ->assertJsonFragment(['pesan' => 'Pemilihan belum dibuka. Silakan tunggu hingga waktu voting dimulai.']);
     }
 
     public function test_vote_gagal_jika_election_sudah_selesai(): void
@@ -305,11 +292,11 @@ class VotingTest extends TestCase
         $voter    = $this->aktifUser();
 
         $this->withToken($this->tokenFor($voter))
-             ->postJson("/api/elections/{$election->id}/vote", [
-                 'candidate_id' => $kandidat->id,
-             ])
-             ->assertStatus(400)
-             ->assertJsonFragment(['pesan' => 'Pemilihan sudah ditutup. Terima kasih atas partisipasi Anda.']);
+            ->postJson("/api/elections/{$election->id}/vote", [
+                'candidate_id' => $kandidat->id,
+            ])
+            ->assertStatus(400)
+            ->assertJsonFragment(['pesan' => 'Pemilihan sudah ditutup. Terima kasih atas partisipasi Anda.']);
     }
 
     public function test_vote_gagal_jika_election_dalam_status_tie(): void
@@ -322,11 +309,11 @@ class VotingTest extends TestCase
         $voter    = $this->aktifUser();
 
         $this->withToken($this->tokenFor($voter))
-             ->postJson("/api/elections/{$election->id}/vote", [
-                 'candidate_id' => $kandidat->id,
-             ])
-             ->assertStatus(400)
-             ->assertJsonFragment(['pesan' => 'Pemilihan sedang dalam proses musyawarah. Voting reguler ditutup sementara.']);
+            ->postJson("/api/elections/{$election->id}/vote", [
+                'candidate_id' => $kandidat->id,
+            ])
+            ->assertStatus(400)
+            ->assertJsonFragment(['pesan' => 'Pemilihan sedang dalam proses musyawarah. Voting reguler ditutup sementara.']);
     }
 
     // ── Validasi waktu ──────────────────────────────────────────
@@ -341,11 +328,11 @@ class VotingTest extends TestCase
         $voter    = $this->aktifUser();
 
         $this->withToken($this->tokenFor($voter))
-             ->postJson("/api/elections/{$election->id}/vote", [
-                 'candidate_id' => $kandidat->id,
-             ])
-             ->assertStatus(400)
-             ->assertJsonFragment(['pesan' => 'Pemilihan belum dimulai.']);
+            ->postJson("/api/elections/{$election->id}/vote", [
+                'candidate_id' => $kandidat->id,
+            ])
+            ->assertStatus(400)
+            ->assertJsonFragment(['pesan' => 'Pemilihan belum dimulai.']);
     }
 
     // ── Kandidat ────────────────────────────────────────────────
@@ -358,11 +345,11 @@ class VotingTest extends TestCase
         $voter          = $this->aktifUser();
 
         $this->withToken($this->tokenFor($voter))
-             ->postJson("/api/elections/{$election->id}/vote", [
-                 'candidate_id' => $kandidatAsing->id,
-             ])
-             ->assertNotFound()
-             ->assertJsonFragment(['pesan' => 'Kandidat tidak ditemukan dalam pemilihan ini.']);
+            ->postJson("/api/elections/{$election->id}/vote", [
+                'candidate_id' => $kandidatAsing->id,
+            ])
+            ->assertNotFound()
+            ->assertJsonFragment(['pesan' => 'Kandidat tidak ditemukan dalam pemilihan ini.']);
     }
 
     // ── Duplikasi ───────────────────────────────────────────────
@@ -378,11 +365,11 @@ class VotingTest extends TestCase
 
         // Suara kedua harus ditolak
         $this->withToken($this->tokenFor($voter))
-             ->postJson("/api/elections/{$election->id}/vote", [
-                 'candidate_id' => $kandidat->id,
-             ])
-             ->assertUnprocessable()
-             ->assertJsonFragment(['pesan' => 'Anda sudah memberikan suara pada pemilihan ini. Satu anggota hanya boleh memilih satu kali.']);
+            ->postJson("/api/elections/{$election->id}/vote", [
+                'candidate_id' => $kandidat->id,
+            ])
+            ->assertUnprocessable()
+            ->assertJsonFragment(['pesan' => 'Anda sudah memberikan suara pada pemilihan ini. Satu anggota hanya boleh memilih satu kali.']);
     }
 
     public function test_user_berbeda_dapat_memilih_di_election_yang_sama(): void
@@ -393,14 +380,14 @@ class VotingTest extends TestCase
         $voter2    = $this->aktifUser();
 
         $this->withToken($this->tokenFor($voter1))
-             ->postJson("/api/elections/{$election->id}/vote", ['candidate_id' => $kandidat->id])
-             ->assertCreated();
+            ->postJson("/api/elections/{$election->id}/vote", ['candidate_id' => $kandidat->id])
+            ->assertCreated();
 
         $this->app['auth']->forgetGuards();
 
         $this->withToken($this->tokenFor($voter2))
-             ->postJson("/api/elections/{$election->id}/vote", ['candidate_id' => $kandidat->id])
-             ->assertCreated();
+            ->postJson("/api/elections/{$election->id}/vote", ['candidate_id' => $kandidat->id])
+            ->assertCreated();
 
         $this->assertDatabaseCount('votes', 2);
     }
@@ -413,9 +400,9 @@ class VotingTest extends TestCase
         $voter    = $this->aktifUser();
 
         $this->withToken($this->tokenFor($voter))
-             ->postJson("/api/elections/{$election->id}/vote", [])
-             ->assertUnprocessable()
-             ->assertJsonValidationErrors(['candidate_id']);
+            ->postJson("/api/elections/{$election->id}/vote", [])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors(['candidate_id']);
     }
 
     public function test_vote_gagal_untuk_election_yang_tidak_ada(): void
@@ -423,8 +410,8 @@ class VotingTest extends TestCase
         $voter = $this->aktifUser();
 
         $this->withToken($this->tokenFor($voter))
-             ->postJson('/api/elections/99999/vote', ['candidate_id' => 1])
-             ->assertNotFound();
+            ->postJson('/api/elections/99999/vote', ['candidate_id' => 1])
+            ->assertNotFound();
     }
 
     // ── Hak akses ───────────────────────────────────────────────
@@ -434,7 +421,7 @@ class VotingTest extends TestCase
         $election = $this->buatElection();
 
         $this->postJson("/api/elections/{$election->id}/vote", ['candidate_id' => 1])
-             ->assertUnauthorized();
+            ->assertUnauthorized();
     }
 
     // ══════════════════════════════════════════════════════════════
@@ -450,9 +437,9 @@ class VotingTest extends TestCase
         $user = $this->aktifUser();
 
         $this->withToken($this->tokenFor($user))
-             ->getJson("/api/elections/{$election->id}/hasil")
-             ->assertOk()
-             ->assertJsonPath('pesan', 'Hasil pemilihan berhasil dimuat.');
+            ->getJson("/api/elections/{$election->id}/hasil")
+            ->assertOk()
+            ->assertJsonPath('pesan', 'Hasil pemilihan berhasil dimuat.');
     }
 
     public function test_hasil_ditampilkan_saat_realtime_aktif_meskipun_election_masih_aktif(): void
@@ -464,8 +451,8 @@ class VotingTest extends TestCase
         $user = $this->aktifUser();
 
         $this->withToken($this->tokenFor($user))
-             ->getJson("/api/elections/{$election->id}/hasil")
-             ->assertOk();
+            ->getJson("/api/elections/{$election->id}/hasil")
+            ->assertOk();
     }
 
     public function test_hasil_diblokir_saat_election_aktif_tanpa_realtime(): void
@@ -477,8 +464,8 @@ class VotingTest extends TestCase
         $user = $this->aktifUser();
 
         $this->withToken($this->tokenFor($user))
-             ->getJson("/api/elections/{$election->id}/hasil")
-             ->assertForbidden();
+            ->getJson("/api/elections/{$election->id}/hasil")
+            ->assertForbidden();
     }
 
     public function test_hasil_diblokir_saat_election_masih_draft(): void
@@ -487,8 +474,8 @@ class VotingTest extends TestCase
         $user     = $this->aktifUser();
 
         $this->withToken($this->tokenFor($user))
-             ->getJson("/api/elections/{$election->id}/hasil")
-             ->assertForbidden();
+            ->getJson("/api/elections/{$election->id}/hasil")
+            ->assertForbidden();
     }
 
     public function test_hasil_menampilkan_pemenang_dengan_suara_terbanyak(): void
@@ -505,8 +492,8 @@ class VotingTest extends TestCase
         $user = $this->aktifUser();
 
         $response = $this->withToken($this->tokenFor($user))
-                         ->getJson("/api/elections/{$election->id}/hasil")
-                         ->assertOk();
+            ->getJson("/api/elections/{$election->id}/hasil")
+            ->assertOk();
 
         $this->assertEquals($kandidat1->id, $response->json('data.pemenang.id'));
         $this->assertEquals(3, $response->json('data.total_suara'));
@@ -526,8 +513,8 @@ class VotingTest extends TestCase
         $user = $this->aktifUser();
 
         $response = $this->withToken($this->tokenFor($user))
-                         ->getJson("/api/elections/{$election->id}/hasil")
-                         ->assertOk();
+            ->getJson("/api/elections/{$election->id}/hasil")
+            ->assertOk();
 
         $kandidat = $response->json('data.kandidat');
         $this->assertEquals($kandidat2->id, $kandidat[0]['id']);
@@ -551,8 +538,8 @@ class VotingTest extends TestCase
         $user = $this->aktifUser();
 
         $response = $this->withToken($this->tokenFor($user))
-                         ->getJson("/api/elections/{$election->id}/hasil")
-                         ->assertOk();
+            ->getJson("/api/elections/{$election->id}/hasil")
+            ->assertOk();
 
         $kandidat = collect($response->json('data.kandidat'));
         $this->assertEquals(75.0, $kandidat->firstWhere('id', $kandidat1->id)['persentase']);
@@ -573,8 +560,8 @@ class VotingTest extends TestCase
         $user = $this->aktifUser();
 
         $response = $this->withToken($this->tokenFor($user))
-                         ->getJson("/api/elections/{$election->id}/hasil")
-                         ->assertOk();
+            ->getJson("/api/elections/{$election->id}/hasil")
+            ->assertOk();
 
         $this->assertNull($response->json('data.pemenang'));
         $this->assertTrue($response->json('data.is_tie'));
@@ -594,8 +581,8 @@ class VotingTest extends TestCase
         $user = $this->aktifUser();
 
         $response = $this->withToken($this->tokenFor($user))
-                         ->getJson("/api/elections/{$election->id}/hasil")
-                         ->assertOk();
+            ->getJson("/api/elections/{$election->id}/hasil")
+            ->assertOk();
 
         $this->assertNull($response->json('data.pemenang'));
         $this->assertStringContainsString('Putaran Kedua', $response->json('data.catatan'));
@@ -620,8 +607,8 @@ class VotingTest extends TestCase
         $user = $this->aktifUser();
 
         $response = $this->withToken($this->tokenFor($user))
-                         ->getJson("/api/elections/{$election->id}/hasil")
-                         ->assertOk();
+            ->getJson("/api/elections/{$election->id}/hasil")
+            ->assertOk();
 
         $this->assertEquals($kandidat1->id, $response->json('data.pemenang.id'));
         $this->assertStringContainsString('musyawarah', $response->json('data.catatan'));

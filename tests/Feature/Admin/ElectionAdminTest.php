@@ -11,6 +11,7 @@ use App\Models\User;
 use App\Models\Vote;
 use App\Services\ElectionService;
 use Database\Seeders\RolePermissionSeeder;
+use Filament\Actions\Testing\TestAction;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
 use Tests\TestCase;
@@ -84,7 +85,7 @@ class ElectionAdminTest extends TestCase
 
         Livewire::actingAs($admin)
             ->test(ListElections::class)
-            ->assertTableActionHidden('edit', $election);
+            ->assertActionHidden(TestAction::make('edit')->table($election));
     }
 
     public function test_aksi_edit_tersembunyi_untuk_election_tie(): void
@@ -94,7 +95,7 @@ class ElectionAdminTest extends TestCase
 
         Livewire::actingAs($admin)
             ->test(ListElections::class)
-            ->assertTableActionHidden('edit', $election);
+            ->assertActionHidden(TestAction::make('edit')->table($election));
     }
 
     public function test_aksi_edit_tersedia_untuk_election_draft(): void
@@ -104,7 +105,7 @@ class ElectionAdminTest extends TestCase
 
         Livewire::actingAs($admin)
             ->test(ListElections::class)
-            ->assertTableActionVisible('edit', $election);
+            ->assertActionVisible(TestAction::make('edit')->table($election));
     }
 
     public function test_aksi_aktifkan_tersedia_hanya_untuk_draft(): void
@@ -115,8 +116,8 @@ class ElectionAdminTest extends TestCase
 
         Livewire::actingAs($admin)
             ->test(ListElections::class)
-            ->assertTableActionVisible('aktifkan', $draft)
-            ->assertTableActionHidden('aktifkan', $aktif);
+            ->assertActionVisible(TestAction::make('aktifkan')->table($draft))
+            ->assertActionHidden(TestAction::make('aktifkan')->table($aktif));
     }
 
     public function test_aksi_tutup_tersedia_hanya_untuk_aktif(): void
@@ -127,8 +128,8 @@ class ElectionAdminTest extends TestCase
 
         Livewire::actingAs($admin)
             ->test(ListElections::class)
-            ->assertTableActionVisible('tutup', $aktif)
-            ->assertTableActionHidden('tutup', $draft);
+            ->assertActionVisible(TestAction::make('tutup')->table($aktif))
+            ->assertActionHidden(TestAction::make('tutup')->table($draft));
     }
 
     public function test_eksekusi_aktifkan_mengubah_status_ke_aktif(): void
@@ -138,8 +139,8 @@ class ElectionAdminTest extends TestCase
 
         Livewire::actingAs($admin)
             ->test(ListElections::class)
-            ->callTableAction('aktifkan', $election)
-            ->assertHasNoTableActionErrors();
+            ->callAction(TestAction::make('aktifkan')->table($election))
+            ->assertHasNoFormErrors();
 
         $this->assertEquals('aktif', $election->fresh()->status);
     }
@@ -158,8 +159,8 @@ class ElectionAdminTest extends TestCase
 
         Livewire::actingAs($admin)
             ->test(ListElections::class)
-            ->callTableAction('tutup', $election)
-            ->assertHasNoTableActionErrors();
+            ->callAction(TestAction::make('tutup')->table($election))
+            ->assertHasNoFormErrors();
 
         $this->assertEquals('selesai', $election->fresh()->status);
     }
@@ -179,8 +180,8 @@ class ElectionAdminTest extends TestCase
 
         Livewire::actingAs($admin)
             ->test(ListElections::class)
-            ->callTableAction('tutup', $election)
-            ->assertHasNoTableActionErrors();
+            ->callAction(TestAction::make('tutup')->table($election))
+            ->assertHasNoFormErrors();
 
         $this->assertEquals('tie', $election->fresh()->status);
     }
@@ -273,7 +274,7 @@ class ElectionAdminTest extends TestCase
                 'tie_winner_candidate_id' => $kandidat1->id,
                 'tie_resolution_notes'    => 'Kandidat 1 dipilih melalui musyawarah.',
             ])
-            ->assertHasNoActionErrors();
+            ->assertHasNoFormErrors();
 
         $fresh = $election->fresh();
         $this->assertEquals('selesai',       $fresh->status);
@@ -309,7 +310,7 @@ class ElectionAdminTest extends TestCase
             ->callAction('musyawarah', data: [
                 'tie_resolution_notes' => 'Ada catatan tapi kandidat tidak dipilih',
             ])
-            ->assertHasActionErrors(['tie_winner_candidate_id']);
+            ->assertHasFormErrors(['tie_winner_candidate_id']);
     }
 
     // ══════════════════════════════════════════════════════════════
@@ -423,7 +424,7 @@ class ElectionAdminTest extends TestCase
         Livewire::actingAs($admin)
             ->test(ViewElection::class, ['record' => $election->getKey()])
             ->callAction('mulai_revote')
-            ->assertHasNoActionErrors();
+            ->assertHasNoFormErrors();
 
         // Election baru telah dibuat
         $this->assertDatabaseCount('elections', 2);

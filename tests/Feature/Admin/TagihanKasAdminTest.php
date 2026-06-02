@@ -7,6 +7,7 @@ use App\Filament\Resources\TagihanKas\TagihanKasResource;
 use App\Models\TagihanKas;
 use App\Models\User;
 use Database\Seeders\RolePermissionSeeder;
+use Filament\Actions\Testing\TestAction;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
 use Tests\TestCase;
@@ -107,7 +108,7 @@ class TagihanKasAdminTest extends TestCase
 
         Livewire::actingAs($bendahara)
             ->test(ListTagihanKas::class)
-            ->assertTableActionVisible('tandai_lunas', $tagihan);
+            ->assertActionVisible(TestAction::make('tandai_lunas')->table($tagihan));
     }
 
     public function test_aksi_tandai_lunas_tersembunyi_untuk_yang_sudah_lunas(): void
@@ -120,7 +121,7 @@ class TagihanKasAdminTest extends TestCase
 
         Livewire::actingAs($bendahara)
             ->test(ListTagihanKas::class)
-            ->assertTableActionHidden('tandai_lunas', $tagihan);
+            ->assertActionHidden(TestAction::make('tandai_lunas')->table($tagihan));
     }
 
     public function test_eksekusi_tandai_lunas_mengubah_status_ke_lunas(): void
@@ -131,8 +132,8 @@ class TagihanKasAdminTest extends TestCase
 
         Livewire::actingAs($bendahara)
             ->test(ListTagihanKas::class)
-            ->callTableAction('tandai_lunas', $tagihan)
-            ->assertHasNoTableActionErrors();
+            ->callAction(TestAction::make('tandai_lunas')->table($tagihan))
+            ->assertHasNoFormErrors();
 
         $this->assertEquals('lunas', $tagihan->fresh()->status);
         $this->assertNotNull($tagihan->fresh()->tanggal_bayar);
@@ -152,7 +153,7 @@ class TagihanKasAdminTest extends TestCase
 
         Livewire::actingAs($bendahara)
             ->test(ListTagihanKas::class)
-            ->assertTableActionVisible('batalkan_lunas', $tagihan);
+            ->assertActionVisible(TestAction::make('batalkan_lunas')->table($tagihan));
     }
 
     public function test_aksi_batalkan_lunas_tersembunyi_untuk_belum_dibayar(): void
@@ -163,7 +164,7 @@ class TagihanKasAdminTest extends TestCase
 
         Livewire::actingAs($bendahara)
             ->test(ListTagihanKas::class)
-            ->assertTableActionHidden('batalkan_lunas', $tagihan);
+            ->assertActionHidden(TestAction::make('batalkan_lunas')->table($tagihan));
     }
 
     public function test_eksekusi_batalkan_lunas_mengembalikan_status_ke_belum_dibayar(): void
@@ -176,8 +177,8 @@ class TagihanKasAdminTest extends TestCase
 
         Livewire::actingAs($bendahara)
             ->test(ListTagihanKas::class)
-            ->callTableAction('batalkan_lunas', $tagihan)
-            ->assertHasNoTableActionErrors();
+            ->callAction(TestAction::make('batalkan_lunas')->table($tagihan))
+            ->assertHasNoFormErrors();
 
         $fresh = $tagihan->fresh();
         $this->assertEquals('belum_dibayar', $fresh->status);
@@ -199,7 +200,9 @@ class TagihanKasAdminTest extends TestCase
 
         Livewire::actingAs($bendahara)
             ->test(ListTagihanKas::class)
-            ->callTableBulkAction('tandai_lunas_massal', [$t1, $t2, $t3])
+            ->assertCanSeeTableRecords([$t1, $t2, $t3])
+            ->selectTableRecords([$t1, $t2, $t3])
+            ->callAction(TestAction::make('tandai_lunas_massal')->table()->bulk())
             ->assertHasNoErrors();
 
         $this->assertEquals('lunas', $t1->fresh()->status);
@@ -220,7 +223,8 @@ class TagihanKasAdminTest extends TestCase
 
         Livewire::actingAs($bendahara)
             ->test(ListTagihanKas::class)
-            ->callTableBulkAction('tandai_lunas_massal', [$sudahLunas]);
+            ->selectTableRecords([$sudahLunas])
+            ->callAction(TestAction::make('tandai_lunas_massal')->table()->bulk());
 
         // Tanggal bayar tidak berubah karena sudah lunas
         $this->assertEquals(

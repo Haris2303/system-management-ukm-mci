@@ -27,18 +27,6 @@ class UserManagementTest extends TestCase
     }
 
     // ─── helper ────────────────────────────────────────────────
-    private function tokenFor(User $user): string
-    {
-        return $user->createToken('test')->plainTextToken;
-    }
-
-    private function aktifUser(array $attrs = []): User
-    {
-        /** @var User $user */
-        $user = User::factory()->create($attrs);
-        $user->assignRole('anggota');
-        return $user;
-    }
 
     private function demisionerUser(): User
     {
@@ -57,13 +45,13 @@ class UserManagementTest extends TestCase
         $user = $this->aktifUser(['password' => 'password_lama']);
 
         $this->withToken($this->tokenFor($user))
-             ->postJson('/api/profile/password', [
-                 'current_password'          => 'password_lama',
-                 'new_password'              => 'password_baru123',
-                 'new_password_confirmation' => 'password_baru123',
-             ])
-             ->assertOk()
-             ->assertJsonPath('pesan', 'Password berhasil diperbarui.');
+            ->postJson('/api/profile/password', [
+                'current_password'          => 'password_lama',
+                'new_password'              => 'password_baru123',
+                'new_password_confirmation' => 'password_baru123',
+            ])
+            ->assertOk()
+            ->assertJsonPath('pesan', 'Password berhasil diperbarui.');
     }
 
     public function test_bisa_login_dengan_password_baru_setelah_ganti(): void
@@ -71,11 +59,11 @@ class UserManagementTest extends TestCase
         $user = $this->aktifUser(['password' => 'password_lama']);
 
         $this->withToken($this->tokenFor($user))
-             ->postJson('/api/profile/password', [
-                 'current_password'          => 'password_lama',
-                 'new_password'              => 'password_baru123',
-                 'new_password_confirmation' => 'password_baru123',
-             ])->assertOk();
+            ->postJson('/api/profile/password', [
+                'current_password'          => 'password_lama',
+                'new_password'              => 'password_baru123',
+                'new_password_confirmation' => 'password_baru123',
+            ])->assertOk();
 
         // Login dengan password baru harus berhasil
         $this->postJson('/api/auth/login', [
@@ -89,11 +77,11 @@ class UserManagementTest extends TestCase
         $user = $this->aktifUser(['password' => 'password_lama']);
 
         $this->withToken($this->tokenFor($user))
-             ->postJson('/api/profile/password', [
-                 'current_password'          => 'password_lama',
-                 'new_password'              => 'password_baru123',
-                 'new_password_confirmation' => 'password_baru123',
-             ])->assertOk();
+            ->postJson('/api/profile/password', [
+                'current_password'          => 'password_lama',
+                'new_password'              => 'password_baru123',
+                'new_password_confirmation' => 'password_baru123',
+            ])->assertOk();
 
         $this->postJson('/api/auth/login', [
             'email'    => $user->email,
@@ -106,13 +94,13 @@ class UserManagementTest extends TestCase
         $user = $this->aktifUser(['password' => 'password_benar']);
 
         $this->withToken($this->tokenFor($user))
-             ->postJson('/api/profile/password', [
-                 'current_password'          => 'password_salah',
-                 'new_password'              => 'password_baru123',
-                 'new_password_confirmation' => 'password_baru123',
-             ])
-             ->assertUnprocessable()
-             ->assertJsonPath('errors.current_password.0', 'Password saat ini tidak sesuai.');
+            ->postJson('/api/profile/password', [
+                'current_password'          => 'password_salah',
+                'new_password'              => 'password_baru123',
+                'new_password_confirmation' => 'password_baru123',
+            ])
+            ->assertUnprocessable()
+            ->assertJsonPath('errors.current_password.0', 'Password saat ini tidak sesuai.');
     }
 
     public function test_ganti_password_gagal_jika_password_baru_kurang_8_karakter(): void
@@ -120,13 +108,13 @@ class UserManagementTest extends TestCase
         $user = $this->aktifUser(['password' => 'password_lama']);
 
         $this->withToken($this->tokenFor($user))
-             ->postJson('/api/profile/password', [
-                 'current_password'          => 'password_lama',
-                 'new_password'              => 'pendek',
-                 'new_password_confirmation' => 'pendek',
-             ])
-             ->assertUnprocessable()
-             ->assertJsonValidationErrors(['new_password']);
+            ->postJson('/api/profile/password', [
+                'current_password'          => 'password_lama',
+                'new_password'              => 'pendek',
+                'new_password_confirmation' => 'pendek',
+            ])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors(['new_password']);
     }
 
     public function test_ganti_password_gagal_jika_konfirmasi_tidak_cocok(): void
@@ -134,13 +122,13 @@ class UserManagementTest extends TestCase
         $user = $this->aktifUser(['password' => 'password_lama']);
 
         $this->withToken($this->tokenFor($user))
-             ->postJson('/api/profile/password', [
-                 'current_password'          => 'password_lama',
-                 'new_password'              => 'password_baru123',
-                 'new_password_confirmation' => 'berbeda_sekali',
-             ])
-             ->assertUnprocessable()
-             ->assertJsonValidationErrors(['new_password']);
+            ->postJson('/api/profile/password', [
+                'current_password'          => 'password_lama',
+                'new_password'              => 'password_baru123',
+                'new_password_confirmation' => 'berbeda_sekali',
+            ])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors(['new_password']);
     }
 
     public function test_ganti_password_gagal_jika_semua_field_kosong(): void
@@ -148,9 +136,9 @@ class UserManagementTest extends TestCase
         $user = $this->aktifUser();
 
         $this->withToken($this->tokenFor($user))
-             ->postJson('/api/profile/password', [])
-             ->assertUnprocessable()
-             ->assertJsonValidationErrors(['current_password', 'new_password']);
+            ->postJson('/api/profile/password', [])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors(['current_password', 'new_password']);
     }
 
     // ── Hak Akses: Ganti Password ───────────────────────────────
@@ -169,13 +157,13 @@ class UserManagementTest extends TestCase
         $user = $this->demisionerUser();
 
         $this->withToken($this->tokenFor($user))
-             ->postJson('/api/profile/password', [
-                 'current_password'          => 'password123',
-                 'new_password'              => 'baru12345',
-                 'new_password_confirmation' => 'baru12345',
-             ])
-             ->assertForbidden()
-             ->assertJsonPath('kode', 'AKUN_DEMISIONER');
+            ->postJson('/api/profile/password', [
+                'current_password'          => 'password123',
+                'new_password'              => 'baru12345',
+                'new_password_confirmation' => 'baru12345',
+            ])
+            ->assertForbidden()
+            ->assertJsonPath('kode', 'AKUN_DEMISIONER');
     }
 
     // ══════════════════════════════════════════════════════════════
@@ -189,13 +177,13 @@ class UserManagementTest extends TestCase
         $user = $this->aktifUser();
 
         $this->withToken($this->tokenFor($user))
-             ->postJson('/api/profile/avatar', [
-                 'mode'  => 'emoji',
-                 'emoji' => '😎',
-                 'bg'    => 'ff5733',
-             ])
-             ->assertOk()
-             ->assertJsonPath('pesan', 'Avatar emoji berhasil diperbarui.');
+            ->postJson('/api/profile/avatar', [
+                'mode'  => 'emoji',
+                'emoji' => '😎',
+                'bg'    => 'ff5733',
+            ])
+            ->assertOk()
+            ->assertJsonPath('pesan', 'Avatar emoji berhasil diperbarui.');
 
         $this->assertDatabaseHas('users', [
             'id'     => $user->id,
@@ -208,12 +196,12 @@ class UserManagementTest extends TestCase
         $user = $this->aktifUser();
 
         $this->withToken($this->tokenFor($user))
-             ->postJson('/api/profile/avatar', [
-                 'mode'  => 'emoji',
-                 'emoji' => '😎',
-             ])
-             ->assertUnprocessable()
-             ->assertJsonValidationErrors(['bg']);
+            ->postJson('/api/profile/avatar', [
+                'mode'  => 'emoji',
+                'emoji' => '😎',
+            ])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors(['bg']);
     }
 
     public function test_update_avatar_emoji_gagal_jika_bg_bukan_hex_valid(): void
@@ -221,13 +209,13 @@ class UserManagementTest extends TestCase
         $user = $this->aktifUser();
 
         $this->withToken($this->tokenFor($user))
-             ->postJson('/api/profile/avatar', [
-                 'mode'  => 'emoji',
-                 'emoji' => '😎',
-                 'bg'    => 'bukan-hex',
-             ])
-             ->assertUnprocessable()
-             ->assertJsonValidationErrors(['bg']);
+            ->postJson('/api/profile/avatar', [
+                'mode'  => 'emoji',
+                'emoji' => '😎',
+                'bg'    => 'bukan-hex',
+            ])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors(['bg']);
     }
 
     public function test_update_avatar_emoji_gagal_tanpa_field_emoji(): void
@@ -235,12 +223,12 @@ class UserManagementTest extends TestCase
         $user = $this->aktifUser();
 
         $this->withToken($this->tokenFor($user))
-             ->postJson('/api/profile/avatar', [
-                 'mode' => 'emoji',
-                 'bg'   => 'ff5733',
-             ])
-             ->assertUnprocessable()
-             ->assertJsonValidationErrors(['emoji']);
+            ->postJson('/api/profile/avatar', [
+                'mode' => 'emoji',
+                'bg'   => 'ff5733',
+            ])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors(['emoji']);
     }
 
     // ── Mode: photo ─────────────────────────────────────────────
@@ -250,12 +238,12 @@ class UserManagementTest extends TestCase
         $user = $this->aktifUser();
 
         $this->withToken($this->tokenFor($user))
-             ->postJson('/api/profile/avatar', [
-                 'mode' => 'photo',
-                 'foto' => UploadedFile::fake()->image('avatar.jpg', 200, 200),
-             ])
-             ->assertOk()
-             ->assertJsonPath('pesan', 'Foto profil berhasil diperbarui.');
+            ->postJson('/api/profile/avatar', [
+                'mode' => 'photo',
+                'foto' => UploadedFile::fake()->image('avatar.jpg', 200, 200),
+            ])
+            ->assertOk()
+            ->assertJsonPath('pesan', 'Foto profil berhasil diperbarui.');
 
         $user->refresh();
         $this->assertNotNull($user->avatar);
@@ -271,12 +259,12 @@ class UserManagementTest extends TestCase
         ]);
 
         $this->withToken($this->tokenFor($user))
-             ->postJson('/api/profile/avatar', [
-                 'mode' => 'photo',
-                 'foto' => UploadedFile::fake()->image('avatar.jpg'),
-             ])
-             ->assertUnprocessable()
-             ->assertJsonPath('kode', 'COOLDOWN_AKTIF');
+            ->postJson('/api/profile/avatar', [
+                'mode' => 'photo',
+                'foto' => UploadedFile::fake()->image('avatar.jpg'),
+            ])
+            ->assertUnprocessable()
+            ->assertJsonPath('kode', 'COOLDOWN_AKTIF');
     }
 
     public function test_update_avatar_foto_berhasil_setelah_cooldown_selesai(): void
@@ -287,11 +275,11 @@ class UserManagementTest extends TestCase
         ]);
 
         $this->withToken($this->tokenFor($user))
-             ->postJson('/api/profile/avatar', [
-                 'mode' => 'photo',
-                 'foto' => UploadedFile::fake()->image('avatar.jpg'),
-             ])
-             ->assertOk();
+            ->postJson('/api/profile/avatar', [
+                'mode' => 'photo',
+                'foto' => UploadedFile::fake()->image('avatar.jpg'),
+            ])
+            ->assertOk();
     }
 
     public function test_update_avatar_foto_gagal_jika_file_bukan_gambar(): void
@@ -299,12 +287,12 @@ class UserManagementTest extends TestCase
         $user = $this->aktifUser();
 
         $this->withToken($this->tokenFor($user))
-             ->postJson('/api/profile/avatar', [
-                 'mode' => 'photo',
-                 'foto' => UploadedFile::fake()->create('dokumen.pdf', 100, 'application/pdf'),
-             ])
-             ->assertUnprocessable()
-             ->assertJsonValidationErrors(['foto']);
+            ->postJson('/api/profile/avatar', [
+                'mode' => 'photo',
+                'foto' => UploadedFile::fake()->create('dokumen.pdf', 100, 'application/pdf'),
+            ])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors(['foto']);
     }
 
     public function test_update_avatar_foto_gagal_jika_tidak_ada_file(): void
@@ -312,9 +300,9 @@ class UserManagementTest extends TestCase
         $user = $this->aktifUser();
 
         $this->withToken($this->tokenFor($user))
-             ->postJson('/api/profile/avatar', ['mode' => 'photo'])
-             ->assertUnprocessable()
-             ->assertJsonValidationErrors(['foto']);
+            ->postJson('/api/profile/avatar', ['mode' => 'photo'])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors(['foto']);
     }
 
     // ── Mode: last_photo ────────────────────────────────────────
@@ -327,9 +315,9 @@ class UserManagementTest extends TestCase
         ]);
 
         $this->withToken($this->tokenFor($user))
-             ->postJson('/api/profile/avatar', ['mode' => 'last_photo'])
-             ->assertOk()
-             ->assertJsonPath('pesan', 'Avatar berhasil dikembalikan ke foto sebelumnya.');
+            ->postJson('/api/profile/avatar', ['mode' => 'last_photo'])
+            ->assertOk()
+            ->assertJsonPath('pesan', 'Avatar berhasil dikembalikan ke foto sebelumnya.');
 
         $this->assertDatabaseHas('users', [
             'id'     => $user->id,
@@ -342,9 +330,9 @@ class UserManagementTest extends TestCase
         $user = $this->aktifUser(['last_photo_path' => null]);
 
         $this->withToken($this->tokenFor($user))
-             ->postJson('/api/profile/avatar', ['mode' => 'last_photo'])
-             ->assertUnprocessable()
-             ->assertJsonPath('kode', 'TIDAK_ADA_FOTO_LAMA');
+            ->postJson('/api/profile/avatar', ['mode' => 'last_photo'])
+            ->assertUnprocessable()
+            ->assertJsonPath('kode', 'TIDAK_ADA_FOTO_LAMA');
     }
 
     // ── Mode: tidak valid ───────────────────────────────────────
@@ -354,9 +342,9 @@ class UserManagementTest extends TestCase
         $user = $this->aktifUser();
 
         $this->withToken($this->tokenFor($user))
-             ->postJson('/api/profile/avatar', ['mode' => 'mode_aneh'])
-             ->assertUnprocessable()
-             ->assertJsonPath('pesan', 'Mode tidak valid.');
+            ->postJson('/api/profile/avatar', ['mode' => 'mode_aneh'])
+            ->assertUnprocessable()
+            ->assertJsonPath('pesan', 'Mode tidak valid.');
     }
 
     // ── Hak Akses: Update Avatar ────────────────────────────────
@@ -364,7 +352,7 @@ class UserManagementTest extends TestCase
     public function test_update_avatar_memerlukan_autentikasi(): void
     {
         $this->postJson('/api/profile/avatar', ['mode' => 'emoji', 'emoji' => '🔥', 'bg' => '000000'])
-             ->assertUnauthorized();
+            ->assertUnauthorized();
     }
 
     public function test_update_avatar_diblokir_untuk_demisioner(): void
@@ -372,9 +360,9 @@ class UserManagementTest extends TestCase
         $user = $this->demisionerUser();
 
         $this->withToken($this->tokenFor($user))
-             ->postJson('/api/profile/avatar', ['mode' => 'emoji', 'emoji' => '🔥', 'bg' => '000000'])
-             ->assertForbidden()
-             ->assertJsonPath('kode', 'AKUN_DEMISIONER');
+            ->postJson('/api/profile/avatar', ['mode' => 'emoji', 'emoji' => '🔥', 'bg' => '000000'])
+            ->assertForbidden()
+            ->assertJsonPath('kode', 'AKUN_DEMISIONER');
     }
 
     // ══════════════════════════════════════════════════════════════
@@ -388,12 +376,12 @@ class UserManagementTest extends TestCase
         $expectedMemberId = 'MCI-' . str_pad($user->id, 4, '0', STR_PAD_LEFT);
 
         $this->withToken($this->tokenFor($user))
-             ->getJson('/api/id-card/me')
-             ->assertOk()
-             ->assertJsonPath('member_id', $expectedMemberId)
-             ->assertJsonPath('user.id', $user->id)
-             ->assertJsonPath('user.name', $user->name)
-             ->assertJsonStructure(['user', 'member_id', 'foto_url', 'card_url']);
+            ->getJson('/api/id-card/me')
+            ->assertOk()
+            ->assertJsonPath('member_id', $expectedMemberId)
+            ->assertJsonPath('user.id', $user->id)
+            ->assertJsonPath('user.name', $user->name)
+            ->assertJsonStructure(['user', 'member_id', 'foto_url', 'card_url']);
     }
 
     public function test_id_card_me_memerlukan_autentikasi(): void
@@ -413,9 +401,9 @@ class UserManagementTest extends TestCase
         $user = User::factory()->create();
 
         $this->getJson("/api/id-card/{$user->id}")
-             ->assertOk()
-             ->assertJsonPath('user.id', $user->id)
-             ->assertJsonPath('user.name', $user->name);
+            ->assertOk()
+            ->assertJsonPath('user.id', $user->id)
+            ->assertJsonPath('user.name', $user->name);
     }
 
     public function test_id_card_publik_tidak_mengekspos_email_dan_nomor_hp(): void
@@ -444,8 +432,8 @@ class UserManagementTest extends TestCase
         $user = $this->aktifUser();
 
         $response = $this->withToken($this->tokenFor($user))
-                         ->getJson('/api/id-card/me')
-                         ->assertOk();
+            ->getJson('/api/id-card/me')
+            ->assertOk();
 
         $memberId = $response->json('member_id');
         $this->assertMatchesRegularExpression('/^MCI-\d{4}$/', $memberId);
@@ -457,21 +445,23 @@ class UserManagementTest extends TestCase
 
     #[\PHPUnit\Framework\Attributes\DataProvider('protectedEndpointsProvider')]
     public function test_endpoint_protected_menolak_request_tanpa_token(
-        string $method, string $url
+        string $method,
+        string $url
     ): void {
         $this->json($method, $url)->assertUnauthorized();
     }
 
     #[\PHPUnit\Framework\Attributes\DataProvider('demisionerBlockedEndpointsProvider')]
     public function test_endpoint_diblokir_untuk_akun_demisioner(
-        string $method, string $url
+        string $method,
+        string $url
     ): void {
         $user = $this->demisionerUser();
 
         $this->withToken($this->tokenFor($user))
-             ->json($method, $url)
-             ->assertForbidden()
-             ->assertJsonPath('kode', 'AKUN_DEMISIONER');
+            ->json($method, $url)
+            ->assertForbidden()
+            ->assertJsonPath('kode', 'AKUN_DEMISIONER');
     }
 
     public static function protectedEndpointsProvider(): array

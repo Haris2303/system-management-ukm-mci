@@ -27,20 +27,6 @@ class MateriTest extends TestCase
         Storage::fake('public');
     }
 
-    // ─── helpers ───────────────────────────────────────────────
-
-    private function buatDivisi(string $nama = 'Web Dev'): Divisi
-    {
-        static $urut = 1;
-        return Divisi::create([
-            'nama'      => $nama,
-            'slug'      => Str::slug($nama . '-' . $urut++),
-            'icon'      => '💻',
-            'is_active' => true,
-            'urut'      => $urut,
-        ]);
-    }
-
     private function userDenganDivisi(Divisi $divisi): User
     {
         /** @var User $user */
@@ -55,11 +41,6 @@ class MateriTest extends TestCase
         $user = User::factory()->create(['divisi_id' => null]);
         $user->assignRole('anggota');
         return $user;
-    }
-
-    private function tokenFor(User $user): string
-    {
-        return $user->createToken('test')->plainTextToken;
     }
 
     /** Buat materi umum (divisi_id = null). */
@@ -96,8 +77,8 @@ class MateriTest extends TestCase
         $user = $this->userTanpaDivisi();
 
         $response = $this->withToken($this->tokenFor($user))
-                         ->getJson('/api/materi')
-                         ->assertOk();
+            ->getJson('/api/materi')
+            ->assertOk();
 
         $this->assertCount(2, $response->json('data.materi'));
     }
@@ -111,8 +92,8 @@ class MateriTest extends TestCase
         $this->buatMateriDivisi($divisi);
 
         $response = $this->withToken($this->tokenFor($user))
-                         ->getJson('/api/materi')
-                         ->assertOk();
+            ->getJson('/api/materi')
+            ->assertOk();
 
         $this->assertCount(2, $response->json('data.materi'));
     }
@@ -127,8 +108,8 @@ class MateriTest extends TestCase
         $this->buatMateriDivisi($divisiB, ['judul' => 'Materi B']);
 
         $response = $this->withToken($this->tokenFor($userA))
-                         ->getJson('/api/materi')
-                         ->assertOk();
+            ->getJson('/api/materi')
+            ->assertOk();
 
         $this->assertCount(1, $response->json('data.materi'));
         $this->assertEquals('Materi A', $response->json('data.materi.0.judul'));
@@ -143,8 +124,8 @@ class MateriTest extends TestCase
         $this->buatMateriDivisi($divisi, ['judul' => 'Khusus']);
 
         $response = $this->withToken($this->tokenFor($user))
-                         ->getJson('/api/materi')
-                         ->assertOk();
+            ->getJson('/api/materi')
+            ->assertOk();
 
         $this->assertCount(1, $response->json('data.materi'));
         $this->assertEquals('Umum', $response->json('data.materi.0.judul'));
@@ -162,8 +143,8 @@ class MateriTest extends TestCase
         $this->buatMateriDivisi($divisi);
 
         $response = $this->withToken($this->tokenFor($user))
-                         ->getJson('/api/materi')
-                         ->assertOk();
+            ->getJson('/api/materi')
+            ->assertOk();
 
         $this->assertEquals(3, $response->json('data.total'));
         $this->assertEquals(2, $response->json('data.jumlah_umum'));
@@ -178,8 +159,8 @@ class MateriTest extends TestCase
         $this->buatMateriUmum();
 
         $response = $this->withToken($this->tokenFor($user))
-                         ->getJson('/api/materi')
-                         ->assertOk();
+            ->getJson('/api/materi')
+            ->assertOk();
 
         $materi = $response->json('data.materi.0');
         $this->assertArrayHasKey('id',         $materi);
@@ -206,8 +187,8 @@ class MateriTest extends TestCase
         $this->buatMateriDivisi($divisi, ['judul' => 'Divisi']);
 
         $response = $this->withToken($this->tokenFor($user))
-                         ->getJson('/api/materi')
-                         ->assertOk();
+            ->getJson('/api/materi')
+            ->assertOk();
 
         $materis    = collect($response->json('data.materi'));
         $umum       = $materis->firstWhere('judul', 'Umum');
@@ -226,8 +207,8 @@ class MateriTest extends TestCase
         $this->buatMateriDivisi($divisi, ['judul' => 'Divisi']);
 
         $response = $this->withToken($this->tokenFor($user))
-                         ->getJson('/api/materi')
-                         ->assertOk();
+            ->getJson('/api/materi')
+            ->assertOk();
 
         $materis    = collect($response->json('data.materi'));
         $umum       = $materis->firstWhere('judul', 'Umum');
@@ -247,8 +228,8 @@ class MateriTest extends TestCase
         $this->buatMateriUmum(['file_path' => 'materi/dokumen.pdf']);
 
         $response = $this->withToken($this->tokenFor($user))
-                         ->getJson('/api/materi')
-                         ->assertOk();
+            ->getJson('/api/materi')
+            ->assertOk();
 
         $this->assertTrue($response->json('data.materi.0.has_file'));
         $this->assertNotNull($response->json('data.materi.0.file_url'));
@@ -260,8 +241,8 @@ class MateriTest extends TestCase
         $this->buatMateriUmum(['file_path' => null]);
 
         $response = $this->withToken($this->tokenFor($user))
-                         ->getJson('/api/materi')
-                         ->assertOk();
+            ->getJson('/api/materi')
+            ->assertOk();
 
         $this->assertFalse($response->json('data.materi.0.has_file'));
         $this->assertNull($response->json('data.materi.0.file_url'));
@@ -273,8 +254,8 @@ class MateriTest extends TestCase
         $this->buatMateriUmum(['link_url' => 'https://youtu.be/abc123']);
 
         $response = $this->withToken($this->tokenFor($user))
-                         ->getJson('/api/materi')
-                         ->assertOk();
+            ->getJson('/api/materi')
+            ->assertOk();
 
         $this->assertTrue($response->json('data.materi.0.has_link'));
         $this->assertEquals('https://youtu.be/abc123', $response->json('data.materi.0.link_url'));
@@ -286,8 +267,8 @@ class MateriTest extends TestCase
         $this->buatMateriUmum(['link_url' => null]);
 
         $response = $this->withToken($this->tokenFor($user))
-                         ->getJson('/api/materi')
-                         ->assertOk();
+            ->getJson('/api/materi')
+            ->assertOk();
 
         $this->assertFalse($response->json('data.materi.0.has_link'));
         $this->assertNull($response->json('data.materi.0.link_url'));
@@ -302,8 +283,8 @@ class MateriTest extends TestCase
         ]);
 
         $response = $this->withToken($this->tokenFor($user))
-                         ->getJson('/api/materi')
-                         ->assertOk();
+            ->getJson('/api/materi')
+            ->assertOk();
 
         $materi = $response->json('data.materi.0');
         $this->assertTrue($materi['has_file']);
@@ -320,8 +301,8 @@ class MateriTest extends TestCase
         $this->buatMateriUmum(['uploaded_by' => $uploader->id]);
 
         $response = $this->withToken($this->tokenFor($user))
-                         ->getJson('/api/materi')
-                         ->assertOk();
+            ->getJson('/api/materi')
+            ->assertOk();
 
         $this->assertEquals('Ketua Divisi', $response->json('data.materi.0.uploader'));
     }
@@ -332,8 +313,8 @@ class MateriTest extends TestCase
         $this->buatMateriUmum(['uploaded_by' => null]);
 
         $response = $this->withToken($this->tokenFor($user))
-                         ->getJson('/api/materi')
-                         ->assertOk();
+            ->getJson('/api/materi')
+            ->assertOk();
 
         $this->assertEquals('Admin', $response->json('data.materi.0.uploader'));
     }
@@ -352,8 +333,8 @@ class MateriTest extends TestCase
         $lama->save();
 
         $response = $this->withToken($this->tokenFor($user))
-                         ->getJson('/api/materi')
-                         ->assertOk();
+            ->getJson('/api/materi')
+            ->assertOk();
 
         $this->assertEquals('Baru', $response->json('data.materi.0.judul'));
         $this->assertEquals('Lama', $response->json('data.materi.1.judul'));
@@ -364,8 +345,8 @@ class MateriTest extends TestCase
         $user = $this->userTanpaDivisi();
 
         $response = $this->withToken($this->tokenFor($user))
-                         ->getJson('/api/materi')
-                         ->assertOk();
+            ->getJson('/api/materi')
+            ->assertOk();
 
         $this->assertStringContainsString('Belum ada materi', $response->json('pesan'));
         $this->assertEquals(0, $response->json('data.total'));
@@ -378,8 +359,8 @@ class MateriTest extends TestCase
         $this->buatMateriUmum(['judul' => 'Materi 2']);
 
         $response = $this->withToken($this->tokenFor($user))
-                         ->getJson('/api/materi')
-                         ->assertOk();
+            ->getJson('/api/materi')
+            ->assertOk();
 
         $this->assertStringContainsString('2', $response->json('pesan'));
     }
@@ -398,9 +379,9 @@ class MateriTest extends TestCase
         $user->assignRole('demisioner');
 
         $this->withToken($this->tokenFor($user))
-             ->getJson('/api/materi')
-             ->assertForbidden()
-             ->assertJsonPath('kode', 'AKUN_DEMISIONER');
+            ->getJson('/api/materi')
+            ->assertForbidden()
+            ->assertJsonPath('kode', 'AKUN_DEMISIONER');
     }
 
     // ══════════════════════════════════════════════════════════════

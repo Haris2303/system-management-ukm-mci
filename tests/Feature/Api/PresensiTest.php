@@ -24,37 +24,6 @@ class PresensiTest extends TestCase
         Role::firstOrCreate(['name' => 'super_admin', 'guard_name' => 'web']);
     }
 
-    // ─── helpers ───────────────────────────────────────────────
-
-    private function aktifUser(array $attrs = []): User
-    {
-        /** @var User $user */
-        $user = User::factory()->create($attrs);
-        $user->assignRole('anggota');
-        return $user;
-    }
-
-    private function tokenFor(User $user): string
-    {
-        return $user->createToken('test')->plainTextToken;
-    }
-
-    /**
-     * Buat agenda dengan waktu valid (mulai 30 menit lalu, selesai 2 jam lagi).
-     * Memastikan hook retrieved tidak menutup agenda saat diambil dalam test.
-     */
-    private function buatAgenda(array $attrs = []): Agenda
-    {
-        return Agenda::create(array_merge([
-            'nama_agenda'   => 'Rapat Rutin',
-            'deskripsi'     => 'Agenda test',
-            'waktu_mulai'   => now()->subMinutes(30),
-            'waktu_selesai' => now()->addHours(2),
-            'lokasi'        => 'Ruang A',
-            'is_active'     => true,
-        ], $attrs));
-    }
-
     // ══════════════════════════════════════════════════════════════
     // CATAT PRESENSI — POST /api/presensi
     // ══════════════════════════════════════════════════════════════
@@ -65,11 +34,11 @@ class PresensiTest extends TestCase
         $user   = $this->aktifUser();
 
         $this->withToken($this->tokenFor($user))
-             ->postJson('/api/presensi', ['token' => $agenda->qr_code_token])
-             ->assertCreated()
-             ->assertJsonPath('status', 'berhasil')
-             ->assertJsonPath('data.status', 'Hadir')
-             ->assertJsonPath('data.agenda', $agenda->nama_agenda);
+            ->postJson('/api/presensi', ['token' => $agenda->qr_code_token])
+            ->assertCreated()
+            ->assertJsonPath('status', 'berhasil')
+            ->assertJsonPath('data.status', 'Hadir')
+            ->assertJsonPath('data.agenda', $agenda->nama_agenda);
     }
 
     public function test_presensi_tersimpan_di_database(): void
@@ -78,8 +47,8 @@ class PresensiTest extends TestCase
         $user   = $this->aktifUser();
 
         $this->withToken($this->tokenFor($user))
-             ->postJson('/api/presensi', ['token' => $agenda->qr_code_token])
-             ->assertCreated();
+            ->postJson('/api/presensi', ['token' => $agenda->qr_code_token])
+            ->assertCreated();
 
         $this->assertDatabaseHas('presensis', [
             'user_id'   => $user->id,
@@ -94,8 +63,8 @@ class PresensiTest extends TestCase
         $user   = $this->aktifUser(['name' => 'Budi Santoso']);
 
         $response = $this->withToken($this->tokenFor($user))
-                         ->postJson('/api/presensi', ['token' => $agenda->qr_code_token])
-                         ->assertCreated();
+            ->postJson('/api/presensi', ['token' => $agenda->qr_code_token])
+            ->assertCreated();
 
         $this->assertStringContainsString('Budi Santoso', $response->json('pesan'));
     }
@@ -111,9 +80,9 @@ class PresensiTest extends TestCase
         $tokenPalsu = str_repeat('x', 32);
 
         $this->withToken($this->tokenFor($user))
-             ->postJson('/api/presensi', ['token' => $tokenPalsu])
-             ->assertNotFound()
-             ->assertJsonPath('status', 'gagal');
+            ->postJson('/api/presensi', ['token' => $tokenPalsu])
+            ->assertNotFound()
+            ->assertJsonPath('status', 'gagal');
     }
 
     public function test_presensi_gagal_jika_agenda_tidak_aktif(): void
@@ -123,9 +92,9 @@ class PresensiTest extends TestCase
         $user   = $this->aktifUser();
 
         $this->withToken($this->tokenFor($user))
-             ->postJson('/api/presensi', ['token' => $agenda->qr_code_token])
-             ->assertNotFound()
-             ->assertJsonPath('status', 'gagal');
+            ->postJson('/api/presensi', ['token' => $agenda->qr_code_token])
+            ->assertNotFound()
+            ->assertJsonPath('status', 'gagal');
     }
 
     // ── Validasi Waktu ──────────────────────────────────────────
@@ -141,10 +110,10 @@ class PresensiTest extends TestCase
         $user = $this->aktifUser();
 
         $this->withToken($this->tokenFor($user))
-             ->postJson('/api/presensi', ['token' => $agenda->qr_code_token])
-             ->assertStatus(400)
-             ->assertJsonPath('status', 'gagal')
-             ->assertJsonFragment(['pesan' => 'Jadwal presensi sudah ditutup.']);
+            ->postJson('/api/presensi', ['token' => $agenda->qr_code_token])
+            ->assertStatus(400)
+            ->assertJsonPath('status', 'gagal')
+            ->assertJsonFragment(['pesan' => 'Jadwal presensi sudah ditutup.']);
     }
 
     public function test_presensi_gagal_jika_belum_waktunya_mulai(): void
@@ -156,10 +125,10 @@ class PresensiTest extends TestCase
         $user = $this->aktifUser();
 
         $this->withToken($this->tokenFor($user))
-             ->postJson('/api/presensi', ['token' => $agenda->qr_code_token])
-             ->assertStatus(400)
-             ->assertJsonPath('status', 'Gagal')
-             ->assertJsonFragment(['pesan' => 'Jadwal presensi belum dimulai.']);
+            ->postJson('/api/presensi', ['token' => $agenda->qr_code_token])
+            ->assertStatus(400)
+            ->assertJsonPath('status', 'Gagal')
+            ->assertJsonFragment(['pesan' => 'Jadwal presensi belum dimulai.']);
     }
 
     // ── Duplikasi ───────────────────────────────────────────────
@@ -179,9 +148,9 @@ class PresensiTest extends TestCase
 
         // Coba presensi lagi → harus ditolak
         $this->withToken($this->tokenFor($user))
-             ->postJson('/api/presensi', ['token' => $agenda->qr_code_token])
-             ->assertUnprocessable()
-             ->assertJsonFragment(['pesan' => 'Anda sudah melakukan presensi untuk agenda ini.']);
+            ->postJson('/api/presensi', ['token' => $agenda->qr_code_token])
+            ->assertUnprocessable()
+            ->assertJsonFragment(['pesan' => 'Anda sudah melakukan presensi untuk agenda ini.']);
     }
 
     public function test_user_berbeda_dapat_presensi_di_agenda_yang_sama(): void
@@ -191,15 +160,15 @@ class PresensiTest extends TestCase
         $user2  = $this->aktifUser();
 
         $this->withToken($this->tokenFor($user1))
-             ->postJson('/api/presensi', ['token' => $agenda->qr_code_token])
-             ->assertCreated();
+            ->postJson('/api/presensi', ['token' => $agenda->qr_code_token])
+            ->assertCreated();
 
         // Reset auth guard agar request berikutnya tidak memakai cache user sebelumnya
         $this->app['auth']->forgetGuards();
 
         $this->withToken($this->tokenFor($user2))
-             ->postJson('/api/presensi', ['token' => $agenda->qr_code_token])
-             ->assertCreated();
+            ->postJson('/api/presensi', ['token' => $agenda->qr_code_token])
+            ->assertCreated();
 
         $this->assertDatabaseCount('presensis', 2);
     }
@@ -211,9 +180,9 @@ class PresensiTest extends TestCase
         $user = $this->aktifUser();
 
         $this->withToken($this->tokenFor($user))
-             ->postJson('/api/presensi', [])
-             ->assertUnprocessable()
-             ->assertJsonValidationErrors(['token']);
+            ->postJson('/api/presensi', [])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors(['token']);
     }
 
     public function test_presensi_gagal_jika_token_bukan_32_karakter(): void
@@ -221,9 +190,9 @@ class PresensiTest extends TestCase
         $user = $this->aktifUser();
 
         $this->withToken($this->tokenFor($user))
-             ->postJson('/api/presensi', ['token' => 'terlalu-pendek'])
-             ->assertUnprocessable()
-             ->assertJsonValidationErrors(['token']);
+            ->postJson('/api/presensi', ['token' => 'terlalu-pendek'])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors(['token']);
     }
 
     public function test_presensi_gagal_jika_token_lebih_dari_32_karakter(): void
@@ -231,9 +200,9 @@ class PresensiTest extends TestCase
         $user = $this->aktifUser();
 
         $this->withToken($this->tokenFor($user))
-             ->postJson('/api/presensi', ['token' => str_repeat('a', 33)])
-             ->assertUnprocessable()
-             ->assertJsonValidationErrors(['token']);
+            ->postJson('/api/presensi', ['token' => str_repeat('a', 33)])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors(['token']);
     }
 
     // ── Hak Akses: Catat Presensi ───────────────────────────────
@@ -241,7 +210,7 @@ class PresensiTest extends TestCase
     public function test_presensi_memerlukan_autentikasi(): void
     {
         $this->postJson('/api/presensi', ['token' => str_repeat('a', 32)])
-             ->assertUnauthorized();
+            ->assertUnauthorized();
     }
 
     // ══════════════════════════════════════════════════════════════
@@ -261,10 +230,10 @@ class PresensiTest extends TestCase
         ]);
 
         $this->withToken($this->tokenFor($user))
-             ->getJson('/api/presensi/riwayat')
-             ->assertOk()
-             ->assertJsonPath('pesan', 'Riwayat presensi berhasil dimuat.')
-             ->assertJsonCount(1, 'data.data');
+            ->getJson('/api/presensi/riwayat')
+            ->assertOk()
+            ->assertJsonPath('pesan', 'Riwayat presensi berhasil dimuat.')
+            ->assertJsonCount(1, 'data.data');
     }
 
     public function test_riwayat_tidak_mengembalikan_presensi_user_lain(): void
@@ -282,9 +251,9 @@ class PresensiTest extends TestCase
         ]);
 
         $this->withToken($this->tokenFor($userLogin))
-             ->getJson('/api/presensi/riwayat')
-             ->assertOk()
-             ->assertJsonCount(0, 'data.data');
+            ->getJson('/api/presensi/riwayat')
+            ->assertOk()
+            ->assertJsonCount(0, 'data.data');
     }
 
     public function test_riwayat_diurutkan_terbaru_dahulu(): void
@@ -307,8 +276,8 @@ class PresensiTest extends TestCase
         ]);
 
         $response = $this->withToken($this->tokenFor($user))
-                         ->getJson('/api/presensi/riwayat')
-                         ->assertOk();
+            ->getJson('/api/presensi/riwayat')
+            ->assertOk();
 
         $items = $response->json('data.data');
         $this->assertEquals($agenda2->id, $items[0]['agenda_id']);
@@ -320,17 +289,17 @@ class PresensiTest extends TestCase
         $user = $this->aktifUser();
 
         $this->withToken($this->tokenFor($user))
-             ->getJson('/api/presensi/riwayat')
-             ->assertOk()
-             ->assertJsonStructure([
-                 'data' => [
-                     'data',
-                     'current_page',
-                     'per_page',
-                     'total',
-                     'last_page',
-                 ],
-             ]);
+            ->getJson('/api/presensi/riwayat')
+            ->assertOk()
+            ->assertJsonStructure([
+                'data' => [
+                    'data',
+                    'current_page',
+                    'per_page',
+                    'total',
+                    'last_page',
+                ],
+            ]);
     }
 
     public function test_riwayat_menyertakan_nama_agenda(): void
@@ -346,8 +315,8 @@ class PresensiTest extends TestCase
         ]);
 
         $response = $this->withToken($this->tokenFor($user))
-                         ->getJson('/api/presensi/riwayat')
-                         ->assertOk();
+            ->getJson('/api/presensi/riwayat')
+            ->assertOk();
 
         $item = $response->json('data.data.0');
         $this->assertEquals('Rapat Bulanan', $item['agenda']['nama_agenda']);
@@ -358,10 +327,10 @@ class PresensiTest extends TestCase
         $user = $this->aktifUser();
 
         $this->withToken($this->tokenFor($user))
-             ->getJson('/api/presensi/riwayat')
-             ->assertOk()
-             ->assertJsonCount(0, 'data.data')
-             ->assertJsonPath('data.total', 0);
+            ->getJson('/api/presensi/riwayat')
+            ->assertOk()
+            ->assertJsonCount(0, 'data.data')
+            ->assertJsonPath('data.total', 0);
     }
 
     // ── Hak Akses: Riwayat ─────────────────────────────────────

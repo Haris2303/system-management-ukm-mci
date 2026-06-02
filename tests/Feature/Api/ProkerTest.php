@@ -26,18 +26,6 @@ class ProkerTest extends TestCase
 
     // ─── helpers ───────────────────────────────────────────────
 
-    private function buatDivisi(string $nama = 'Web Dev'): Divisi
-    {
-        static $urut = 1;
-        return Divisi::create([
-            'nama'      => $nama,
-            'slug'      => \Illuminate\Support\Str::slug($nama . '-' . $urut++),
-            'icon'      => '💻',
-            'is_active' => true,
-            'urut'      => $urut,
-        ]);
-    }
-
     private function userDenganDivisi(Divisi $divisi): User
     {
         /** @var User $user */
@@ -52,11 +40,6 @@ class ProkerTest extends TestCase
         $user = User::factory()->create(['divisi_id' => null]);
         $user->assignRole('anggota');
         return $user;
-    }
-
-    private function tokenFor(User $user): string
-    {
-        return $user->createToken('test')->plainTextToken;
     }
 
     /** Buat proker umum (divisi_id = null). */
@@ -109,8 +92,8 @@ class ProkerTest extends TestCase
         $user = $this->userTanpaDivisi();
 
         $response = $this->withToken($this->tokenFor($user))
-                         ->getJson('/api/proker')
-                         ->assertOk();
+            ->getJson('/api/proker')
+            ->assertOk();
 
         $this->assertCount(2, $response->json('data.proker'));
     }
@@ -124,8 +107,8 @@ class ProkerTest extends TestCase
         $this->buatProkerDivisi($divisi);
 
         $response = $this->withToken($this->tokenFor($user))
-                         ->getJson('/api/proker')
-                         ->assertOk();
+            ->getJson('/api/proker')
+            ->assertOk();
 
         // Menerima 2: proker umum + proker divisinya
         $this->assertCount(2, $response->json('data.proker'));
@@ -141,8 +124,8 @@ class ProkerTest extends TestCase
         $this->buatProkerDivisi($divisiB, ['nama_proker' => 'Proker B']);
 
         $response = $this->withToken($this->tokenFor($userA))
-                         ->getJson('/api/proker')
-                         ->assertOk();
+            ->getJson('/api/proker')
+            ->assertOk();
 
         $this->assertCount(1, $response->json('data.proker'));
         $this->assertEquals('Proker A', $response->json('data.proker.0.nama_proker'));
@@ -157,8 +140,8 @@ class ProkerTest extends TestCase
         $this->buatProkerDivisi($divisi, ['nama_proker' => 'Khusus Divisi']);
 
         $response = $this->withToken($this->tokenFor($user))
-                         ->getJson('/api/proker')
-                         ->assertOk();
+            ->getJson('/api/proker')
+            ->assertOk();
 
         $this->assertCount(1, $response->json('data.proker'));
         $this->assertEquals('Umum', $response->json('data.proker.0.nama_proker'));
@@ -179,8 +162,8 @@ class ProkerTest extends TestCase
         ]);
 
         $response = $this->withToken($this->tokenFor($user))
-                         ->getJson('/api/proker')
-                         ->assertOk();
+            ->getJson('/api/proker')
+            ->assertOk();
 
         $stats = $response->json('data.statistik');
         $this->assertEquals(4, $stats['total']);
@@ -196,8 +179,8 @@ class ProkerTest extends TestCase
         $this->buatProkerUmum(['nama_proker' => 'Proker Test']);
 
         $response = $this->withToken($this->tokenFor($user))
-                         ->getJson('/api/proker')
-                         ->assertOk();
+            ->getJson('/api/proker')
+            ->assertOk();
 
         $proker = $response->json('data.proker.0');
         $this->assertArrayHasKey('id', $proker);
@@ -221,8 +204,8 @@ class ProkerTest extends TestCase
         $this->buatProkerDivisi($divisi);
 
         $response = $this->withToken($this->tokenFor($user))
-                         ->getJson('/api/proker')
-                         ->assertOk();
+            ->getJson('/api/proker')
+            ->assertOk();
 
         $prokers = collect($response->json('data.proker'));
         $umum    = $prokers->firstWhere('is_umum', true);
@@ -237,8 +220,8 @@ class ProkerTest extends TestCase
         $user = $this->userTanpaDivisi();
 
         $response = $this->withToken($this->tokenFor($user))
-                         ->getJson('/api/proker')
-                         ->assertOk();
+            ->getJson('/api/proker')
+            ->assertOk();
 
         $this->assertStringContainsString('Belum ada', $response->json('pesan'));
         $this->assertCount(0, $response->json('data.proker'));
@@ -251,8 +234,8 @@ class ProkerTest extends TestCase
         $this->buatProkerUmum(['nama_proker' => 'Proker 2']);
 
         $response = $this->withToken($this->tokenFor($user))
-                         ->getJson('/api/proker')
-                         ->assertOk();
+            ->getJson('/api/proker')
+            ->assertOk();
 
         $this->assertStringContainsString('2', $response->json('pesan'));
     }
@@ -271,9 +254,9 @@ class ProkerTest extends TestCase
         $user->assignRole('demisioner');
 
         $this->withToken($this->tokenFor($user))
-             ->getJson('/api/proker')
-             ->assertForbidden()
-             ->assertJsonPath('kode', 'AKUN_DEMISIONER');
+            ->getJson('/api/proker')
+            ->assertForbidden()
+            ->assertJsonPath('kode', 'AKUN_DEMISIONER');
     }
 
     // ══════════════════════════════════════════════════════════════
@@ -288,8 +271,8 @@ class ProkerTest extends TestCase
         $this->buatTugas($proker, 'Tugas B');
 
         $response = $this->withToken($this->tokenFor($user))
-                         ->getJson("/api/proker/{$proker->id}")
-                         ->assertOk();
+            ->getJson("/api/proker/{$proker->id}")
+            ->assertOk();
 
         $this->assertEquals($proker->id, $response->json('data.id'));
         $this->assertCount(2, $response->json('data.tugas'));
@@ -302,8 +285,8 @@ class ProkerTest extends TestCase
         $proker  = $this->buatProkerUmum();
 
         $this->withToken($this->tokenFor($userB))
-             ->getJson("/api/proker/{$proker->id}")
-             ->assertOk();
+            ->getJson("/api/proker/{$proker->id}")
+            ->assertOk();
     }
 
     public function test_show_proker_divisi_lain_mengembalikan_404(): void
@@ -314,9 +297,9 @@ class ProkerTest extends TestCase
         $proker  = $this->buatProkerDivisi($divisiB);
 
         $this->withToken($this->tokenFor($userA))
-             ->getJson("/api/proker/{$proker->id}")
-             ->assertNotFound()
-             ->assertJsonFragment(['pesan' => 'Program kerja tidak ditemukan atau Anda tidak punya akses.']);
+            ->getJson("/api/proker/{$proker->id}")
+            ->assertNotFound()
+            ->assertJsonFragment(['pesan' => 'Program kerja tidak ditemukan atau Anda tidak punya akses.']);
     }
 
     public function test_show_mengembalikan_404_untuk_proker_tidak_ada(): void
@@ -324,8 +307,8 @@ class ProkerTest extends TestCase
         $user = $this->userTanpaDivisi();
 
         $this->withToken($this->tokenFor($user))
-             ->getJson('/api/proker/99999')
-             ->assertNotFound();
+            ->getJson('/api/proker/99999')
+            ->assertNotFound();
     }
 
     public function test_show_tugas_diurutkan_berdasarkan_urut(): void
@@ -338,8 +321,8 @@ class ProkerTest extends TestCase
         TugasProker::create(['proker_id' => $proker->id, 'nama_tugas' => 'Tugas Kedua', 'urut' => 2]);
 
         $response = $this->withToken($this->tokenFor($user))
-                         ->getJson("/api/proker/{$proker->id}")
-                         ->assertOk();
+            ->getJson("/api/proker/{$proker->id}")
+            ->assertOk();
 
         $tugas = $response->json('data.tugas');
         $this->assertEquals('Tugas Pertama', $tugas[0]['nama_tugas']);
@@ -354,8 +337,8 @@ class ProkerTest extends TestCase
         $proker = $this->buatProkerDivisi($divisi);
 
         $response = $this->withToken($this->tokenFor($user))
-                         ->getJson("/api/proker/{$proker->id}")
-                         ->assertOk();
+            ->getJson("/api/proker/{$proker->id}")
+            ->assertOk();
 
         $this->assertNotNull($response->json('data.divisi'));
         $this->assertEquals($divisi->id, $response->json('data.divisi.id'));
@@ -367,8 +350,8 @@ class ProkerTest extends TestCase
         $proker = $this->buatProkerUmum();
 
         $response = $this->withToken($this->tokenFor($user))
-                         ->getJson("/api/proker/{$proker->id}")
-                         ->assertOk();
+            ->getJson("/api/proker/{$proker->id}")
+            ->assertOk();
 
         $this->assertNull($response->json('data.divisi'));
     }
@@ -380,8 +363,8 @@ class ProkerTest extends TestCase
         $proker = $this->buatProkerUmum(['pic_id' => $pic->id]);
 
         $response = $this->withToken($this->tokenFor($user))
-                         ->getJson("/api/proker/{$proker->id}")
-                         ->assertOk();
+            ->getJson("/api/proker/{$proker->id}")
+            ->assertOk();
 
         $this->assertNotNull($response->json('data.pic'));
         $this->assertEquals('Koordinator Proker', $response->json('data.pic.name'));
@@ -403,9 +386,9 @@ class ProkerTest extends TestCase
         $proker = $this->buatProkerUmum();
 
         $this->withToken($this->tokenFor($user))
-             ->getJson("/api/proker/{$proker->id}")
-             ->assertForbidden()
-             ->assertJsonPath('kode', 'AKUN_DEMISIONER');
+            ->getJson("/api/proker/{$proker->id}")
+            ->assertForbidden()
+            ->assertJsonPath('kode', 'AKUN_DEMISIONER');
     }
 
     // ══════════════════════════════════════════════════════════════

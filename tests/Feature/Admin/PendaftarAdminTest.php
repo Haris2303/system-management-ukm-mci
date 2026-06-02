@@ -12,6 +12,7 @@ use App\Models\PertanyaanSeleksi;
 use App\Models\User;
 use App\Services\PendaftarService;
 use Database\Seeders\RolePermissionSeeder;
+use Filament\Actions\Testing\TestAction;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Str;
 use Livewire\Livewire;
@@ -527,8 +528,8 @@ class PendaftarAdminTest extends TestCase
 
         Livewire::actingAs($admin)
             ->test(ListPendaftars::class)
-            ->assertTableActionExists('luluskan')
-            ->assertTableActionVisible('luluskan', $pendaftar);
+            ->assertActionExists(TestAction::make('luluskan')->table($pendaftar))
+            ->assertActionVisible(TestAction::make('luluskan')->table($pendaftar));
     }
 
     public function test_aksi_tolak_tersedia_untuk_pendaftar_menunggu(): void
@@ -539,8 +540,8 @@ class PendaftarAdminTest extends TestCase
 
         Livewire::actingAs($admin)
             ->test(ListPendaftars::class)
-            ->assertTableActionExists('tolak')
-            ->assertTableActionVisible('tolak', $pendaftar);
+            ->assertActionExists(TestAction::make('tolak')->table($pendaftar))
+            ->assertActionVisible(TestAction::make('tolak')->table($pendaftar));
     }
 
     public function test_aksi_luluskan_tidak_tersedia_untuk_yang_sudah_lulus(): void
@@ -551,7 +552,7 @@ class PendaftarAdminTest extends TestCase
 
         Livewire::actingAs($admin)
             ->test(ListPendaftars::class)
-            ->assertTableActionHidden('luluskan', $pendaftar);
+            ->assertActionHidden(TestAction::make('luluskan')->table($pendaftar));
     }
 
     public function test_aksi_tolak_tidak_tersedia_untuk_yang_sudah_ditolak(): void
@@ -562,7 +563,7 @@ class PendaftarAdminTest extends TestCase
 
         Livewire::actingAs($admin)
             ->test(ListPendaftars::class)
-            ->assertTableActionHidden('tolak', $pendaftar);
+            ->assertActionHidden(TestAction::make('tolak')->table($pendaftar));
     }
 
     public function test_eksekusi_aksi_luluskan_dari_tabel(): void
@@ -577,8 +578,8 @@ class PendaftarAdminTest extends TestCase
 
         Livewire::actingAs($admin)
             ->test(ListPendaftars::class)
-            ->callTableAction('luluskan', $pendaftar)
-            ->assertHasNoTableActionErrors();
+            ->callAction(TestAction::make('luluskan')->table($pendaftar))
+            ->assertHasNoFormErrors();
 
         $this->assertEquals('lulus', $pendaftar->fresh()->status);
         // Akun dibuat dengan email yang diinput di formulir
@@ -593,8 +594,8 @@ class PendaftarAdminTest extends TestCase
 
         Livewire::actingAs($admin)
             ->test(ListPendaftars::class)
-            ->callTableAction('tolak', $pendaftar)
-            ->assertHasNoTableActionErrors();
+            ->callAction(TestAction::make('tolak')->table($pendaftar))
+            ->assertHasNoFormErrors();
 
         $this->assertEquals('ditolak', $pendaftar->fresh()->status);
     }

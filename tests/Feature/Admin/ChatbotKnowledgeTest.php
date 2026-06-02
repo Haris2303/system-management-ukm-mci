@@ -10,6 +10,7 @@ use App\Models\RagChunk;
 use App\Models\RagDocument;
 use App\Models\User;
 use Database\Seeders\RolePermissionSeeder;
+use Filament\Actions\Testing\TestAction;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Queue;
@@ -108,7 +109,7 @@ class ChatbotKnowledgeTest extends TestCase
 
         Livewire::actingAs($admin)
             ->test(ListRagDocuments::class)
-            ->assertTableActionVisible('lihat_isi', $dok);
+            ->assertActionVisible(TestAction::make('lihat_isi')->table($dok));
     }
 
     public function test_aksi_lihat_isi_tersembunyi_untuk_dokumen_processing(): void
@@ -128,7 +129,7 @@ class ChatbotKnowledgeTest extends TestCase
 
         Livewire::actingAs($admin)
             ->test(ListRagDocuments::class)
-            ->assertTableActionVisible('lihat_progress', $dok);
+            ->assertActionVisible(TestAction::make('lihat_progress')->table($dok));
     }
 
     public function test_aksi_lihat_progress_tersembunyi_untuk_dokumen_ready(): void
@@ -138,7 +139,7 @@ class ChatbotKnowledgeTest extends TestCase
 
         Livewire::actingAs($admin)
             ->test(ListRagDocuments::class)
-            ->assertTableActionHidden('lihat_progress', $dok);
+            ->assertActionHidden(TestAction::make('lihat_progress')->table($dok));
     }
 
     public function test_aksi_reprocess_tersedia_untuk_dokumen_error(): void
@@ -148,7 +149,7 @@ class ChatbotKnowledgeTest extends TestCase
 
         Livewire::actingAs($admin)
             ->test(ListRagDocuments::class)
-            ->assertTableActionVisible('reprocess', $dok);
+            ->assertActionVisible(TestAction::make('reprocess')->table($dok));
     }
 
     public function test_aksi_reprocess_tersembunyi_untuk_dokumen_ready(): void
@@ -173,8 +174,8 @@ class ChatbotKnowledgeTest extends TestCase
 
         Livewire::actingAs($admin)
             ->test(ListRagDocuments::class)
-            ->callTableAction('reprocess', $dok)
-            ->assertHasNoTableActionErrors();
+            ->callAction(TestAction::make('reprocess')->table($dok))
+            ->assertHasNoFormErrors();
 
         // Chunks lama dihapus
         $this->assertDatabaseCount('rag_chunks', 0);
@@ -406,7 +407,6 @@ class ChatbotKnowledgeTest extends TestCase
         $job = new ProcessPdfJob(1);
 
         $method = new \ReflectionMethod(ProcessPdfJob::class, 'splitIntoChunks');
-        $method->setAccessible(true);
 
         // Teks sangat pendek (< 50 karakter) harus disaring
         $chunks = $method->invoke($job, 'Pendek.');
@@ -419,7 +419,6 @@ class ChatbotKnowledgeTest extends TestCase
         $job = new ProcessPdfJob(1);
 
         $method = new \ReflectionMethod(ProcessPdfJob::class, 'splitIntoChunks');
-        $method->setAccessible(true);
 
         $teks   = "Ini   teks   dengan\n\nbanyak\t\tspasi. " . str_repeat('Kalimat normal. ', 20);
         $chunks = $method->invoke($job, $teks);

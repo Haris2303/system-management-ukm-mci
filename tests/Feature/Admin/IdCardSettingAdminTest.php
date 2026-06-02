@@ -189,7 +189,7 @@ class IdCardSettingAdminTest extends TestCase
         Livewire::actingAs($admin)
             ->test(IdCardSettingPage::class)
             ->callAction('removeBackground')
-            ->assertHasNoActionErrors();
+            ->assertHasNoFormErrors();
 
         $this->assertNull(IdCardSetting::current()->fresh()->background_image);
     }
