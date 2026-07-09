@@ -9,7 +9,7 @@ use Carbon\Carbon;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 
-class KasWidget extends BaseWidget
+class StatWidget extends BaseWidget
 {
     /**
      * Tampilkan widget di posisi paling atas dashboard.

@@ -52,8 +52,7 @@ class AnggotaAktifWidget extends BaseWidget
             ->filters([
                 SelectFilter::make('divisi_id')
                     ->label('Divisi')
-                    ->options(Divisi::orderBy('urut')->pluck('nama', 'id'))
-                    ->searchable(),
+                    ->options(Divisi::orderBy('urut')->pluck('nama', 'id')),
             ])
             ->paginated([10, 25])
             ->striped();
