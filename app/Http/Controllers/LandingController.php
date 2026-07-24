@@ -19,11 +19,14 @@ class LandingController extends Controller
     /** Tampilkan landing page utama */
     public function index(): View
     {
-        $divisis         = Divisi::all();
-        $galleries       = Gallery::where('is_featured', true)->orderBy('urut')->take(9)->get();
-        $profil          = ProfilUkm::first();
-        $jumlahDivisi    = Divisi::count();
-        $jumlahAlumni    = User::role('demisioner')->count();
+        $divisis            = Divisi::all();
+        $galleries          = Gallery::where('is_featured', true)->orderBy('urut')->take(9)->get();
+        $profil             = ProfilUkm::first();
+        $jumlahDivisi       = Divisi::count();
+        $jumlahAlumni       = User::role('demisioner')->count();
+        $jumlahAnggotaAktif = User::whereDoesntHave('roles', fn ($q) => $q->where('name', 'demisioner'))
+            ->whereNull('kicked_at')
+            ->count();
         $openRecruitment = OpenRecruitment::active()->latest()->first();
 
         // Berita terbaru untuk section landing page (maks 6)
@@ -35,7 +38,7 @@ class LandingController extends Controller
 
         return view('landing', compact(
             'divisis', 'galleries', 'posts',
-            'profil', 'jumlahDivisi', 'jumlahAlumni',
+            'profil', 'jumlahDivisi', 'jumlahAlumni', 'jumlahAnggotaAktif',
             'openRecruitment'
         ));
     }

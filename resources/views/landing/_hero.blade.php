@@ -43,7 +43,11 @@
 
                 {{-- Stats — body-tabular with tnum --}}
                 <div class="flex items-center gap-8 pt-2" style="animation: fadeUp 0.8s 0.35s ease both;">
-                    @foreach ([['200+', 'Anggota Aktif'], ['50+', 'Project Selesai'], ['8', 'Divisi']] as [$n, $l])
+                    @foreach ([
+                        [$jumlahAnggotaAktif > 0 ? $jumlahAnggotaAktif . '+' : '—', 'Anggota Aktif'],
+                        [$jumlahAlumni > 0 ? $jumlahAlumni . '+' : '—', 'Alumni'],
+                        [$jumlahDivisi, 'Divisi'],
+                    ] as [$n, $l])
                         <div class="text-center">
                             <div class="font-display text-2xl text-brand-600"
                                 style="font-weight:300; font-feature-settings:'tnum'; letter-spacing:-0.42px;">
@@ -61,7 +65,7 @@
                     <a href="#daftar"
                         class="inline-flex items-center gap-2 px-7 py-3 rounded-full bg-brand-600 text-white hover:bg-brand-700 shadow-xl shadow-brand-200 hover:shadow-brand-300 hover:-translate-y-1 transition-all duration-200"
                         style="font-weight:400; font-size:16px; line-height:1.0;">
-                        Daftar Sekarang
+                        Yuk, Bergabung!
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M17 8l4 4m0 0l-4 4m4-4H3" />

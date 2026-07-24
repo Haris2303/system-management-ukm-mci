@@ -15,58 +15,205 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-        // Ambil contoh divisi untuk keperluan testing
-        $divisiProgramming = Divisi::where('nama', 'Programming')->first();
-        $divisiDesain = Divisi::where('nama', 'Desain Grafis')->first();
+        // // Ambil contoh divisi untuk keperluan testing
+        // $divisiProgramming = Divisi::where('nama', 'Programming')->first();
+        // $divisiDesain = Divisi::where('nama', 'Desain Grafis')->first();
 
-        // 2. Ketua UKM
+        // // 2. Ketua UKM
+        // $ketua = User::firstOrCreate(
+        //     ['email' => 'ketua@mci.ac.id'],
+        //     [
+        //         'name' => 'Budi Ketua',
+        //         'password' => Hash::make('password'),
+        //         'no_hp' => '082222222222',
+        //         'divisi_id' => null,
+        //     ]
+        // );
+        // $ketua->assignRole('ketua_ukm');
+
+        // // 3. Bendahara (Biasanya masuk divisi tertentu atau netral)
+        // $bendahara = User::firstOrCreate(
+        //     ['email' => 'bendahara@mci.ac.id'],
+        //     [
+        //         'name' => 'Siti Bendahara',
+        //         'password' => Hash::make('password'),
+        //         'no_hp' => '083333333333',
+        //         'divisi_id' => $divisiProgramming?->id,
+        //     ]
+        // );
+        // $bendahara->assignRole('bendahara');
+
+        // // 4. Ketua Divisi (Contoh: Ketua Programming)
+        // $ketuaDiv = User::firstOrCreate(
+        //     ['email' => 'kadiv.prog@mci.com'],
+        //     [
+        //         'name' => 'Andi Kadiv',
+        //         'password' => Hash::make('password'),
+        //         'no_hp' => '084444444444',
+        //         'divisi_id' => $divisiProgramming?->id,
+        //     ]
+        // );
+        // $ketuaDiv->assignRole('ketua_divisi');
+
+        // // 5. Anggota (Contoh: Anggota Desain)
+        // $anggota = User::firstOrCreate(
+        //     ['email' => 'anggota1@mci.ac.com'],
+        //     [
+        //         'name' => 'Rizky Anggota',
+        //         'password' => Hash::make('password'),
+        //         'no_hp' => '085555555555',
+        //         'divisi_id' => $divisiDesain?->id,
+        //     ]
+        // );
+        // $anggota->assignRole('anggota');
+
+        // $this->command->info('✅ Berhasil membuat User contoh untuk setiap Role.');
+
+
+
+        // Ambil divisi yang dipakai (sesuai isi data Excel)
+        $divisiProgramming     = Divisi::where('nama', 'Programming')->first();
+        $divisiGameDeveloper   = Divisi::where('nama', 'Game Developer')->first();
+        $divisiCinematography  = Divisi::where('nama', 'Cinematography')->first();
+
+        // 1. Ketua UKM
         $ketua = User::firstOrCreate(
-            ['email' => 'ketua@mci.ac.id'],
+            ['email' => 'yayanrasya2@gmail.com'],
             [
-                'name' => 'Budi Ketua',
+                'name' => 'Yayan Rasya Aditya Malawat',
                 'password' => Hash::make('password'),
-                'no_hp' => '082222222222',
-                'divisi_id' => null,
+                'no_hp' => '',
+                'divisi_id' => $divisiCinematography?->id,
             ]
         );
         $ketua->assignRole('ketua_ukm');
 
-        // 3. Bendahara (Biasanya masuk divisi tertentu atau netral)
+        // 2. Bendahara
         $bendahara = User::firstOrCreate(
-            ['email' => 'bendahara@mci.ac.id'],
+            ['email' => 'astielitaa87@gmail.com'],
             [
-                'name' => 'Siti Bendahara',
+                'name' => 'Asti Elita Saraswati',
                 'password' => Hash::make('password'),
-                'no_hp' => '083333333333',
+                'no_hp' => '',
                 'divisi_id' => $divisiProgramming?->id,
             ]
         );
         $bendahara->assignRole('bendahara');
 
-        // 4. Ketua Divisi (Contoh: Ketua Programming)
+        // 3. Ketua Divisi (Programming)
         $ketuaDiv = User::firstOrCreate(
-            ['email' => 'kadiv.prog@mci.com'],
+            ['email' => 'khairyariqa@gmail.com'],
             [
-                'name' => 'Andi Kadiv',
+                'name' => 'Khairy Ariqa',
                 'password' => Hash::make('password'),
-                'no_hp' => '084444444444',
+                'no_hp' => '',
                 'divisi_id' => $divisiProgramming?->id,
             ]
         );
         $ketuaDiv->assignRole('ketua_divisi');
 
-        // 5. Anggota (Contoh: Anggota Desain)
-        $anggota = User::firstOrCreate(
-            ['email' => 'anggota1@mci.ac.com'],
+        // 4. Anggota - Cinematography
+        $anggota1 = User::firstOrCreate(
+            ['email' => 'mieshellada53@gmail.com'],
             [
-                'name' => 'Rizky Anggota',
+                'name' => 'Mieshell Telling Ada',
                 'password' => Hash::make('password'),
-                'no_hp' => '085555555555',
-                'divisi_id' => $divisiDesain?->id,
+                'no_hp' => '',
+                'divisi_id' => $divisiCinematography?->id,
             ]
         );
-        $anggota->assignRole('anggota');
+        $anggota1->assignRole('anggota');
 
-        $this->command->info('✅ Berhasil membuat User contoh untuk setiap Role.');
+        $anggota2 = User::firstOrCreate(
+            ['email' => 'ritsuu0058@gmail.com'],
+            [
+                'name' => 'Risani Anggraeni',
+                'password' => Hash::make('password'),
+                'no_hp' => '',
+                'divisi_id' => $divisiCinematography?->id,
+            ]
+        );
+        $anggota2->assignRole('anggota');
+
+        $anggota3 = User::firstOrCreate(
+            ['email' => 'arthurmenanti31@gmail.con'],
+            [
+                'name' => 'Smith Arthur Menanti',
+                'password' => Hash::make('password'),
+                'no_hp' => '',
+                'divisi_id' => $divisiCinematography?->id,
+            ]
+        );
+        $anggota3->assignRole('anggota');
+
+        // 5. Anggota - Game Developer
+        $anggota4 = User::firstOrCreate(
+            ['email' => 'dewinurlatifah26@gmail.com'],
+            [
+                'name' => 'Dewi Nur Latifah',
+                'password' => Hash::make('password'),
+                'no_hp' => '',
+                'divisi_id' => $divisiGameDeveloper?->id,
+            ]
+        );
+        $anggota4->assignRole('anggota');
+
+        $anggota5 = User::firstOrCreate(
+            ['email' => 'rizkysulaiman337@gmail.com'],
+            [
+                'name' => 'Muh. Rizky S',
+                'password' => Hash::make('password'),
+                'no_hp' => '',
+                'divisi_id' => $divisiGameDeveloper?->id,
+            ]
+        );
+        $anggota5->assignRole('anggota');
+
+        $anggota6 = User::firstOrCreate(
+            ['email' => 'Iy.amunau@gmail.com'],
+            [
+                'name' => 'Israel Yoeman Amunau',
+                'password' => Hash::make('password'),
+                'no_hp' => '',
+                'divisi_id' => $divisiGameDeveloper?->id,
+            ]
+        );
+        $anggota6->assignRole('anggota');
+
+        // 6. Anggota - Programming
+        $anggota7 = User::firstOrCreate(
+            ['email' => 'nayyzhaff@gmail.com'],
+            [
+                'name' => 'Nayla Zhafrani Chairunisa',
+                'password' => Hash::make('password'),
+                'no_hp' => '',
+                'divisi_id' => $divisiProgramming?->id,
+            ]
+        );
+        $anggota7->assignRole('anggota');
+
+        $anggota8 = User::firstOrCreate(
+            ['email' => 'sititusyek@gmail.com'],
+            [
+                'name' => 'Siti Nurul Qomaria Tusyek',
+                'password' => Hash::make('password'),
+                'no_hp' => '',
+                'divisi_id' => $divisiProgramming?->id,
+            ]
+        );
+        $anggota8->assignRole('anggota');
+
+        $anggota9 = User::firstOrCreate(
+            ['email' => 'hayuningpratiwi21@gmail.com'],
+            [
+                'name' => 'Hayuning Diah Pratiwi',
+                'password' => Hash::make('password'),
+                'no_hp' => '',
+                'divisi_id' => $divisiProgramming?->id,
+            ]
+        );
+        $anggota9->assignRole('anggota');
+
+        $this->command->info('✅ Berhasil membuat User dari data Excel untuk setiap Role.');
     }
 }

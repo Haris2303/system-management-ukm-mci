@@ -97,6 +97,32 @@
                 </div>
 
                 
+                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($profil?->visi || $profil?->misi): ?>
+                    <div class="grid sm:grid-cols-2 gap-4 reveal reveal-delay-1">
+                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($profil->visi): ?>
+                            <div class="rounded-xl bg-white border border-hairline p-5">
+                                <div class="text-brand-600 text-xs uppercase tracking-widest mb-2"
+                                    style="font-weight:600;">Visi</div>
+                                <p class="text-ink-mute text-sm leading-relaxed" style="font-weight:300;">
+                                    <?php echo e($profil->visi); ?>
+
+                                </p>
+                            </div>
+                        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($profil->misi): ?>
+                            <div class="rounded-xl bg-white border border-hairline p-5">
+                                <div class="text-brand-600 text-xs uppercase tracking-widest mb-2"
+                                    style="font-weight:600;">Misi</div>
+                                <p class="text-ink-mute text-sm leading-relaxed" style="font-weight:300;">
+                                    <?php echo e($profil->misi); ?>
+
+                                </p>
+                            </div>
+                        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                    </div>
+                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+
+                
                 <div class="space-y-3 reveal reveal-delay-2">
                     <?php
                         $defaultKeunggulan = [

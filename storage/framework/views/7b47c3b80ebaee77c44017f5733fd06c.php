@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ID Card — {{ $user->name }}</title>
+    <title>ID Card — <?php echo e($user->name); ?></title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -265,9 +265,10 @@
         .id-card-bg-mode .id-card-footer-text { color: rgba(255,255,255,.55); }
 
         /* ── Template CSS (injected when no background image) ── */
-        @if(!$backgroundImage)
-        {!! $template['css'] !!}
-        @endif
+        <?php if(!$backgroundImage): ?>
+        <?php echo $template['css']; ?>
+
+        <?php endif; ?>
 
         /* ── Print ── */
         @media print {
@@ -280,11 +281,11 @@
 </head>
 
 <body>
-    {{-- Toolbar --}}
+    
     <div class="toolbar">
         <div style="display:flex;align-items:center;gap:12px;">
             <a href="javascript:history.back()" class="btn-back">← Kembali</a>
-            <span class="toolbar-title">ID Card — {{ $user->name }}</span>
+            <span class="toolbar-title">ID Card — <?php echo e($user->name); ?></span>
         </div>
         <button class="btn-print" onclick="window.print()">
             <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -296,73 +297,77 @@
     </div>
 
     <div class="page-body">
-        <div class="id-card {{ $backgroundImage ? 'id-card-bg-mode' : '' }}"
-             style="box-shadow:0 20px 60px rgba(0,0,0,0.14);{{ $backgroundImage ? 'background-image:url(\'' . $backgroundImage . '\')' : '' }}">
+        <div class="id-card <?php echo e($backgroundImage ? 'id-card-bg-mode' : ''); ?>"
+             style="box-shadow:0 20px 60px rgba(0,0,0,0.14);<?php echo e($backgroundImage ? 'background-image:url(\'' . $backgroundImage . '\')' : ''); ?>">
 
-            {{-- Corner decorations (CSS-template mode only) --}}
+            
             <div class="id-card-corner-tl"></div>
             <div class="id-card-corner-tr"></div>
             <div class="id-card-corner-bl"></div>
             <div class="id-card-corner-br"></div>
 
-            {{-- Header --}}
+            
             <div class="id-card-header">
-                <img src="{{ asset('assets/logo/logo.png') }}" alt="Logo MCI" class="id-card-header-logo">
+                <img src="<?php echo e(asset('assets/logo/logo.png')); ?>" alt="Logo MCI" class="id-card-header-logo">
                 <div class="id-card-header-text">
                     <div class="id-card-header-org">Unit Kegiatan Mahasiswa</div>
                     <div class="id-card-header-title">MCI - Media Creative Informations</div>
                 </div>
             </div>
 
-            {{-- Content panel --}}
+            
             <div class="id-card-content">
 
-                {{-- Foto (centered) --}}
+                
                 <div class="id-card-photo-wrap">
-                    @if($fotoUrl)
-                        <img src="{{ $fotoUrl }}" alt="{{ $user->name }}"
+                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($fotoUrl): ?>
+                        <img src="<?php echo e($fotoUrl); ?>" alt="<?php echo e($user->name); ?>"
                              class="id-card-photo id-card-photo-ring">
-                    @else
+                    <?php else: ?>
                         <div class="id-card-photo-placeholder id-card-photo-ring"
                              style="background:linear-gradient(135deg,#1a4ff5,#3671ff);">
-                            {{ mb_strtoupper(mb_substr($user->name, 0, 1)) }}
+                            <?php echo e(mb_strtoupper(mb_substr($user->name, 0, 1))); ?>
+
                         </div>
-                    @endif
+                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                 </div>
 
-                {{-- Nama, Role, Divisi (centered) --}}
+                
                 <div class="id-card-info">
-                    <p class="id-card-name">{{ $user->name }}</p>
+                    <p class="id-card-name"><?php echo e($user->name); ?></p>
                     <div>
                         <span class="id-card-badge">
-                            {{ $user->role_label ?? ($user->roles->first()?->name ?? 'Anggota') }}
+                            <?php echo e($user->role_label ?? ($user->roles->first()?->name ?? 'Anggota')); ?>
+
                         </span>
                     </div>
                     <div style="margin-top:10px;">
                         <div class="id-card-divisi-row">
                             <span class="id-card-divisi-label">Divisi</span>
-                            <span class="id-card-divisi-value">{{ $user->divisi?->nama ?? '—' }}</span>
+                            <span class="id-card-divisi-value"><?php echo e($user->divisi?->nama ?? '—'); ?></span>
                         </div>
                     </div>
                 </div>
 
-                {{-- Divider --}}
+                
                 <div class="id-card-divider"></div>
 
-                {{-- QR Code (centered) --}}
+                
                 <div class="id-card-qr-wrap">
                     <span class="id-card-scan-label">Scan untuk verifikasi</span>
                     <div class="id-card-qr">
-                        {!! $qrCode !!}
+                        <?php echo $qrCode; ?>
+
                     </div>
                 </div>
 
-            </div>{{-- end .id-card-content --}}
+            </div>
 
-            {{-- Footer --}}
+            
             <div class="id-card-footer">
                 <div class="id-card-footer-text">
-                    UKM MCI · Kartu Anggota Resmi · {{ date('Y') }}
+                    UKM MCI · Kartu Anggota Resmi · <?php echo e(date('Y')); ?>
+
                 </div>
             </div>
 
@@ -370,3 +375,4 @@
     </div>
 </body>
 </html>
+<?php /**PATH C:\laragon\www\ukm-mci-digitalisasi\resources\views/id-card/show.blade.php ENDPATH**/ ?>

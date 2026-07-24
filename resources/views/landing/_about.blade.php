@@ -93,6 +93,30 @@
                     @endif
                 </div>
 
+                {{-- Visi & Misi --}}
+                @if ($profil?->visi || $profil?->misi)
+                    <div class="grid sm:grid-cols-2 gap-4 reveal reveal-delay-1">
+                        @if ($profil->visi)
+                            <div class="rounded-xl bg-white border border-hairline p-5">
+                                <div class="text-brand-600 text-xs uppercase tracking-widest mb-2"
+                                    style="font-weight:600;">Visi</div>
+                                <p class="text-ink-mute text-sm leading-relaxed" style="font-weight:300;">
+                                    {{ $profil->visi }}
+                                </p>
+                            </div>
+                        @endif
+                        @if ($profil->misi)
+                            <div class="rounded-xl bg-white border border-hairline p-5">
+                                <div class="text-brand-600 text-xs uppercase tracking-widest mb-2"
+                                    style="font-weight:600;">Misi</div>
+                                <p class="text-ink-mute text-sm leading-relaxed" style="font-weight:300;">
+                                    {{ $profil->misi }}
+                                </p>
+                            </div>
+                        @endif
+                    </div>
+                @endif
+
                 {{-- Feature list --}}
                 <div class="space-y-3 reveal reveal-delay-2">
                     @php

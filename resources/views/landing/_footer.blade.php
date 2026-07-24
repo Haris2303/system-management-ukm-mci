@@ -43,7 +43,7 @@
             <div>
                 <div class="text-ink text-sm mb-5" style="font-weight:400;">Navigasi</div>
                 <ul class="space-y-3">
-                    @foreach ([['#tentang', 'Tentang Kami'], ['#program', 'Program & Divisi'], ['#galeri', 'Galeri Kegiatan'], ['#pengurus', 'Struktur Pengurus'], ['#daftar', 'Daftar Anggota']] as [$href, $label])
+                    @foreach ([['/#tentang', 'Tentang'], ['/#divisi', 'Divisi'], ['/berita', 'Berita'], ['/galeri', 'Galeri'], ['/pengurus', 'Pengurus']] as [$href, $label])
                         <li>
                             <a href="{{ $href }}"
                                 class="text-ink-mute text-sm hover:text-brand-600 transition-colors"

@@ -219,9 +219,8 @@
                 </a>
 
                 
-                <?php ($recruitmentOpen = \App\Models\OpenRecruitment::active()->exists()); ?>
                 <div class="hidden lg:flex items-center gap-1">
-                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__currentLoopData = [['/#tentang', 'Tentang'], ['/#program', 'Program'], ['/berita', 'Berita', 'berita'], ['/galeri', 'Galeri', 'galeri'], ['/pengurus', 'Pengurus']]; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as [$href, $label]): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
+                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__currentLoopData = [['/#tentang', 'Tentang'], ['/#divisi', 'Divisi'], ['/berita', 'Berita', 'berita'], ['/galeri', 'Galeri', 'galeri'], ['/pengurus', 'Pengurus']]; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as [$href, $label]): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
                         <a href="<?php echo e($href); ?>"
                             class="px-4 py-2 rounded-lg text-sm text-ink-mute hover:text-brand-600 hover:bg-brand-50 transition-all duration-200"
                             style="font-weight:300;">
@@ -234,10 +233,9 @@
                 
                 <div class="flex items-center gap-3">
                     <a href="/daftar"
-                        class="hidden lg:inline-flex items-center gap-2 px-5 py-2 rounded-full text-white text-sm shadow-lg transition-all duration-200 hover:-translate-y-0.5 <?php echo e($recruitmentOpen ? 'bg-brand-600 hover:bg-brand-700 shadow-brand-200 hover:shadow-brand-300' : 'bg-slate-400 hover:bg-slate-500 shadow-slate-200'); ?>"
+                        class="hidden lg:inline-flex items-center gap-2 px-5 py-2 rounded-full text-white text-sm shadow-lg transition-all duration-200 hover:-translate-y-0.5 bg-brand-600 hover:bg-brand-700 shadow-brand-200 hover:shadow-brand-300"
                         style="font-weight:400;">
-                        <?php echo e($recruitmentOpen ? 'Bergabung Sekarang' : 'Pendaftaran Ditutup'); ?>
-
+                        Pendaftaran
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M17 8l4 4m0 0l-4 4m4-4H3" />
@@ -259,7 +257,7 @@
         
         <div id="mobile-menu" class="lg:hidden navbar-glass border-t border-hairline">
             <div class="max-w-7xl mx-auto px-6 py-4 flex flex-col gap-1">
-                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__currentLoopData = [['/#tentang', 'Tentang Kami'], ['/#program', 'Program'], ['/galeri', 'Galeri'], ['/pengurus', 'Pengurus']]; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as [$href, $label]): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
+                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__currentLoopData = [['/#tentang', 'Tentang Kami'], ['/#divisi', 'Divisi'], ['/galeri', 'Galeri'], ['/pengurus', 'Pengurus']]; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as [$href, $label]): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
                     <a href="<?php echo e($href); ?>"
                         class="mobile-link px-4 py-3 rounded-xl text-sm text-ink-mute hover:bg-brand-50 hover:text-brand-600 transition-colors"
                         style="font-weight:300;">
@@ -269,9 +267,9 @@
                 <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::endLoop(); ?><?php endif; ?><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::closeLoop(); ?><?php endif; ?>
                 <div class="pt-2 border-t border-hairline mt-1">
                     <a href="/daftar"
-                        class="flex items-center justify-center gap-2 px-5 py-3 rounded-full text-white text-sm <?php echo e($recruitmentOpen ? 'bg-brand-600' : 'bg-slate-400'); ?>"
+                        class="flex items-center justify-center gap-2 px-5 py-3 rounded-full text-white text-sm bg-brand-600"
                         style="font-weight:400;">
-                        <?php echo e($recruitmentOpen ? 'Bergabung Sekarang' : 'Pendaftaran Ditutup'); ?> &rarr;
+                        Pendaftaran &rarr;
                     </a>
                 </div>
             </div>

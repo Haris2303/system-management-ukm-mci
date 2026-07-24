@@ -1,5 +1,5 @@
 {{-- resources/views/landing/_programs.blade.php --}}
-<section id="program" class="py-28 bg-canvas-soft relative overflow-hidden">
+<section id="divisi" class="py-28 bg-canvas-soft relative overflow-hidden">
     <div class="absolute inset-0 dot-grid opacity-40"></div>
 
     <div class="relative z-10 max-w-7xl mx-auto px-6 lg:px-8">
@@ -73,32 +73,34 @@
         @endif
 
         {{-- CTA Strip --}}
-        <div class="mt-14 reveal">
-            {{-- card-pricing-featured: brand-dark-900 --}}
-            <div
-                class="rounded-xl bg-brand-900 p-8 lg:p-10 flex flex-col lg:flex-row items-center justify-between gap-6 relative overflow-hidden">
-                <div class="absolute top-0 right-0 w-72 h-72 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/3"></div>
-                <div class="absolute bottom-0 left-20 w-40 h-40 bg-brand-600/20 rounded-full translate-y-1/2"></div>
-                <div class="relative z-10 text-center lg:text-left">
-                    <h3 class="text-2xl lg:text-3xl text-white"
-                        style="font-weight:300; letter-spacing:-0.64px;">
-                        Siap bergabung dengan divisi pilihan Anda?
-                    </h3>
-                    <p class="text-brand-200 mt-2" style="font-weight:300;">
-                        Daftar sekarang dan mulai perjalanan teknologi Anda bersama MCI.
-                    </p>
+        @if ($openRecruitment)
+            <div class="mt-14 reveal">
+                {{-- card-pricing-featured: brand-dark-900 --}}
+                <div
+                    class="rounded-xl bg-brand-900 p-8 lg:p-10 flex flex-col lg:flex-row items-center justify-between gap-6 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-72 h-72 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/3"></div>
+                    <div class="absolute bottom-0 left-20 w-40 h-40 bg-brand-600/20 rounded-full translate-y-1/2"></div>
+                    <div class="relative z-10 text-center lg:text-left">
+                        <h3 class="text-2xl lg:text-3xl text-white"
+                            style="font-weight:300; letter-spacing:-0.64px;">
+                            Siap bergabung dengan divisi pilihan Anda?
+                        </h3>
+                        <p class="text-brand-200 mt-2" style="font-weight:300;">
+                            Daftar sekarang dan mulai perjalanan teknologi Anda bersama MCI.
+                        </p>
+                    </div>
+                    {{-- button-on-dark: white bg on dark surface --}}
+                    <a href="#daftar"
+                        class="relative z-10 shrink-0 inline-flex items-center gap-2 px-7 py-3 rounded-full bg-white text-brand-700 hover:bg-brand-50 shadow-lg hover:-translate-y-0.5 transition-all duration-200"
+                        style="font-weight:400; font-size:16px; line-height:1.0;">
+                        Daftar Sekarang
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                        </svg>
+                    </a>
                 </div>
-                {{-- button-on-dark: white bg on dark surface --}}
-                <a href="#daftar"
-                    class="relative z-10 shrink-0 inline-flex items-center gap-2 px-7 py-3 rounded-full bg-white text-brand-700 hover:bg-brand-50 shadow-lg hover:-translate-y-0.5 transition-all duration-200"
-                    style="font-weight:400; font-size:16px; line-height:1.0;">
-                    Daftar Sekarang
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                    </svg>
-                </a>
             </div>
-        </div>
+        @endif
     </div>
 </section>

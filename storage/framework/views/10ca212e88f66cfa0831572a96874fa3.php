@@ -515,7 +515,7 @@
                 </div>
                 <div
                     style="color:rgba(255,255,255,.7);font-size:11.5px;font-family:'DM Sans',sans-serif;margin-top:1px;">
-                    Powered by Claude · Siap membantu 😊
+                    Powered by Haris Aja · Siap membantu 😊
                 </div>
             </div>
             <button id="chat-clear" title="Hapus percakapan"
@@ -598,7 +598,7 @@
                 if (isOpen) {
                     badge.classList.remove('show');
                     inputEl.focus();
-                    scrollToBottom();
+                    focusLastBotMessage();
                 }
             }
             trigger.addEventListener('click', togglePanel);
@@ -611,15 +611,33 @@
                 }
             });
 
+            // Buang phrase internal seperti "User Safety: safe" yang kadang
+            // ikut terbawa dalam jawaban model, beserta baris kosong sisanya.
+            function stripSafetyTag(text) {
+                return text
+                    .replace(/user\s*safety\s*:\s*safe\.?/gi, '')
+                    .replace(/[ \t]*\n\s*\n/g, '\n');
+            }
+
             // ── Simple markdown parser ─────────────────────────────────────
             function parseMarkdown(text) {
-                return text
+                const html = stripSafetyTag(text)
                     .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
                     .replace(/\*(.+?)\*/g, '<em>$1</em>')
                     .replace(/`(.+?)`/g, '<code>$1</code>')
                     .replace(/^[-•]\s(.+)/gm, '<li>$1</li>')
                     .replace(/(<li>.*<\/li>\n?)+/g, s => `<ul>${s}</ul>`)
-                    .replace(/\n/g, '<br>');
+                    // Setiap jeda baris (satu atau lebih \n berturut-turut) dianggap
+                    // batas paragraf baru, jadi selalu dirender dengan <br> ganda
+                    // supaya paragraf-paragraf jawaban AI terpisah rapi.
+                    .replace(/\n+/g, '<br><br>');
+                return stripLeadingBreaks(html);
+            }
+
+            // Buang <br>, newline, atau spasi kosong di awal jawaban AI supaya
+            // bubble chat tidak punya baris kosong/jarak ekstra di atas.
+            function stripLeadingBreaks(html) {
+                return html.replace(/^(?:\s|<br\s*\/?>)+/i, '');
             }
 
             // ── Render message ─────────────────────────────────────────────
@@ -639,8 +657,36 @@
                 wrap.appendChild(avatar);
                 wrap.appendChild(bubble);
                 messagesEl.appendChild(wrap);
-                scrollToBottom();
+
+                // Jawaban baru dari bot: fokuskan ke awal section-nya, bukan ke
+                // bawah, supaya pengguna langsung membaca dari awal jawaban.
+                if (role === 'bot') {
+                    focusNewMessage(wrap);
+                } else {
+                    scrollToBottom();
+                }
                 return bubble;
+            }
+
+            function focusNewMessage(el) {
+                requestAnimationFrame(() => {
+                    el.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                });
+            }
+
+            // Saat panel dibuka: fokuskan ke awal jawaban AI terakhir, bukan
+            // ke bawah, supaya pengguna bisa mulai baca dari awal jawabannya.
+            function focusLastBotMessage() {
+                const botMessages = messagesEl.querySelectorAll('.msg.bot');
+                const lastBot = botMessages[botMessages.length - 1];
+                if (lastBot) {
+                    focusNewMessage(lastBot);
+                } else {
+                    scrollToBottom();
+                }
             }
 
             function escapeHtml(t) {
@@ -716,47 +762,33 @@
                 }
             }
 
-            // ── Send message ───────────────────────────────────────────────
-            async function sendMessage() {
-                const text = inputEl.value.trim();
-                if (!text || isStreaming) return;
+            // ── Satu kali percobaan kirim + baca stream jawaban ─────────────
+            // Melempar Error kalau gagal (response gagal atau stream putus),
+            // supaya sendMessage() bisa mencoba ulang tanpa sepengetahuan user.
+            async function attemptSend(text) {
+                const response = await fetch('/chatbot/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrf,
+                    },
+                    body: JSON.stringify({
+                        message: text,
+                        session_id: sessionId
+                    }),
+                });
 
-                inputEl.value = '';
-                updateSendBtn();
-                autoResize();
+                if (!response.ok) {
+                    const err = await response.json().catch(() => ({}));
+                    throw new Error(err.message || 'Maaf, terjadi kesalahan. Coba lagi ya! 🙏');
+                }
 
-                // Sembunyikan suggestions setelah pertama kirim
-                suggestEl.style.display = 'none';
-
-                addMessage('user', text);
-                isStreaming = true;
-                sendBtn.disabled = true;
-
-                showTyping();
+                hideTyping();
+                const botBubble = addMessage('bot', '');
+                const botWrap = botBubble.parentElement;
 
                 try {
-                    const response = await fetch('/chatbot/chat', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': csrf,
-                        },
-                        body: JSON.stringify({
-                            message: text,
-                            session_id: sessionId
-                        }),
-                    });
-
-                    hideTyping();
-
-                    if (!response.ok) {
-                        const err = await response.json().catch(() => ({}));
-                        addMessage('bot', err.message || 'Maaf, terjadi kesalahan. Coba lagi ya! 🙏');
-                        return;
-                    }
-
                     // Streaming SSE
-                    const botBubble = addMessage('bot', '');
                     const reader = response.body.getReader();
                     const decoder = new TextDecoder();
                     let buffer = '';
@@ -786,7 +818,6 @@
                                 if (chunk.text) {
                                     fullText += chunk.text;
                                     botBubble.innerHTML = parseMarkdown(fullText);
-                                    scrollToBottom();
                                 }
                             } catch {}
                         }
@@ -798,15 +829,57 @@
                     if (!isOpen) {
                         badge.classList.add('show');
                     }
-
-                } catch (e) {
-                    hideTyping();
-                    addMessage('bot', 'Koneksi terputus. Periksa internet Anda dan coba lagi 🌐');
-                } finally {
-                    isStreaming = false;
-                    updateSendBtn();
-                    inputEl.focus();
+                } catch (streamErr) {
+                    // Buang bubble setengah jadi lalu tampilkan lagi indikator
+                    // mengetik supaya percobaan berikutnya terlihat mulus.
+                    botWrap.remove();
+                    showTyping();
+                    throw streamErr;
                 }
+            }
+
+            // ── Send message ───────────────────────────────────────────────
+            const MAX_SEND_RETRIES = 2;
+
+            async function sendMessage() {
+                const text = inputEl.value.trim();
+                if (!text || isStreaming) return;
+
+                inputEl.value = '';
+                updateSendBtn();
+                autoResize();
+
+                // Sembunyikan suggestions setelah pertama kirim
+                suggestEl.style.display = 'none';
+
+                addMessage('user', text);
+                isStreaming = true;
+                sendBtn.disabled = true;
+
+                showTyping();
+
+                let success = false;
+                let lastErrorMessage = 'Koneksi terputus. Periksa internet Anda dan coba lagi 🌐';
+
+                for (let attempt = 0; attempt <= MAX_SEND_RETRIES; attempt++) {
+                    try {
+                        await attemptSend(text);
+                        success = true;
+                        break;
+                    } catch (e) {
+                        lastErrorMessage = e.message || lastErrorMessage;
+                        // Percobaan gagal — diam-diam coba lagi (jika masih ada jatah).
+                    }
+                }
+
+                if (!success) {
+                    hideTyping();
+                    addMessage('bot', lastErrorMessage);
+                }
+
+                isStreaming = false;
+                updateSendBtn();
+                inputEl.focus();
             }
 
             // ── Input handlers ─────────────────────────────────────────────
@@ -883,9 +956,10 @@
             // ── Init ───────────────────────────────────────────────────────
             (function init() {
                 const hadHistory = loadHistory();
-                if (!hadHistory) showWelcome();
-
-                loadSuggestions();
+                if (!hadHistory) {
+                    showWelcome();
+                    loadSuggestions();
+                }
 
                 // Tampilkan badge setelah 3 detik untuk attract attention
                 setTimeout(() => {
