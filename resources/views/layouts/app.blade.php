@@ -5,15 +5,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description"
-        content="UKM MCI â€” Unit Kegiatan Mahasiswa Teknologi & Informatika. Bergabunglah bersama kami dalam mengeksplorasi dunia teknologi.">
-    <title>@yield('title', 'UKM MCI â€” Mahasiswa Creative & Innovation')</title>
+        content="UKM MCI | Unit Kegiatan Mahasiswa Media Creative Informations. Bergabunglah bersama kami dalam mengeksplorasi dunia teknologi.">
+    <title>@yield('title', 'UKM MCI Mahasiswa Creative Informations')</title>
 
     {{-- Google Fonts: Inter (open-source Sohne alternative, weights 300 & 400) --}}
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400&display=swap" rel="stylesheet">
 
     {{-- Tailwind CDN --}}
     <script src="https://cdn.tailwindcss.com"></script>
@@ -27,7 +25,7 @@
                     },
                     colors: {
                         brand: {
-                            50:  '#eef5ff',
+                            50: '#eef5ff',
                             100: '#daeaff',
                             200: '#bdd8ff',
                             300: '#90bdff',
@@ -42,8 +40,8 @@
                         accent: '#0ff4c6',
                         violet: {
                             DEFAULT: '#8b5cf6',
-                            deep:    '#7c3aed',
-                            soft:    '#a78bfa',
+                            deep: '#7c3aed',
+                            soft: '#a78bfa',
                         },
                         ink: {
                             DEFAULT: '#0d253d',
@@ -71,20 +69,38 @@
                     },
                     keyframes: {
                         fadeUp: {
-                            '0%': { opacity: '0', transform: 'translateY(32px)' },
-                            '100%': { opacity: '1', transform: 'translateY(0)' }
+                            '0%': {
+                                opacity: '0',
+                                transform: 'translateY(32px)'
+                            },
+                            '100%': {
+                                opacity: '1',
+                                transform: 'translateY(0)'
+                            }
                         },
                         fadeIn: {
-                            '0%': { opacity: '0' },
-                            '100%': { opacity: '1' }
+                            '0%': {
+                                opacity: '0'
+                            },
+                            '100%': {
+                                opacity: '1'
+                            }
                         },
                         float: {
-                            '0%,100%': { transform: 'translateY(0)' },
-                            '50%': { transform: 'translateY(-18px)' }
+                            '0%,100%': {
+                                transform: 'translateY(0)'
+                            },
+                            '50%': {
+                                transform: 'translateY(-18px)'
+                            }
                         },
                         scan: {
-                            '0%': { top: '0%' },
-                            '100%': { top: '100%' }
+                            '0%': {
+                                top: '0%'
+                            },
+                            '100%': {
+                                top: '100%'
+                            }
                         },
                     },
                 }
@@ -102,23 +118,23 @@
             font-feature-settings: "ss01";
         }
 
-        /* â”€â”€ Gradient mesh â€” neon mint (kiri) + biru (tengah) + violet (kanan) â”€â”€ */
+        /* Gradient mesh â€” neon mint (kiri) + biru (tengah) + violet (kanan) */
         .mesh-bg {
             background:
-                radial-gradient(ellipse 70% 60% at 5% 15%,  #0ff4c618 0%, transparent 55%),
-                radial-gradient(ellipse 80% 60% at 35% 5%,  #daeaff55 0%, transparent 60%),
+                radial-gradient(ellipse 70% 60% at 5% 15%, #0ff4c618 0%, transparent 55%),
+                radial-gradient(ellipse 80% 60% at 35% 5%, #daeaff55 0%, transparent 60%),
                 radial-gradient(ellipse 60% 50% at 70% 10%, #bdd8ff33 0%, transparent 55%),
                 radial-gradient(ellipse 50% 45% at 98% 20%, #8b5cf620 0%, transparent 55%),
                 #f8faff;
         }
 
-        /* â”€â”€ Grid dot pattern â”€â”€ */
+        /* Grid dot pattern */
         .dot-grid {
             background-image: radial-gradient(circle, #1a4ff520 1px, transparent 1px);
             background-size: 28px 28px;
         }
 
-        /* â”€â”€ Section reveal on scroll â”€â”€ */
+        /* Section reveal on scroll */
         .reveal {
             opacity: 0;
             transform: translateY(40px);
@@ -130,12 +146,23 @@
             transform: translateY(0);
         }
 
-        .reveal-delay-1 { transition-delay: 0.1s; }
-        .reveal-delay-2 { transition-delay: 0.2s; }
-        .reveal-delay-3 { transition-delay: 0.3s; }
-        .reveal-delay-4 { transition-delay: 0.4s; }
+        .reveal-delay-1 {
+            transition-delay: 0.1s;
+        }
 
-        /* â”€â”€ Navbar blur glass â”€â”€ */
+        .reveal-delay-2 {
+            transition-delay: 0.2s;
+        }
+
+        .reveal-delay-3 {
+            transition-delay: 0.3s;
+        }
+
+        .reveal-delay-4 {
+            transition-delay: 0.4s;
+        }
+
+        /* Navbar blur glass */
         .navbar-glass {
             background: rgba(255, 255, 255, 0.92);
             backdrop-filter: blur(20px);
@@ -143,7 +170,7 @@
             border-bottom: 1px solid rgba(83, 58, 253, 0.07);
         }
 
-        /* â”€â”€ Gradient text â€” neon mint â†’ biru â†’ violet (logo brand) â”€â”€ */
+        /* Gradient text â€” neon mint â†’ biru â†’ violet (logo brand) */
         .gradient-text {
             background: linear-gradient(135deg, #0ff4c6 0%, #3671ff 50%, #8b5cf6 100%);
             -webkit-background-clip: text;
@@ -151,7 +178,7 @@
             background-clip: text;
         }
 
-        /* â”€â”€ Tech card hover â”€â”€ */
+        /* Tech card hover */
         .tech-card {
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
@@ -161,24 +188,43 @@
             box-shadow: 0 20px 48px rgba(26, 79, 245, 0.12);
         }
 
-        /* â”€â”€ Gallery hover â”€â”€ */
-        .gallery-item { overflow: hidden; }
-        .gallery-item img { transition: transform 0.5s ease; }
-        .gallery-item:hover img { transform: scale(1.08); }
+        /* Gallery hover */
+        .gallery-item {
+            overflow: hidden;
+        }
 
-        /* â”€â”€ Scrollbar â”€â”€ */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #f1f5f9; }
-        ::-webkit-scrollbar-thumb { background: #3671ff; border-radius: 3px; }
+        .gallery-item img {
+            transition: transform 0.5s ease;
+        }
 
-        /* â”€â”€ Mobile menu â”€â”€ */
+        .gallery-item:hover img {
+            transform: scale(1.08);
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #3671ff;
+            border-radius: 3px;
+        }
+
+        /* Mobile menu */
         #mobile-menu {
             max-height: 0;
             overflow: hidden;
             transition: max-height 0.4s ease;
         }
 
-        #mobile-menu.open { max-height: 400px; }
+        #mobile-menu.open {
+            max-height: 400px;
+        }
 
         /* Form focus ring */
         input:focus,
@@ -188,7 +234,7 @@
             box-shadow: 0 0 0 3px rgba(54, 113, 255, 0.15);
         }
 
-        /* â”€â”€ Noise texture overlay â”€â”€ */
+        /* Noise texture overlay */
         .noise::after {
             content: '';
             position: absolute;
@@ -200,14 +246,15 @@
     </style>
 
     {{-- Font Awesome 6 Free --}}
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
 
     @stack('styles')
 </head>
 
 <body class="font-body text-ink antialiased bg-white" style="font-weight: 300;">
 
-    {{-- â”€â”€ NAVBAR â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ --}}
+    {{-- NAVBAR --}}
     <nav id="navbar" class="fixed top-0 left-0 right-0 z-50 transition-all duration-300">
         <div class="max-w-7xl mx-auto px-6 lg:px-8">
             <div class="flex items-center justify-between h-16 lg:h-18">
@@ -274,17 +321,17 @@
         </div>
     </nav>
 
-    {{-- â”€â”€ MAIN CONTENT â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ --}}
+    {{-- MAIN CONTENT  --}}
     <main>
         @yield('content')
     </main>
 
-    {{-- â”€â”€ FOOTER â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ --}}
+    {{-- FOOTER --}}
     @include('landing._footer')
 
     @include('components.chatbot')
 
-    {{-- â”€â”€ BACK TO TOP â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ --}}
+    {{-- BACK TO TOP --}}
     <button id="back-top"
         class="fixed bottom-8 right-8 z-40 w-11 h-11 rounded-full bg-brand-600 text-white shadow-lg shadow-brand-200 flex items-center justify-center opacity-0 translate-y-4 transition-all duration-300 hover:bg-brand-700 hover:-translate-y-1"
         aria-label="Kembali ke atas">
@@ -293,7 +340,7 @@
         </svg>
     </button>
 
-    {{-- â”€â”€ GLOBAL SCRIPTS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ --}}
+    {{-- GLOBAL SCRIPTS --}}
     <script>
         (() => {
             // Navbar scroll effect
@@ -331,7 +378,9 @@
                         observer.unobserve(e.target);
                     }
                 });
-            }, { threshold: 0.12 });
+            }, {
+                threshold: 0.12
+            });
             revealEls.forEach(el => observer.observe(el));
 
             // Back to top
@@ -343,7 +392,10 @@
                 btn.classList.toggle('opacity-100', show);
                 btn.classList.toggle('translate-y-0', show);
             });
-            btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+            btn.addEventListener('click', () => window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            }));
 
             // Active nav highlight
             const sections = document.querySelectorAll('section[id]');
@@ -355,7 +407,8 @@
                 });
                 navLinks.forEach(a => {
                     a.classList.remove('text-brand-600', 'bg-brand-50');
-                    if (a.getAttribute('href') === '#' + current) a.classList.add('text-brand-600', 'bg-brand-50');
+                    if (a.getAttribute('href') === '#' + current) a.classList.add('text-brand-600',
+                        'bg-brand-50');
                 });
             });
         })();

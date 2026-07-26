@@ -24,7 +24,7 @@ class LandingController extends Controller
         $profil             = ProfilUkm::first();
         $jumlahDivisi       = Divisi::count();
         $jumlahAlumni       = User::role('demisioner')->count();
-        $jumlahAnggotaAktif = User::whereDoesntHave('roles', fn ($q) => $q->where('name', 'demisioner'))
+        $jumlahAnggotaAktif = User::whereDoesntHave('roles', fn($q) => $q->whereIn('name', ['super_admin', 'demisioner']))
             ->whereNull('kicked_at')
             ->count();
         $openRecruitment = OpenRecruitment::active()->latest()->first();
@@ -37,8 +37,13 @@ class LandingController extends Controller
             ->get();
 
         return view('landing', compact(
-            'divisis', 'galleries', 'posts',
-            'profil', 'jumlahDivisi', 'jumlahAlumni', 'jumlahAnggotaAktif',
+            'divisis',
+            'galleries',
+            'posts',
+            'profil',
+            'jumlahDivisi',
+            'jumlahAlumni',
+            'jumlahAnggotaAktif',
             'openRecruitment'
         ));
     }

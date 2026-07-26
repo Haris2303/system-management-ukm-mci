@@ -515,7 +515,7 @@
                 </div>
                 <div
                     style="color:rgba(255,255,255,.7);font-size:11.5px;font-family:'DM Sans',sans-serif;margin-top:1px;">
-                    Powered by Haris Aja · Siap membantu 😊
+                    Powered by Open Router · Siap membantu 😊
                 </div>
             </div>
             <button id="chat-clear" title="Hapus percakapan"
