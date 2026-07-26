@@ -26,3 +26,7 @@ Homestead.yaml
 Thumbs.db
 .claude
 storage/debugbar/
+/storage/framework/cache
+/storage/framework/sessions
+/storage/framework/testing
+/storage/framework/views/*.php
