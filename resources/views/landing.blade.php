@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'UKM MCI — Mahasiswa Creative & Innovation')
+@section('title', 'UKM MCI | Media Creative Informations')
 
 @section('content')
     @include('landing._hero')
