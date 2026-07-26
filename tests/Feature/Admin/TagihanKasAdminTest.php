@@ -46,10 +46,10 @@ class TagihanKasAdminTest extends TestCase
         $this->assertTrue(TagihanKasResource::canViewAny());
     }
 
-    public function test_ketua_ukm_dapat_akses_tagihan_kas(): void
+    public function test_ketua_ukm_tidak_dapat_akses_tagihan_kas(): void
     {
         $this->actingAs($this->buatUser('ketua_ukm'));
-        $this->assertTrue(TagihanKasResource::canViewAny());
+        $this->assertFalse(TagihanKasResource::canViewAny());
     }
 
     public function test_super_admin_dapat_akses_tagihan_kas(): void

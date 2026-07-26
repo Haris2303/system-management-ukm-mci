@@ -31,6 +31,14 @@ class RekapPresensi extends Page implements HasTable
 
     protected string $view = 'filament.pages.rekap-presensi';
 
+    public static function canAccess(): bool
+    {
+        // Bendahara hanya boleh mengakses fitur keuangan (E-Kas Keuangan);
+        // ketua_ukm dibatasi hanya E-Voting, Open Recruitment, Divisi &
+        // Laporan Keuangan E-Kas.
+        return ! (auth()->user()?->hasAnyRole(['bendahara', 'ketua_ukm']) ?? false);
+    }
+
     public function table(Table $table): Table
     {
         return $table

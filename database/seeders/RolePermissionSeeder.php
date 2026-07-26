@@ -13,8 +13,8 @@ class RolePermissionSeeder extends Seeder
      * Definisi 6 role di sistem UKM MCI:
      *
      * 1. super_admin   — Akses penuh ke semua fitur
-     * 2. ketua_ukm     — Kelola seluruh organisasi (kecuali user/role)
-     * 3. sekretaris    — Kelola berita, agenda, presensi, materi
+     * 2. ketua_ukm     — E-Voting, Open Recruitment & Divisi
+     * 3. sekretaris    — Manajemen Presensi & User (read/create/edit)
      * 4. bendahara     — Kelola keuangan (e-kas)
      * 5. ketua_divisi  — Kelola pendaftar & pertanyaan seleksi divisinya
      * 6. anggota       — Hanya akses mobile, tidak bisa masuk panel admin
@@ -28,6 +28,7 @@ class RolePermissionSeeder extends Seeder
         $permissions = [
             // User & Role Management
             'kelola_users',
+            'kelola_users_dasar',        // Lihat, tambah, ubah user (tanpa hapus)
             'kelola_roles',
 
             // Konten
@@ -73,40 +74,28 @@ class RolePermissionSeeder extends Seeder
         $superAdmin = Role::firstOrCreate(['name' => 'super_admin', 'guard_name' => 'web']);
         $superAdmin->syncPermissions(Permission::all());
 
-        // ✅ KETUA UKM — Akses semua KECUALI user & role management
+        // ✅ KETUA UKM — Hanya E-Voting, Open Recruitment (Pendaftar &
+        // Pertanyaan Seleksi), dan Divisi. TIDAK punya akses ke Berita,
+        // Galeri, Program Kerja, Materi, Agenda, Presensi, Knowledge Base
+        // (RAG), maupun E-Kas Keuangan (termasuk Laporan Keuangan).
         $ketuaUkm = Role::firstOrCreate(['name' => 'ketua_ukm', 'guard_name' => 'web']);
         $ketuaUkm->syncPermissions([
             'akses_panel_admin',
             'lihat_dashboard',
-            'kelola_berita',
-            'kelola_galeri',
-            'kelola_program',
-            'kelola_pengurus',
-            'kelola_materi',
-            'kelola_agenda',
-            'kelola_presensi',
             'kelola_voting',
-            'kelola_tagihan_kas',
-            'kelola_transaksi_kas',
-            'lihat_saldo_kas',
             'kelola_divisi',
-            'kelola_pertanyaan_seleksi',
             'kelola_pendaftar',
-            'kelola_rag_documents',
+            'kelola_pertanyaan_seleksi',
         ]);
 
-        // ✅ SEKRETARIS — Konten, agenda, presensi, materi
+        // ✅ SEKRETARIS — Manajemen Presensi & User (read/create/edit)
         $sekretaris = Role::firstOrCreate(['name' => 'sekretaris', 'guard_name' => 'web']);
         $sekretaris->syncPermissions([
             'akses_panel_admin',
             'lihat_dashboard',
-            'kelola_berita',
-            'kelola_galeri',
-            'kelola_program',
-            'kelola_pengurus',
-            'kelola_materi',
             'kelola_agenda',
             'kelola_presensi',
+            'kelola_users_dasar',
         ]);
 
         // ✅ BENDAHARA — Khusus keuangan
@@ -146,8 +135,8 @@ class RolePermissionSeeder extends Seeder
         $this->command->info('✅ 6 role berhasil dibuat dengan permission masing-masing.');
         $this->command->newLine();
         $this->command->info('   👑 super_admin   — Akses semua fitur');
-        $this->command->info('   👨‍💼 ketua_ukm     — Akses semua kecuali user management');
-        $this->command->info('   📝 sekretaris    — Konten, agenda, presensi, materi');
+        $this->command->info('   👨‍💼 ketua_ukm     — E-Voting, Open Recruitment & Divisi');
+        $this->command->info('   📝 sekretaris    — Manajemen Presensi & User (read/create/edit)');
         $this->command->info('   💰 bendahara     — Keuangan (e-kas)');
         $this->command->info('   🏆 ketua_divisi  — Rekrutmen & materi divisinya');
         $this->command->info('   👥 anggota       — Hanya mobile app');

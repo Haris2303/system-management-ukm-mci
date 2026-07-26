@@ -56,6 +56,14 @@ class ProgramKerjaResource extends Resource
         ];
     }
 
+    public static function canViewAny(): bool
+    {
+        // Bendahara hanya boleh mengakses E-Kas Keuangan; sekretaris hanya
+        // boleh mengakses Manajemen Presensi & User; ketua_ukm dibatasi
+        // hanya E-Voting, Open Recruitment, Divisi & Laporan Keuangan E-Kas.
+        return ! (auth()->user()?->hasAnyRole(['bendahara', 'sekretaris', 'ketua_ukm']) ?? false);
+    }
+
     public static function getPages(): array
     {
         return [

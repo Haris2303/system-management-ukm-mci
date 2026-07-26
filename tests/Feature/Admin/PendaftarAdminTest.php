@@ -66,11 +66,11 @@ class PendaftarAdminTest extends TestCase
 
     // ── Query scoping ────────────────────────────────────────────
 
-    public function test_ketua_ukm_melihat_semua_pendaftar(): void
+    public function test_super_admin_melihat_semua_pendaftar(): void
     {
         $divisiA = $this->buatDivisi('A');
         $divisiB = $this->buatDivisi('B');
-        $admin   = $this->buatUser('ketua_ukm');
+        $admin   = $this->buatUser('super_admin');
 
         $this->buatPendaftar($divisiA);
         $this->buatPendaftar($divisiB);
@@ -482,6 +482,15 @@ class PendaftarAdminTest extends TestCase
     // LIVEWIRE — halaman list & aksi
     // ══════════════════════════════════════════════════════════════
 
+    public function test_list_page_dapat_diakses_oleh_super_admin(): void
+    {
+        $admin = $this->buatUser('super_admin');
+
+        Livewire::actingAs($admin)
+            ->test(ListPendaftars::class)
+            ->assertSuccessful();
+    }
+
     public function test_list_page_dapat_diakses_oleh_ketua_ukm(): void
     {
         $admin = $this->buatUser('ketua_ukm');
@@ -491,11 +500,11 @@ class PendaftarAdminTest extends TestCase
             ->assertSuccessful();
     }
 
-    public function test_list_page_menampilkan_semua_pendaftar_untuk_ketua_ukm(): void
+    public function test_list_page_menampilkan_semua_pendaftar_untuk_super_admin(): void
     {
         $divisiA = $this->buatDivisi('A');
         $divisiB = $this->buatDivisi('B');
-        $admin   = $this->buatUser('ketua_ukm');
+        $admin   = $this->buatUser('super_admin');
 
         $p1 = $this->buatPendaftar($divisiA, ['nama' => 'Budi']);
         $p2 = $this->buatPendaftar($divisiB, ['nama' => 'Sari']);
@@ -523,7 +532,7 @@ class PendaftarAdminTest extends TestCase
     public function test_aksi_luluskan_tersedia_untuk_pendaftar_menunggu(): void
     {
         $divisi    = $this->buatDivisi();
-        $admin     = $this->buatUser('ketua_ukm');
+        $admin     = $this->buatUser('super_admin');
         $pendaftar = $this->buatPendaftar($divisi, ['status' => 'menunggu']);
 
         Livewire::actingAs($admin)
@@ -535,7 +544,7 @@ class PendaftarAdminTest extends TestCase
     public function test_aksi_tolak_tersedia_untuk_pendaftar_menunggu(): void
     {
         $divisi    = $this->buatDivisi();
-        $admin     = $this->buatUser('ketua_ukm');
+        $admin     = $this->buatUser('super_admin');
         $pendaftar = $this->buatPendaftar($divisi, ['status' => 'menunggu']);
 
         Livewire::actingAs($admin)
@@ -547,7 +556,7 @@ class PendaftarAdminTest extends TestCase
     public function test_aksi_luluskan_tidak_tersedia_untuk_yang_sudah_lulus(): void
     {
         $divisi    = $this->buatDivisi();
-        $admin     = $this->buatUser('ketua_ukm');
+        $admin     = $this->buatUser('super_admin');
         $pendaftar = $this->buatPendaftar($divisi, ['status' => 'lulus', 'nim' => '2023A']);
 
         Livewire::actingAs($admin)
@@ -558,7 +567,7 @@ class PendaftarAdminTest extends TestCase
     public function test_aksi_tolak_tidak_tersedia_untuk_yang_sudah_ditolak(): void
     {
         $divisi    = $this->buatDivisi();
-        $admin     = $this->buatUser('ketua_ukm');
+        $admin     = $this->buatUser('super_admin');
         $pendaftar = $this->buatPendaftar($divisi, ['status' => 'ditolak', 'nim' => '2023A']);
 
         Livewire::actingAs($admin)
@@ -569,7 +578,7 @@ class PendaftarAdminTest extends TestCase
     public function test_eksekusi_aksi_luluskan_dari_tabel(): void
     {
         $divisi    = $this->buatDivisi();
-        $admin     = $this->buatUser('ketua_ukm');
+        $admin     = $this->buatUser('super_admin');
         $pendaftar = $this->buatPendaftar($divisi, [
             'nim'    => '20239999',
             'email'  => 'peserta.lulus@example.com',
@@ -589,7 +598,7 @@ class PendaftarAdminTest extends TestCase
     public function test_eksekusi_aksi_tolak_dari_tabel(): void
     {
         $divisi    = $this->buatDivisi();
-        $admin     = $this->buatUser('ketua_ukm');
+        $admin     = $this->buatUser('super_admin');
         $pendaftar = $this->buatPendaftar($divisi, ['status' => 'menunggu']);
 
         Livewire::actingAs($admin)
@@ -603,7 +612,7 @@ class PendaftarAdminTest extends TestCase
     public function test_view_page_menampilkan_detail_pendaftar(): void
     {
         $divisi    = $this->buatDivisi();
-        $admin     = $this->buatUser('ketua_ukm');
+        $admin     = $this->buatUser('super_admin');
         $pendaftar = $this->buatPendaftar($divisi, ['nama' => 'Detail Test']);
 
         Livewire::actingAs($admin)

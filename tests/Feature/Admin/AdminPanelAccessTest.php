@@ -138,7 +138,8 @@ class AdminPanelAccessTest extends TestCase
     }
 
     // ══════════════════════════════════════════════════════════════
-    // Resource: UserResource — kelola_users (hanya super_admin)
+    // Resource: UserResource — kelola_users (super_admin: penuh),
+    // kelola_users_dasar (sekretaris: read/create/edit, tanpa hapus)
     // ══════════════════════════════════════════════════════════════
 
     public function test_super_admin_dapat_kelola_users(): void
@@ -155,10 +156,23 @@ class AdminPanelAccessTest extends TestCase
         $this->assertFalse(UserResource::canCreate());
     }
 
-    public function test_sekretaris_tidak_dapat_kelola_users(): void
+    public function test_sekretaris_dapat_lihat_tambah_ubah_users(): void
     {
         $this->aktingAs($this->buatUser('sekretaris'));
-        $this->assertFalse(UserResource::canViewAny());
+        $this->assertTrue(UserResource::canViewAny());
+        $this->assertTrue(UserResource::canCreate());
+
+        $target = $this->buatUser('anggota');
+        $this->assertTrue(UserResource::canEdit($target));
+    }
+
+    public function test_sekretaris_tidak_dapat_hapus_users(): void
+    {
+        $sekretaris = $this->buatUser('sekretaris');
+        $this->aktingAs($sekretaris);
+
+        $target = $this->buatUser('anggota');
+        $this->assertFalse(UserResource::canDelete($target));
     }
 
     public function test_bendahara_tidak_dapat_kelola_users(): void
@@ -236,11 +250,11 @@ class AdminPanelAccessTest extends TestCase
         $this->assertTrue(TransaksiKasResource::canViewAny());
     }
 
-    public function test_ketua_ukm_dapat_kelola_tagihan_kas(): void
+    public function test_ketua_ukm_tidak_dapat_kelola_tagihan_kas(): void
     {
         $this->aktingAs($this->buatUser('ketua_ukm'));
-        $this->assertTrue(TagihanKasResource::canViewAny());
-        $this->assertTrue(TransaksiKasResource::canViewAny());
+        $this->assertFalse(TagihanKasResource::canViewAny());
+        $this->assertFalse(TransaksiKasResource::canViewAny());
     }
 
     public function test_sekretaris_tidak_dapat_kelola_tagihan_kas(): void
@@ -260,10 +274,10 @@ class AdminPanelAccessTest extends TestCase
     // Resource: MateriResource — kelola_materi
     // ══════════════════════════════════════════════════════════════
 
-    public function test_sekretaris_dapat_kelola_materi(): void
+    public function test_sekretaris_tidak_dapat_kelola_materi(): void
     {
         $this->aktingAs($this->buatUser('sekretaris'));
-        $this->assertTrue(MateriResource::canViewAny());
+        $this->assertFalse(MateriResource::canViewAny());
     }
 
     public function test_ketua_divisi_dapat_kelola_materi(): void
@@ -338,16 +352,16 @@ class AdminPanelAccessTest extends TestCase
     // Resource: PostResource — kelola_berita
     // ══════════════════════════════════════════════════════════════
 
-    public function test_sekretaris_dapat_kelola_berita(): void
+    public function test_sekretaris_tidak_dapat_kelola_berita(): void
     {
         $this->aktingAs($this->buatUser('sekretaris'));
-        $this->assertTrue(PostResource::canViewAny());
+        $this->assertFalse(PostResource::canViewAny());
     }
 
-    public function test_ketua_ukm_dapat_kelola_berita(): void
+    public function test_ketua_ukm_tidak_dapat_kelola_berita(): void
     {
         $this->aktingAs($this->buatUser('ketua_ukm'));
-        $this->assertTrue(PostResource::canViewAny());
+        $this->assertFalse(PostResource::canViewAny());
     }
 
     public function test_bendahara_tidak_dapat_kelola_berita(): void
@@ -372,10 +386,10 @@ class AdminPanelAccessTest extends TestCase
         $this->assertTrue(RagDocumentResource::canViewAny());
     }
 
-    public function test_ketua_ukm_dapat_kelola_rag_documents(): void
+    public function test_ketua_ukm_tidak_dapat_kelola_rag_documents(): void
     {
         $this->aktingAs($this->buatUser('ketua_ukm'));
-        $this->assertTrue(RagDocumentResource::canViewAny());
+        $this->assertFalse(RagDocumentResource::canViewAny());
     }
 
     public function test_bendahara_tidak_dapat_kelola_rag_documents(): void
@@ -454,10 +468,10 @@ class AdminPanelAccessTest extends TestCase
     // MATERI RESOURCE (ADMIN) — kelola_materi + query scoping
     // ══════════════════════════════════════════════════════════════
 
-    public function test_sekretaris_dapat_akses_materi_resource(): void
+    public function test_sekretaris_tidak_dapat_akses_materi_resource(): void
     {
         $this->actingAs($this->buatUser('sekretaris'));
-        $this->assertTrue(MateriResource::canViewAny());
+        $this->assertFalse(MateriResource::canViewAny());
     }
 
     public function test_ketua_divisi_dapat_akses_materi_resource(): void
@@ -514,10 +528,10 @@ class AdminPanelAccessTest extends TestCase
         $this->assertTrue(TransaksiKasResource::canViewAny());
     }
 
-    public function test_ketua_ukm_dapat_akses_transaksi_kas(): void
+    public function test_ketua_ukm_tidak_dapat_akses_transaksi_kas(): void
     {
         $this->actingAs($this->buatUser('ketua_ukm'));
-        $this->assertTrue(TransaksiKasResource::canViewAny());
+        $this->assertFalse(TransaksiKasResource::canViewAny());
     }
 
     public function test_sekretaris_tidak_dapat_akses_transaksi_kas(): void

@@ -5,6 +5,7 @@ use App\Http\Controllers\DaftarController;
 use App\Http\Controllers\GalleryController;
 use App\Http\Controllers\IdCardController;
 use App\Http\Controllers\LandingController;
+use App\Http\Controllers\LaporanKeuanganController;
 use App\Http\Controllers\PostController;
 use App\Models\User;
 use Illuminate\Support\Facades\Route;
@@ -52,7 +53,7 @@ Route::get('/pengurus', function () {
 })->name('pengurus.index');
 
 // ── Pendaftaran ─────────────────────────────────────────────────────
-Route::get('/daftar', [DaftarController::class, 'index']);
+Route::get('/daftar', [DaftarController::class, 'index'])->name('daftar.form');
 
 // ── E-Voting Rekap Suara (publik, full-screen) ────────────────
 Route::get('/elections/{election}/rekap', function (App\Models\Election $election) {
@@ -70,6 +71,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/id-card/preview',  [IdCardController::class, 'preview'])->name('id-card.preview');
     Route::get('/id-card/{userId}', [IdCardController::class, 'show'])->name('id-card.show');
 });
+
+// ── Laporan Keuangan E-Kas (dashboard, gated oleh lihat_saldo_kas) ──
+Route::middleware('auth')
+    ->get('/laporan-keuangan/pdf', [LaporanKeuanganController::class, 'pdf'])
+    ->name('laporan-keuangan.pdf');
 
 // ── RAG Document Download ──────────────────────────────────────
 Route::middleware('auth')->get('/rag-documents/{document}/download', function (App\Models\RagDocument $document) {

@@ -68,28 +68,30 @@ class UserResource extends Resource
     }
 
     // ═══════════════════════════════════════════════════════════
-    // ACCESS CONTROL — hanya super_admin yang bisa kelola users
+    // ACCESS CONTROL — super_admin: penuh, sekretaris: read/create/edit
     // ═══════════════════════════════════════════════════════════
 
     public static function canViewAny(): bool
     {
-        return auth()->user()?->can('kelola_users') ?? false;
+        return auth()->user()?->canAny(['kelola_users', 'kelola_users_dasar']) ?? false;
     }
 
     public static function canCreate(): bool
     {
-        return auth()->user()?->can('kelola_users') ?? false;
+        return auth()->user()?->canAny(['kelola_users', 'kelola_users_dasar']) ?? false;
     }
 
     public static function canEdit($record): bool
     {
-        return auth()->user()?->can('kelola_users') ?? false;
+        return auth()->user()?->canAny(['kelola_users', 'kelola_users_dasar']) ?? false;
     }
 
     public static function canDelete($record): bool
     {
         // Cegah user menghapus dirinya sendiri
         if (auth()->id() === $record->id) return false;
+
+        // Hanya kelola_users penuh (super_admin) yang boleh menghapus
         return auth()->user()?->can('kelola_users') ?? false;
     }
 }

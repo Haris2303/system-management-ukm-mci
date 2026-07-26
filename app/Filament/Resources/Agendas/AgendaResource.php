@@ -58,6 +58,14 @@ class AgendaResource extends Resource
         ];
     }
 
+    public static function canViewAny(): bool
+    {
+        // Bendahara hanya boleh mengakses fitur keuangan (E-Kas Keuangan);
+        // ketua_ukm dibatasi hanya E-Voting, Open Recruitment, Divisi &
+        // Laporan Keuangan E-Kas.
+        return ! (auth()->user()?->hasAnyRole(['bendahara', 'ketua_ukm']) ?? false);
+    }
+
     public static function getPages(): array
     {
         return [

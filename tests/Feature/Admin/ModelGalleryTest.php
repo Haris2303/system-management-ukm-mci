@@ -23,12 +23,36 @@ class ModelGalleryTest extends TestCase
 
     public function test_semua_role_panel_dapat_akses_galeri(): void
     {
-        foreach (['super_admin', 'ketua_ukm', 'sekretaris', 'bendahara', 'ketua_divisi'] as $role) {
+        foreach (['super_admin', 'ketua_divisi'] as $role) {
             $admin = $this->buatUser($role);
             Livewire::actingAs($admin)
                 ->test(ListGalleries::class)
                 ->assertSuccessful();
         }
+    }
+
+    public function test_sekretaris_tidak_dapat_akses_galeri(): void
+    {
+        $admin = $this->buatUser('sekretaris');
+        Livewire::actingAs($admin)
+            ->test(ListGalleries::class)
+            ->assertForbidden();
+    }
+
+    public function test_bendahara_tidak_dapat_akses_galeri(): void
+    {
+        $admin = $this->buatUser('bendahara');
+        Livewire::actingAs($admin)
+            ->test(ListGalleries::class)
+            ->assertForbidden();
+    }
+
+    public function test_ketua_ukm_tidak_dapat_akses_galeri(): void
+    {
+        $admin = $this->buatUser('ketua_ukm');
+        Livewire::actingAs($admin)
+            ->test(ListGalleries::class)
+            ->assertForbidden();
     }
 
     public function test_gallery_is_featured_default_false(): void

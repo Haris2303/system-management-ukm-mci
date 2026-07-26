@@ -22,7 +22,7 @@ class ModelDivisiTest extends TestCase
     }
 
     // ══════════════════════════════════════════════════════════════
-    // DIVISI RESOURCE — kelola_divisi (super_admin & ketua_ukm)
+    // DIVISI RESOURCE — kelola_divisi (super_admin)
     // ══════════════════════════════════════════════════════════════
 
     public function test_divisi_auto_generate_slug_dari_nama(): void

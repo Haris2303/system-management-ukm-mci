@@ -2,6 +2,7 @@
 
 namespace App\Filament\Widgets;
 
+use App\Models\TagihanKas;
 use App\Models\TransaksiKas;
 use Filament\Support\RawJs;
 use Filament\Widgets\ChartWidget;
@@ -9,9 +10,9 @@ use Illuminate\Support\Carbon;
 
 class GrafikTransaksiKasWidget extends ChartWidget
 {
-    protected ?string $heading = 'Grafik Transaksi Kas';
+    protected ?string $heading = 'Grafik Transaksi & Tagihan Kas';
 
-    protected ?string $description = 'Perbandingan kas masuk dan kas keluar (dalam Ribuan Rp)';
+    protected ?string $description = 'Perbandingan iuran kas, kas masuk, dan kas keluar (dalam Ribuan Rp)';
 
     protected static ?int $sort = 1;
 
@@ -21,23 +22,41 @@ class GrafikTransaksiKasWidget extends ChartWidget
 
     public function mount(): void
     {
-        $latestYear = TransaksiKas::query()
-            ->selectRaw('YEAR(tanggal) as tahun')
-            ->orderByDesc('tahun')
-            ->value('tahun');
+        $latestYear = $this->getTahunTersedia()->first();
 
         $this->filter = $latestYear ? 'tahun_' . $latestYear : 'bulan';
 
         parent::mount();
     }
 
+    /**
+     * Daftar tahun (descending) yang punya data transaksi kas atau tagihan
+     * kas lunas. Diambil di PHP (bukan SQL YEAR()) supaya kompatibel lintas
+     * driver DB.
+     *
+     * @return \Illuminate\Support\Collection<int, int>
+     */
+    private function getTahunTersedia(): \Illuminate\Support\Collection
+    {
+        $tahunTransaksi = TransaksiKas::query()
+            ->get(['tanggal'])
+            ->map(fn(TransaksiKas $t) => $t->tanggal->year);
+
+        $tahunTagihan = TagihanKas::lunas()
+            ->whereNotNull('tanggal_bayar')
+            ->get(['tanggal_bayar'])
+            ->map(fn(TagihanKas $t) => $t->tanggal_bayar->year);
+
+        return $tahunTransaksi
+            ->merge($tahunTagihan)
+            ->unique()
+            ->sortDesc()
+            ->values();
+    }
+
     protected function getFilters(): ?array
     {
-        $tahunList = TransaksiKas::query()
-            ->selectRaw('YEAR(tanggal) as tahun')
-            ->distinct()
-            ->orderByDesc('tahun')
-            ->pluck('tahun')
+        $tahunList = $this->getTahunTersedia()
             ->mapWithKeys(fn($tahun) => ['tahun_' . $tahun => 'Tahun ' . $tahun])
             ->all();
 
@@ -53,7 +72,7 @@ class GrafikTransaksiKasWidget extends ChartWidget
         $tz  = 'Asia/Jayapura';
         $now = Carbon::now($tz);
 
-        [$labels, $masukData, $keluarData] = match (true) {
+        [$labels, $iuranData, $masukData, $keluarData] = match (true) {
             $this->filter === 'minggu'                      => $this->getDataMinggu($now),
             $this->filter === 'bulan'                       => $this->getDataBulan($now),
             str_starts_with($this->filter ?? '', 'tahun_')  => $this->getDataTahun((int) substr($this->filter, 6)),
@@ -62,6 +81,14 @@ class GrafikTransaksiKasWidget extends ChartWidget
 
         return [
             'datasets' => [
+                [
+                    'label'           => 'Iuran Kas',
+                    'data'            => $iuranData,
+                    'backgroundColor' => 'rgba(59, 130, 246, 0.7)',
+                    'borderColor'     => 'rgb(59, 130, 246)',
+                    'borderWidth'     => 1,
+                    'borderRadius'    => 4,
+                ],
                 [
                     'label'           => 'Kas Masuk',
                     'data'            => $masukData,
@@ -89,6 +116,7 @@ class GrafikTransaksiKasWidget extends ChartWidget
         $start    = $now->copy()->startOfWeek();
 
         $labels = [];
+        $iuran  = [];
         $masuk  = [];
         $keluar = [];
 
@@ -96,6 +124,10 @@ class GrafikTransaksiKasWidget extends ChartWidget
             $hari = $start->copy()->addDays($i);
 
             $labels[] = $hariIndo[$i] . ' ' . $hari->format('d');
+
+            $iuran[]  = (int) (TagihanKas::lunas()
+                ->whereDate('tanggal_bayar', $hari->toDateString())
+                ->sum('nominal'));
 
             $masuk[]  = (int) (TransaksiKas::masuk()
                 ->whereDate('tanggal', $hari->toDateString())
@@ -106,7 +138,7 @@ class GrafikTransaksiKasWidget extends ChartWidget
                 ->sum('nominal'));
         }
 
-        return [$labels, $masuk, $keluar];
+        return [$labels, $iuran, $masuk, $keluar];
     }
 
     private function getDataBulan(Carbon $now): array
@@ -116,6 +148,7 @@ class GrafikTransaksiKasWidget extends ChartWidget
         $daysInMonth = $now->daysInMonth;
 
         $labels = [];
+        $iuran  = [];
         $masuk  = [];
         $keluar = [];
 
@@ -129,6 +162,10 @@ class GrafikTransaksiKasWidget extends ChartWidget
 
             $labels[] = 'Minggu ' . $mingguKe;
 
+            $iuran[]  = (int) (TagihanKas::lunas()
+                ->whereBetween('tanggal_bayar', [$startDate . ' 00:00:00', $endDate . ' 23:59:59'])
+                ->sum('nominal'));
+
             $masuk[]  = (int) (TransaksiKas::masuk()
                 ->whereBetween('tanggal', [$startDate, $endDate])
                 ->sum('nominal'));
@@ -141,7 +178,7 @@ class GrafikTransaksiKasWidget extends ChartWidget
             $mingguKe++;
         }
 
-        return [$labels, $masuk, $keluar];
+        return [$labels, $iuran, $masuk, $keluar];
     }
 
     private function getDataTahun(int $year): array
@@ -162,6 +199,7 @@ class GrafikTransaksiKasWidget extends ChartWidget
         ];
 
         $labels = [];
+        $iuran  = [];
         $masuk  = [];
         $keluar = [];
 
@@ -170,6 +208,10 @@ class GrafikTransaksiKasWidget extends ChartWidget
             $endDate   = Carbon::create($year, $bulan, 1)->endOfMonth()->toDateString();
 
             $labels[] = $bulanIndo[$bulan];
+
+            $iuran[]  = (int) (TagihanKas::lunas()
+                ->whereBetween('tanggal_bayar', [$startDate . ' 00:00:00', $endDate . ' 23:59:59'])
+                ->sum('nominal'));
 
             $masuk[]  = (int) (TransaksiKas::masuk()
                 ->whereBetween('tanggal', [$startDate, $endDate])
@@ -180,7 +222,7 @@ class GrafikTransaksiKasWidget extends ChartWidget
                 ->sum('nominal'));
         }
 
-        return [$labels, $masuk, $keluar];
+        return [$labels, $iuran, $masuk, $keluar];
     }
 
     protected function getOptions(): RawJs

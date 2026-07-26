@@ -70,12 +70,28 @@ class ElectionAdminTest extends TestCase
 
     public function test_list_page_dapat_diakses_semua_role_panel(): void
     {
-        foreach (['super_admin', 'ketua_ukm', 'sekretaris', 'bendahara', 'ketua_divisi'] as $role) {
+        foreach (['super_admin', 'ketua_ukm', 'ketua_divisi'] as $role) {
             $admin = $this->buatUser($role);
             Livewire::actingAs($admin)
                 ->test(ListElections::class)
                 ->assertSuccessful();
         }
+    }
+
+    public function test_bendahara_tidak_dapat_akses_list_page(): void
+    {
+        $admin = $this->buatUser('bendahara');
+        Livewire::actingAs($admin)
+            ->test(ListElections::class)
+            ->assertForbidden();
+    }
+
+    public function test_sekretaris_tidak_dapat_akses_list_page(): void
+    {
+        $admin = $this->buatUser('sekretaris');
+        Livewire::actingAs($admin)
+            ->test(ListElections::class)
+            ->assertForbidden();
     }
 
     public function test_aksi_edit_tersembunyi_untuk_election_selesai(): void

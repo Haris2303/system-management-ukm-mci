@@ -71,6 +71,27 @@ class UsersAdminTest extends TestCase
             ->assertActionHidden(TestAction::make('delete')->table($admin));
     }
 
+    public function test_sekretaris_tidak_melihat_aksi_hapus_di_tabel(): void
+    {
+        $sekretaris = $this->buatUser('sekretaris');
+        $target     = $this->buatUser('anggota');
+
+        Livewire::actingAs($sekretaris)
+            ->test(ListUsers::class)
+            ->assertActionHidden(TestAction::make('delete')->table($target))
+            ->assertActionVisible(TestAction::make('edit')->table($target));
+    }
+
+    public function test_sekretaris_tidak_melihat_aksi_hapus_massal(): void
+    {
+        $sekretaris = $this->buatUser('sekretaris');
+        $this->buatUser('anggota');
+
+        Livewire::actingAs($sekretaris)
+            ->test(ListUsers::class)
+            ->assertActionHidden(TestAction::make('delete')->table()->bulk());
+    }
+
     public function test_aksi_demisionerkan_tersembunyi_untuk_diri_sendiri(): void
     {
         $admin  = $this->buatUser('super_admin');

@@ -60,6 +60,6 @@ class TransaksiKasResource extends Resource
 
     public static function canViewAny(): bool
     {
-        return auth()->user()?->can('kelola_tagihan_kas') ?? false;
+        return auth()->user()?->can('kelola_transaksi_kas') ?? false;
     }
 }

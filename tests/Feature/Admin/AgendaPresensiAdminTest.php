@@ -26,18 +26,34 @@ class AgendaPresensiAdminTest extends TestCase
     }
 
     // ══════════════════════════════════════════════════════════════
-    // HAK AKSES — AgendaResource (tidak ada canViewAny override)
-    // Semua role panel dapat melihat Agenda
+    // HAK AKSES — AgendaResource (canViewAny mengecualikan bendahara)
+    // Semua role panel selain bendahara dapat melihat Agenda
     // ══════════════════════════════════════════════════════════════
 
     public function test_semua_role_panel_dapat_akses_list_agenda(): void
     {
-        foreach (['super_admin', 'ketua_ukm', 'sekretaris', 'bendahara', 'ketua_divisi'] as $role) {
+        foreach (['super_admin', 'sekretaris', 'ketua_divisi'] as $role) {
             $admin = $this->buatUser($role);
             Livewire::actingAs($admin)
                 ->test(ListAgendas::class)
                 ->assertSuccessful();
         }
+    }
+
+    public function test_bendahara_tidak_dapat_akses_list_agenda(): void
+    {
+        $admin = $this->buatUser('bendahara');
+        Livewire::actingAs($admin)
+            ->test(ListAgendas::class)
+            ->assertForbidden();
+    }
+
+    public function test_ketua_ukm_tidak_dapat_akses_list_agenda(): void
+    {
+        $admin = $this->buatUser('ketua_ukm');
+        Livewire::actingAs($admin)
+            ->test(ListAgendas::class)
+            ->assertForbidden();
     }
 
     // ══════════════════════════════════════════════════════════════
@@ -180,12 +196,28 @@ class AgendaPresensiAdminTest extends TestCase
 
     public function test_semua_role_panel_dapat_akses_rekap_presensi(): void
     {
-        foreach (['super_admin', 'ketua_ukm', 'sekretaris', 'bendahara', 'ketua_divisi'] as $role) {
+        foreach (['super_admin', 'sekretaris', 'ketua_divisi'] as $role) {
             $admin = $this->buatUser($role);
             Livewire::actingAs($admin)
                 ->test(RekapPresensi::class)
                 ->assertSuccessful();
         }
+    }
+
+    public function test_bendahara_tidak_dapat_akses_rekap_presensi(): void
+    {
+        $admin = $this->buatUser('bendahara');
+        Livewire::actingAs($admin)
+            ->test(RekapPresensi::class)
+            ->assertForbidden();
+    }
+
+    public function test_ketua_ukm_tidak_dapat_akses_rekap_presensi(): void
+    {
+        $admin = $this->buatUser('ketua_ukm');
+        Livewire::actingAs($admin)
+            ->test(RekapPresensi::class)
+            ->assertForbidden();
     }
 
     public function test_rekap_presensi_menampilkan_anggota_tanpa_super_admin_dan_demisioner(): void

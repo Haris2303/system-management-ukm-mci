@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Users\Tables;
 
+use App\Filament\Resources\Users\UserResource;
 use App\Models\Divisi;
 use App\Models\User;
 use Filament\Actions\Action;
@@ -260,11 +261,12 @@ class UsersTable
 
                 EditAction::make(),
                 DeleteAction::make()
-                    ->visible(fn(User $r) => auth()->user()?->id !== $r->id),
+                    ->visible(fn(User $r) => UserResource::canDelete($r)),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make(),
+                    DeleteBulkAction::make()
+                        ->visible(fn() => auth()->user()?->can('kelola_users') ?? false),
                 ]),
             ])
             ->defaultSort('created_at', 'desc');

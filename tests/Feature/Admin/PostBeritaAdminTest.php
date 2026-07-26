@@ -31,16 +31,16 @@ class PostBeritaAdminTest extends TestCase
     // HAK AKSES — PostResource (kelola_berita)
     // ══════════════════════════════════════════════════════════════
 
-    public function test_sekretaris_dapat_akses_resource_berita(): void
+    public function test_sekretaris_tidak_dapat_akses_resource_berita(): void
     {
         $this->actingAs($this->buatUser('sekretaris'));
-        $this->assertTrue(PostResource::canViewAny());
+        $this->assertFalse(PostResource::canViewAny());
     }
 
-    public function test_ketua_ukm_dapat_akses_resource_berita(): void
+    public function test_ketua_ukm_tidak_dapat_akses_resource_berita(): void
     {
         $this->actingAs($this->buatUser('ketua_ukm'));
-        $this->assertTrue(PostResource::canViewAny());
+        $this->assertFalse(PostResource::canViewAny());
     }
 
     public function test_super_admin_dapat_akses_resource_berita(): void
@@ -61,18 +61,36 @@ class PostBeritaAdminTest extends TestCase
         $this->assertFalse(PostResource::canViewAny());
     }
 
-    public function test_list_posts_dapat_diakses_sekretaris(): void
+    public function test_list_posts_dapat_diakses_super_admin(): void
     {
-        $admin = $this->buatUser('sekretaris');
+        $admin = $this->buatUser('super_admin');
 
         Livewire::actingAs($admin)
             ->test(ListPosts::class)
             ->assertSuccessful();
     }
 
-    public function test_list_posts_menampilkan_semua_post(): void
+    public function test_list_posts_tidak_dapat_diakses_sekretaris(): void
     {
         $admin = $this->buatUser('sekretaris');
+
+        Livewire::actingAs($admin)
+            ->test(ListPosts::class)
+            ->assertForbidden();
+    }
+
+    public function test_list_posts_tidak_dapat_diakses_ketua_ukm(): void
+    {
+        $admin = $this->buatUser('ketua_ukm');
+
+        Livewire::actingAs($admin)
+            ->test(ListPosts::class)
+            ->assertForbidden();
+    }
+
+    public function test_list_posts_menampilkan_semua_post(): void
+    {
+        $admin = $this->buatUser('super_admin');
         $p1    = $this->buatPost(['judul' => 'Berita A']);
         $p2    = $this->buatPost(['judul' => 'Berita B']);
 
@@ -178,16 +196,12 @@ class PostBeritaAdminTest extends TestCase
         $this->assertEquals(2, ProgramKerjaResource::getEloquentQuery()->count());
     }
 
-    public function test_ketua_ukm_melihat_semua_proker(): void
+    public function test_ketua_ukm_tidak_dapat_akses_program_kerja(): void
     {
-        $divisi = $this->buatDivisi();
-        $admin  = $this->buatUser('ketua_ukm');
-
-        $this->buatProker();
-        $this->buatProker(['divisi_id' => $divisi->id, 'nama_proker' => 'Divisi']);
+        $admin = $this->buatUser('ketua_ukm');
 
         $this->actingAs($admin);
-        $this->assertEquals(2, ProgramKerjaResource::getEloquentQuery()->count());
+        $this->assertFalse(ProgramKerjaResource::canViewAny());
     }
 
     public function test_sekretaris_melihat_proker_umum_dan_divisinya(): void

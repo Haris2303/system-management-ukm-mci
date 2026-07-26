@@ -65,10 +65,10 @@ class ChatbotKnowledgeTest extends TestCase
         $this->assertTrue(RagDocumentResource::canViewAny());
     }
 
-    public function test_ketua_ukm_dapat_akses_knowledge_base(): void
+    public function test_ketua_ukm_tidak_dapat_akses_knowledge_base(): void
     {
         $this->actingAs($this->buatUser('ketua_ukm'));
-        $this->assertTrue(RagDocumentResource::canViewAny());
+        $this->assertFalse(RagDocumentResource::canViewAny());
     }
 
     public function test_sekretaris_tidak_dapat_akses_knowledge_base(): void
@@ -93,18 +93,27 @@ class ChatbotKnowledgeTest extends TestCase
     // LIST PAGE — aksi berdasarkan status dokumen
     // ══════════════════════════════════════════════════════════════
 
-    public function test_list_page_dapat_diakses_ketua_ukm(): void
+    public function test_list_page_dapat_diakses_super_admin(): void
     {
-        $admin = $this->buatUser('ketua_ukm');
+        $admin = $this->buatUser('super_admin');
 
         Livewire::actingAs($admin)
             ->test(ListRagDocuments::class)
             ->assertSuccessful();
     }
 
-    public function test_aksi_lihat_isi_tersedia_untuk_dokumen_ready(): void
+    public function test_list_page_tidak_dapat_diakses_ketua_ukm(): void
     {
         $admin = $this->buatUser('ketua_ukm');
+
+        Livewire::actingAs($admin)
+            ->test(ListRagDocuments::class)
+            ->assertForbidden();
+    }
+
+    public function test_aksi_lihat_isi_tersedia_untuk_dokumen_ready(): void
+    {
+        $admin = $this->buatUser('super_admin');
         $dok   = $this->buatDokumen(['status' => 'ready']);
 
         Livewire::actingAs($admin)
@@ -114,7 +123,7 @@ class ChatbotKnowledgeTest extends TestCase
 
     public function test_aksi_lihat_isi_tersembunyi_untuk_dokumen_processing(): void
     {
-        $admin = $this->buatUser('ketua_ukm');
+        $admin = $this->buatUser('super_admin');
         $dok   = $this->buatDokumen(['status' => 'processing']);
 
         Livewire::actingAs($admin)
@@ -124,7 +133,7 @@ class ChatbotKnowledgeTest extends TestCase
 
     public function test_aksi_lihat_progress_tersedia_untuk_dokumen_processing(): void
     {
-        $admin = $this->buatUser('ketua_ukm');
+        $admin = $this->buatUser('super_admin');
         $dok   = $this->buatDokumen(['status' => 'processing']);
 
         Livewire::actingAs($admin)
@@ -134,7 +143,7 @@ class ChatbotKnowledgeTest extends TestCase
 
     public function test_aksi_lihat_progress_tersembunyi_untuk_dokumen_ready(): void
     {
-        $admin = $this->buatUser('ketua_ukm');
+        $admin = $this->buatUser('super_admin');
         $dok   = $this->buatDokumen(['status' => 'ready']);
 
         Livewire::actingAs($admin)
@@ -144,7 +153,7 @@ class ChatbotKnowledgeTest extends TestCase
 
     public function test_aksi_reprocess_tersedia_untuk_dokumen_error(): void
     {
-        $admin = $this->buatUser('ketua_ukm');
+        $admin = $this->buatUser('super_admin');
         $dok   = $this->buatDokumen(['status' => 'error']);
 
         Livewire::actingAs($admin)
@@ -154,7 +163,7 @@ class ChatbotKnowledgeTest extends TestCase
 
     public function test_aksi_reprocess_tersembunyi_untuk_dokumen_ready(): void
     {
-        $admin = $this->buatUser('ketua_ukm');
+        $admin = $this->buatUser('super_admin');
         $dok   = $this->buatDokumen(['status' => 'ready']);
 
         Livewire::actingAs($admin)
@@ -164,7 +173,7 @@ class ChatbotKnowledgeTest extends TestCase
 
     public function test_eksekusi_reprocess_menghapus_chunks_lama_dan_dispatch_job(): void
     {
-        $admin = $this->buatUser('ketua_ukm');
+        $admin = $this->buatUser('super_admin');
         $dok   = $this->buatDokumen(['status' => 'error', 'total_chunks' => 5]);
 
         // Buat beberapa chunk lama
@@ -195,7 +204,7 @@ class ChatbotKnowledgeTest extends TestCase
 
     public function test_view_page_menampilkan_nama_dokumen(): void
     {
-        $admin = $this->buatUser('ketua_ukm');
+        $admin = $this->buatUser('super_admin');
         $dok   = $this->buatDokumen(['nama_file' => 'dokumen-penting.pdf']);
 
         Livewire::actingAs($admin)
@@ -206,7 +215,7 @@ class ChatbotKnowledgeTest extends TestCase
 
     public function test_view_page_menampilkan_chunks_dokumen(): void
     {
-        $admin = $this->buatUser('ketua_ukm');
+        $admin = $this->buatUser('super_admin');
         $dok   = $this->buatDokumen(['status' => 'ready']);
 
         $this->buatChunk($dok, 1);
