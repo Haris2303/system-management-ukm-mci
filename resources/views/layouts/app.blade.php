@@ -4,9 +4,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description"
-        content="UKM MCI | Unit Kegiatan Mahasiswa Media Creative Informations. Bergabunglah bersama kami dalam mengeksplorasi dunia teknologi.">
-    <title>@yield('title', 'UKM MCI Mahasiswa Creative Informations')</title>
+
+    @php
+        $metaTitle = trim($__env->yieldContent('title', 'UKM MCI Mahasiswa Creative Informations'));
+        $metaDescription = trim(
+            $__env->yieldContent(
+                'description',
+                'UKM MCI | Unit Kegiatan Mahasiswa Media Creative Informations. Bergabunglah bersama kami dalam mengeksplorasi dunia teknologi.'
+            )
+        );
+        $metaImage = trim($__env->yieldContent('og_image', asset('assets/logo/brand.png')));
+        $metaRobots = trim($__env->yieldContent('robots', 'index, follow'));
+        $canonicalUrl = url()->current();
+    @endphp
+
+    {{-- @section(...) with an inline value already escapes it (Blade's Factory::startSection
+         calls e() on inline content), so these are echoed raw here to avoid double-escaping. --}}
+    <title>{!! $metaTitle !!}</title>
+    <meta name="description" content="{!! $metaDescription !!}">
+    <meta name="robots" content="{!! $metaRobots !!}">
+    <link rel="canonical" href="{{ $canonicalUrl }}">
+
+    {{-- Open Graph --}}
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="UKM MCI">
+    <meta property="og:title" content="{!! $metaTitle !!}">
+    <meta property="og:description" content="{!! $metaDescription !!}">
+    <meta property="og:image" content="{!! $metaImage !!}">
+    <meta property="og:url" content="{{ $canonicalUrl }}">
+    <meta property="og:locale" content="id_ID">
+
+    {{-- Twitter Card --}}
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{!! $metaTitle !!}">
+    <meta name="twitter:description" content="{!! $metaDescription !!}">
+    <meta name="twitter:image" content="{!! $metaImage !!}">
 
     {{-- Google Fonts: Inter (open-source Sohne alternative, weights 300 & 400) --}}
     <link rel="preconnect" href="https://fonts.googleapis.com">

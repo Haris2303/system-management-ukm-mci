@@ -10,6 +10,25 @@ use App\Http\Controllers\PostController;
 use App\Models\User;
 use Illuminate\Support\Facades\Route;
 
+// ── robots.txt ──────────────────────────────────────────────────
+Route::get('/robots.txt', function () {
+    $lines = [
+        'User-agent: *',
+        'Allow: /',
+        'Disallow: /administrasi',
+        'Disallow: /id-card',
+        'Disallow: /elections',
+        'Disallow: /anggota',
+        'Disallow: /laporan-keuangan',
+        'Disallow: /rag-documents',
+        'Disallow: /chatbot',
+        '',
+        'Sitemap: ' . url('/sitemap.xml'),
+    ];
+
+    return response(implode("\n", $lines) . "\n", 200, ['Content-Type' => 'text/plain']);
+})->name('robots');
+
 // ── Landing Page ──────────────────────────────────────────────
 Route::get('/', [LandingController::class, 'index'])->name('landing');
 Route::post('/daftar', [LandingController::class, 'daftar'])->name('daftar');

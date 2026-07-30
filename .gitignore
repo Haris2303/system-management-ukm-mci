@@ -30,3 +30,4 @@ storage/debugbar/
 /storage/framework/sessions
 /storage/framework/testing
 /storage/framework/views/*.php
+/public/sitemap.xml

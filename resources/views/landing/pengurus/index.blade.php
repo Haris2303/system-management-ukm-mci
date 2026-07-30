@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('title', 'UKM MCI — Daftar Pengurus')
+@section('description', 'Kenali struktur kepemimpinan dan tim pengurus UKM MCI (Media Creative Informations) periode ini.')
 
 @section('content')
     {{-- resources/views/landing/_pengurus.blade.php --}}
@@ -15,10 +16,10 @@
                     class="inline-block text-xs font-bold tracking-widest text-brand-500 uppercase bg-brand-50 px-3 py-1.5 rounded-full border border-brand-100 mb-4">
                     Struktur Pengurus
                 </span>
-                <h2 class="font-display text-4xl lg:text-5xl font-bold text-slate-900 leading-tight">
+                <h1 class="font-display text-4xl lg:text-5xl font-bold text-slate-900 leading-tight">
                     Digerakkan oleh
                     <span class="gradient-text"> Orang Terbaik</span>
-                </h2>
+                </h1>
                 <p class="text-slate-500 mt-4 font-light">Kenali tim pengurus yang memimpin UKM MCI periode ini.</p>
             </div>
 

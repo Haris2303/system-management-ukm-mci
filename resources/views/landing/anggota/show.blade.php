@@ -1,6 +1,8 @@
 @extends('layouts.app')
 
 @section('title', $user->name . ' — Anggota UKM MCI')
+@section('description', 'Profil anggota terverifikasi UKM MCI (Media Creative Informations).')
+@section('robots', 'noindex, nofollow')
 
 @section('content')
 <section class="min-h-screen flex items-center justify-center py-24 mesh-bg dot-grid noise relative overflow-hidden">

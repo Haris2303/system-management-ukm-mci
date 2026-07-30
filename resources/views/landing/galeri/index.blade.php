@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('title', 'Galeri Kegiatan — UKM MCI')
+@section('description', 'Dokumentasi foto kegiatan, pelatihan, dan pencapaian UKM MCI (Media Creative Informations).')
 
 @section('content')
 

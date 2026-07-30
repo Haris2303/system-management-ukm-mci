@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
-@section('title', 'UKM MCI — Daftar Pengurus')
+@section('title', 'Pendaftaran Anggota — UKM MCI')
+@section('description', 'Bergabung menjadi anggota UKM MCI (Media Creative Informations). Isi formulir pendaftaran dan mulai perjalanan teknologimu bersama kami.')
 
 @section('content')
 
@@ -30,10 +31,10 @@
                                 ? $openRecruitment->judul . ($openRecruitment->gelombang ? ' · ' . $openRecruitment->gelombang : '')
                                 : 'Close Recruitment' }}
                         </span>
-                        <h2 class="font-display text-4xl lg:text-5xl font-bold text-slate-900 leading-tight">
+                        <h1 class="font-display text-4xl lg:text-5xl font-bold text-slate-900 leading-tight">
                             Mulai Perjalanan
                             <span class="gradient-text"> Teknologimu</span>
-                        </h2>
+                        </h1>
                         <p class="text-slate-500 mt-4 font-light text-lg leading-relaxed">
                             @if ($openRecruitment?->deskripsi)
                                 {{ $openRecruitment->deskripsi }}

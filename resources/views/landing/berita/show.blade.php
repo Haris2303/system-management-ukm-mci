@@ -2,6 +2,10 @@
 @extends('layouts.app')
 
 @section('title', $post->judul . ' — UKM MCI')
+@section('description', Str::limit($post->ringkasan ?: strip_tags($post->konten), 160))
+@if ($post->thumbnail)
+    @section('og_image', asset('storage/' . $post->thumbnail))
+@endif
 
 @push('styles')
     <style>

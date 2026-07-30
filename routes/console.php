@@ -26,3 +26,4 @@ Artisan::command('agenda:tutup-otomatis', function () {
 })->purpose('Tutup otomatis agenda yang sudah melewati waktu selesai');
 
 Schedule::command('agenda:tutup-otomatis')->everyMinute();
+Schedule::command('sitemap:generate')->daily();
