@@ -10,8 +10,8 @@
         $metaDescription = trim(
             $__env->yieldContent(
                 'description',
-                'UKM MCI | Unit Kegiatan Mahasiswa Media Creative Informations. Bergabunglah bersama kami dalam mengeksplorasi dunia teknologi.'
-            )
+                'UKM MCI | Unit Kegiatan Mahasiswa Media Creative Informations. Bergabunglah bersama kami dalam mengeksplorasi dunia teknologi.',
+            ),
         );
         $metaImage = trim($__env->yieldContent('og_image', asset('assets/logo/brand.png')));
         $metaRobots = trim($__env->yieldContent('robots', 'index, follow'));
@@ -39,6 +39,9 @@
     <meta name="twitter:title" content="{!! $metaTitle !!}">
     <meta name="twitter:description" content="{!! $metaDescription !!}">
     <meta name="twitter:image" content="{!! $metaImage !!}">
+
+    {{-- Favicon --}}
+    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
 
     {{-- Google Fonts: Inter (open-source Sohne alternative, weights 300 & 400) --}}
     <link rel="preconnect" href="https://fonts.googleapis.com">
