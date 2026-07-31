@@ -5,6 +5,7 @@ use App\Http\Controllers\DaftarController;
 use App\Http\Controllers\GalleryController;
 use App\Http\Controllers\IdCardController;
 use App\Http\Controllers\LandingController;
+use App\Http\Controllers\LaporanAbsensiController;
 use App\Http\Controllers\LaporanKeuanganController;
 use App\Http\Controllers\PostController;
 use App\Models\User;
@@ -95,6 +96,11 @@ Route::middleware('auth')->group(function () {
 Route::middleware('auth')
     ->get('/laporan-keuangan/pdf', [LaporanKeuanganController::class, 'pdf'])
     ->name('laporan-keuangan.pdf');
+
+// ── Laporan Absensi (dashboard, gated oleh kelola_presensi) ──
+Route::middleware('auth')
+    ->get('/laporan-absensi/pdf', [LaporanAbsensiController::class, 'pdf'])
+    ->name('laporan-absensi.pdf');
 
 // ── RAG Document Download ──────────────────────────────────────
 Route::middleware('auth')->get('/rag-documents/{document}/download', function (App\Models\RagDocument $document) {

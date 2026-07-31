@@ -11,7 +11,10 @@ class LaporanKeuanganController extends Controller
 {
     public function __construct(private readonly LaporanKeuanganService $laporan)
     {
-        abort_unless(Auth::user()?->can('lihat_saldo_kas') ?? false, 403);
+        abort_unless(
+            Auth::user()?->hasAnyRole(['super_admin', 'ketua_ukm', 'bendahara']) ?? false,
+            403
+        );
     }
 
     public function pdf(): Response

@@ -77,7 +77,9 @@ class RolePermissionSeeder extends Seeder
         // ✅ KETUA UKM — Hanya E-Voting, Open Recruitment (Pendaftar &
         // Pertanyaan Seleksi), dan Divisi. TIDAK punya akses ke Berita,
         // Galeri, Program Kerja, Materi, Agenda, Presensi, Knowledge Base
-        // (RAG), maupun E-Kas Keuangan (termasuk Laporan Keuangan).
+        // (RAG), maupun kelola E-Kas Keuangan. Akses ke Laporan Keuangan
+        // & Laporan Absensi (generate PDF) diatur berbasis role langsung
+        // di Dashboard/controller terkait, bukan lewat permission ini.
         $ketuaUkm = Role::firstOrCreate(['name' => 'ketua_ukm', 'guard_name' => 'web']);
         $ketuaUkm->syncPermissions([
             'akses_panel_admin',

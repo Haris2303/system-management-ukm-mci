@@ -57,9 +57,17 @@ class LaporanKeuanganTest extends TestCase
         $this->actingAs($admin)->get(route('laporan-keuangan.pdf'))->assertForbidden();
     }
 
-    public function test_ketua_ukm_tidak_dapat_mengunduh_laporan(): void
+    public function test_ketua_ukm_dapat_mengunduh_laporan(): void
     {
+        $this->seedDataKas();
         $admin = $this->buatUser('ketua_ukm');
+
+        $this->actingAs($admin)->get(route('laporan-keuangan.pdf'))->assertSuccessful();
+    }
+
+    public function test_sekretaris_tidak_dapat_mengunduh_laporan_keuangan(): void
+    {
+        $admin = $this->buatUser('sekretaris');
 
         $this->actingAs($admin)->get(route('laporan-keuangan.pdf'))->assertForbidden();
     }
@@ -74,9 +82,19 @@ class LaporanKeuanganTest extends TestCase
             ->assertSee('Generate Laporan');
     }
 
-    public function test_tombol_generate_laporan_tidak_tampil_di_dashboard_untuk_ketua_ukm(): void
+    public function test_tombol_generate_laporan_tampil_di_dashboard_untuk_ketua_ukm(): void
     {
         $admin = $this->buatUser('ketua_ukm');
+
+        Livewire::actingAs($admin)
+            ->test(Dashboard::class)
+            ->assertSuccessful()
+            ->assertSee('Generate Laporan');
+    }
+
+    public function test_tombol_generate_laporan_tidak_tampil_di_dashboard_untuk_ketua_divisi(): void
+    {
+        $admin = $this->buatUser('ketua_divisi');
 
         Livewire::actingAs($admin)
             ->test(Dashboard::class)
