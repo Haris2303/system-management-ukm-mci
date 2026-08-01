@@ -2,8 +2,9 @@
 
 namespace App\Filament\Resources\TagihanKas\Schemas;
 
-use App\Helpers\BulanHelper;
 use App\Models\User;
+use Filament\Actions\Action;
+use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -12,6 +13,7 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
+use Illuminate\Support\Carbon;
 
 class TagihanKasForm
 {
@@ -23,18 +25,17 @@ class TagihanKasForm
                     ->description('Buat tagihan iuran wajib untuk anggota.')
                     ->schema([
 
-                        Select::make('user_id')
-                            ->label('Anggota')
-                            ->options(fn() => User::query()->pluck('name', 'id'))
-                            ->searchable()
-                            ->required()
-                            ->columnSpanFull(),
+                        static::anggotaField($schema->getOperation()),
 
-                        Select::make('bulan_tagihan')
-                            ->label('Bulan Tagihan')
-                            ->options(BulanHelper::options())
+                        DatePicker::make('bulan_tagihan')
+                            ->label('Tanggal Tagihan')
                             ->required()
-                            ->searchable(),
+                            ->default(now('Asia/Jayapura'))
+                            ->native(false)
+                            ->displayFormat('d F Y')
+                            ->formatStateUsing(fn($state) => $state ? Carbon::parse($state) : null)
+                            ->dehydrateStateUsing(fn($state) => $state ? Carbon::parse($state)->format('Y-m') : null)
+                            ->helperText('Tagihan akan dikelompokkan berdasarkan bulan dari tanggal yang dipilih.'),
 
                         TextInput::make('nominal')
                             ->label('Nominal (Rupiah)')
@@ -75,5 +76,46 @@ class TagihanKasForm
 
                     ])->columns(1),
             ]);
+    }
+
+    /**
+     * Field Anggota: multi-select + tombol "Pilih Semua" saat membuat tagihan baru,
+     * single select (semua user) saat mengedit tagihan yang sudah ada.
+     */
+    private static function anggotaField(string $operation): Select
+    {
+        if ($operation !== 'create') {
+            return Select::make('user_id')
+                ->label('Anggota')
+                ->options(fn() => User::query()->pluck('name', 'id'))
+                ->searchable()
+                ->required()
+                ->columnSpanFull();
+        }
+
+        return Select::make('user_ids')
+            ->label('Anggota')
+            ->multiple()
+            ->options(fn() => static::eligibleAnggotaQuery()->pluck('name', 'id'))
+            ->searchable()
+            ->required()
+            ->hintAction(
+                Action::make('pilih_semua_anggota')
+                    ->label('Pilih Semua Anggota')
+                    ->icon('heroicon-o-check-circle')
+                    ->action(fn(Set $set) => $set('user_ids', static::eligibleAnggotaQuery()->pluck('id')->toArray()))
+            )
+            ->columnSpanFull();
+    }
+
+    /**
+     * Anggota yang berhak ditagih: bukan Super Admin, bukan demisioner, dan belum dikeluarkan.
+     */
+    private static function eligibleAnggotaQuery()
+    {
+        return User::query()
+            ->whereDoesntHave('roles', fn($q) => $q->whereIn('name', ['super_admin', 'demisioner']))
+            ->whereNull('kicked_at')
+            ->orderBy('name');
     }
 }

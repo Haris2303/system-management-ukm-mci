@@ -38,6 +38,8 @@ class IdCardController extends Controller
 
         $fotoUrl = $user->avatar_url;
 
+        $backUrl = $request->query('back');
+
         return view('id-card.show', compact(
             'user',
             'template',
@@ -45,7 +47,8 @@ class IdCardController extends Controller
             'qrCode',
             'memberId',
             'fotoUrl',
-            'profileUrl'
+            'profileUrl',
+            'backUrl'
         ));
     }
 

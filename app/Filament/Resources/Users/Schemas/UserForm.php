@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Users\Schemas;
 
 use App\Models\Divisi;
 use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Grid;
@@ -38,13 +39,17 @@ class UserForm
                             ->tel()
                             ->maxLength(20),
 
-                        Select::make('divisi_id')
+                        Radio::make('divisi_id')
                             ->label('Divisi')
                             ->options(Divisi::query()->orderBy('urut')->pluck('nama', 'id'))
-                            ->searchable()
-                            ->placeholder('— Tidak ada divisi —')
                             ->helperText('Wajib diisi untuk Ketua Divisi & Anggota.')
+                            ->columns(2)
                             ->columnSpanFull(),
+
+                        TextInput::make('periode')
+                            ->label('Periode')
+                            ->placeholder('Contoh: 2024/2025')
+                            ->maxLength(20),
                     ])->columns(2),
 
                 Grid::make(1)->schema([

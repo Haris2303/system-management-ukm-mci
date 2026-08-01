@@ -283,7 +283,7 @@
     {{-- Toolbar --}}
     <div class="toolbar">
         <div style="display:flex;align-items:center;gap:12px;">
-            <a href="javascript:history.back()" class="btn-back">← Kembali</a>
+            <a href="{{ $backUrl ?? url()->previous() }}" class="btn-back">← Kembali</a>
             <span class="toolbar-title">ID Card — {{ $user->name }}</span>
         </div>
         <button class="btn-print" onclick="window.print()">
