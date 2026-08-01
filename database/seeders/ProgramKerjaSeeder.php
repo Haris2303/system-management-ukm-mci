@@ -13,10 +13,10 @@ class ProgramKerjaSeeder extends Seeder
     public function run(): void
     {
         $pic = [
-            'ketua'    => User::where('email', 'ketua@mci.ac.id')->first(),
-            'kadiv'    => User::where('email', 'kadiv.prog@mci.com')->first(),
-            'bendahara'=> User::where('email', 'bendahara@mci.ac.id')->first(),
-            'anggota'  => User::where('email', 'anggota1@mci.ac.com')->first(),
+            'ketua'     => User::role('ketua_ukm')->first(),
+            'kadiv'     => User::role('ketua_divisi')->first(),
+            'bendahara' => User::role('bendahara')->first(),
+            'anggota'   => User::role('anggota')->first(),
         ];
 
         // Fallback: pakai user pertama yang ada jika belum di-seed

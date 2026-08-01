@@ -214,6 +214,60 @@ class UserSeeder extends Seeder
         );
         $anggota9->assignRole('anggota');
 
+        // 7. Sekretaris (demo role — belum ada di data Excel)
+        $sekretaris = User::firstOrCreate(
+            ['email' => 'sekretaris.mci@gmail.com'],
+            [
+                'name' => 'Nadia Putri Sekretaris',
+                'password' => Hash::make('password'),
+                'no_hp' => '086666666666',
+                'divisi_id' => $divisiCinematography?->id,
+                'periode' => '2025/2026',
+            ]
+        );
+        $sekretaris->assignRole('sekretaris');
+
+        // 8. Demisioner (contoh akun alumni/nonaktif untuk demo)
+        $demisioner = User::firstOrCreate(
+            ['email' => 'alumni.demisioner@gmail.com'],
+            [
+                'name' => 'Fajar Nugroho (Alumni)',
+                'password' => Hash::make('password'),
+                'no_hp' => '087777777777',
+                'divisi_id' => $divisiProgramming?->id,
+                'periode' => '2023/2024',
+            ]
+        );
+        $demisioner->assignRole('demisioner');
+
+        // Set periode aktif untuk seluruh pengurus & anggota inti di atas
+        foreach ([$ketua, $bendahara, $ketuaDiv, $anggota1, $anggota2, $anggota3, $anggota4, $anggota5, $anggota6, $anggota7, $anggota8, $anggota9] as $u) {
+            if (blank($u->periode)) {
+                $u->update(['periode' => '2025/2026']);
+            }
+        }
+
         $this->command->info('✅ Berhasil membuat User dari data Excel untuk setiap Role.');
+
+        // ── Tambahan anggota dummy (via factory) agar data lebih ramai saat presentasi ──
+        $divisiList = collect([$divisiProgramming, $divisiGameDeveloper, $divisiCinematography])
+            ->filter()
+            ->values();
+
+        if ($divisiList->isNotEmpty() && User::role('anggota')->count() < 20) {
+            User::factory()
+                ->count(12)
+                ->create()
+                ->each(function (User $user) use ($divisiList) {
+                    $user->update([
+                        'divisi_id' => $divisiList->random()->id,
+                        'periode'   => '2025/2026',
+                        'no_hp'     => '08' . fake()->numerify('##########'),
+                    ]);
+                    $user->assignRole('anggota');
+                });
+
+            $this->command->info('✅ 12 anggota dummy tambahan berhasil dibuat via factory.');
+        }
     }
 }
