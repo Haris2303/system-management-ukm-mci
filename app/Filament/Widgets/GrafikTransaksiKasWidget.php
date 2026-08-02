@@ -14,7 +14,7 @@ class GrafikTransaksiKasWidget extends ChartWidget
 
     protected ?string $description = 'Perbandingan iuran kas, kas masuk, dan kas keluar (dalam Ribuan Rp)';
 
-    protected static ?int $sort = 1;
+    protected static ?int $sort = 0;
 
     protected int|string|array $columnSpan = 2;
 

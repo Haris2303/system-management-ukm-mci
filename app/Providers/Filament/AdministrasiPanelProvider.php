@@ -38,7 +38,12 @@ class AdministrasiPanelProvider extends PanelProvider
             ->darkMode(false)
             ->renderHook(
                 \Filament\View\PanelsRenderHook::HEAD_END,
-                fn() => '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">',
+                fn() => '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">'
+                    // Grid widget (mis. dashboard) default-nya "align-items: stretch", jadi widget
+                    // pendek (stat card) dipaksa setinggi widget tertinggi di barisnya (chart/tabel)
+                    // dan menyisakan ruang kosong besar di bawahnya. Batasi hanya ke grid yang
+                    // langsung berisi widget (bukan grid form/schema) agar layout tetap padat.
+                    . '<style>.fi-grid:has(> .fi-wi-widget) { align-items: start; }</style>',
             )
             ->userMenuItems([
                 MenuItem::make()

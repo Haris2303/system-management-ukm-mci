@@ -12,9 +12,13 @@ use Filament\Widgets\TableWidget as BaseWidget;
 
 class AnggotaAktifWidget extends BaseWidget
 {
+    /**
+     * Tampil di baris ketiga dashboard, tepat di bawah Grafik Transaksi Kas
+     * (sort 0, span 2) — sejajar lebar dengan grafik tersebut.
+     */
     protected static ?int $sort = 2;
 
-    protected int|string|array $columnSpan = 1;
+    protected int|string|array $columnSpan = 2;
 
     protected static ?string $heading = 'Anggota Aktif';
 
