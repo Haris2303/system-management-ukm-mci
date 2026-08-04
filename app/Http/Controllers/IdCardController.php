@@ -84,6 +84,7 @@ class IdCardController extends Controller
         $memberId        = 'MCI-' . str_pad($user->id, 4, '0', STR_PAD_LEFT);
         $fotoUrl         = $user->avatar_url;
         $backgroundImage = IdCardSetting::backgroundImageUrl();
+        $template        = IdCardTemplates::find(IdCardSetting::activeTemplate());
         $cardUrl         = $base . route('id-card.show', $user->id, false);
         $profileUrl      = $base . route('anggota.show', $user->public_id, false);
 
@@ -99,6 +100,11 @@ class IdCardController extends Controller
             'avatar'               => $user->avatar,
             'foto_url'             => $fotoUrl,
             'background_image_url' => $backgroundImage,
+            'template' => [
+                'slug'   => $template['slug'],
+                'label'  => $template['label'],
+                'colors' => $template['colors'],
+            ],
             'card_url'             => $cardUrl,
             'profile_url'          => $profileUrl,
         ]);

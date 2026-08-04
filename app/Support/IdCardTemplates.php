@@ -38,6 +38,17 @@ class IdCardTemplates
             'slug'        => 'biru-klasik',
             'label'       => 'Biru Klasik',
             'preview_bg'  => 'linear-gradient(135deg,#1a4ff5,#3671ff)',
+            'colors'      => [
+                'card_background'  => '#ffffff',
+                'border'           => '#1a4ff5',
+                'header_gradient'  => ['#1340e1', '#3671ff'],
+                'accent'           => '#1a4ff5',
+                'badge_background' => '#eef5ff',
+                'badge_text'       => '#1a4ff5',
+                'badge_border'     => '#bdd8ff',
+                'text_color'       => '#0f172a',
+                'divider'          => '#1a4ff5',
+            ],
             'css'         => '
                 .id-card { background:#fff; border:3px solid #1a4ff5; border-radius:16px; }
                 .id-card-header { background:linear-gradient(135deg,#1340e1,#3671ff); }
@@ -63,6 +74,17 @@ class IdCardTemplates
             'slug'        => 'teknologi',
             'label'       => 'Teknologi',
             'preview_bg'  => 'linear-gradient(135deg,#0f172a,#1e293b)',
+            'colors'      => [
+                'card_background'  => '#0f172a',
+                'border'           => '#0ff4c6',
+                'header_gradient'  => ['#0c1445', '#0f172a'],
+                'accent'           => '#0ff4c6',
+                'badge_background' => 'rgba(15,244,198,0.1)',
+                'badge_text'       => '#0ff4c6',
+                'badge_border'     => 'rgba(15,244,198,0.3)',
+                'text_color'       => '#e2e8f0',
+                'divider'          => 'rgba(15,244,198,0.3)',
+            ],
             'css'         => '
                 .id-card {
                     background:#0f172a;
@@ -100,6 +122,17 @@ class IdCardTemplates
             'slug'        => 'elegan-emas',
             'label'       => 'Elegan Emas',
             'preview_bg'  => 'linear-gradient(135deg,#b45309,#f59e0b)',
+            'colors'      => [
+                'card_background'  => '#fffbf0',
+                'border'           => '#f59e0b',
+                'header_gradient'  => ['#92400e', '#b45309', '#d97706'],
+                'accent'           => '#b45309',
+                'badge_background' => '#fef3c7',
+                'badge_text'       => '#92400e',
+                'badge_border'     => '#fde68a',
+                'text_color'       => '#0f172a',
+                'divider'          => '#f59e0b',
+            ],
             'css'         => '
                 .id-card {
                     background:#fffbf0;
@@ -133,6 +166,17 @@ class IdCardTemplates
             'slug'        => 'ungu-gradien',
             'label'       => 'Ungu Gradien',
             'preview_bg'  => 'linear-gradient(135deg,#4f46e5,#7c3aed)',
+            'colors'      => [
+                'card_background'  => '#ffffff',
+                'border'           => '#7c3aed',
+                'header_gradient'  => ['#3730a3', '#4f46e5', '#7c3aed'],
+                'accent'           => '#6d28d9',
+                'badge_background' => '#f5f3ff',
+                'badge_text'       => '#5b21b6',
+                'badge_border'     => '#ddd6fe',
+                'text_color'       => '#0f172a',
+                'divider'          => '#4f46e5',
+            ],
             'css'         => '
                 .id-card {
                     background:#fff;
@@ -161,6 +205,17 @@ class IdCardTemplates
             'slug'        => 'merah-energi',
             'label'       => 'Merah Energi',
             'preview_bg'  => 'linear-gradient(135deg,#be123c,#e11d48)',
+            'colors'      => [
+                'card_background'  => '#ffffff',
+                'border'           => '#e11d48',
+                'header_gradient'  => ['#9f1239', '#be123c', '#e11d48'],
+                'accent'           => '#be123c',
+                'badge_background' => '#fff1f2',
+                'badge_text'       => '#9f1239',
+                'badge_border'     => '#fecdd3',
+                'text_color'       => '#0f172a',
+                'divider'          => '#e11d48',
+            ],
             'css'         => '
                 .id-card { background:#fff; border:3px solid #e11d48; border-radius:14px; }
                 .id-card-header { background:linear-gradient(135deg,#9f1239,#be123c,#e11d48); }
@@ -185,6 +240,17 @@ class IdCardTemplates
             'slug'        => 'hijau-alam',
             'label'       => 'Hijau Alam',
             'preview_bg'  => 'linear-gradient(135deg,#065f46,#059669)',
+            'colors'      => [
+                'card_background'  => '#ffffff',
+                'border'           => '#059669',
+                'header_gradient'  => ['#064e3b', '#065f46', '#059669'],
+                'accent'           => '#047857',
+                'badge_background' => '#ecfdf5',
+                'badge_text'       => '#065f46',
+                'badge_border'     => '#a7f3d0',
+                'text_color'       => '#0f172a',
+                'divider'          => '#059669',
+            ],
             'css'         => '
                 .id-card { background:#fff; border:3px solid #059669; border-radius:16px; }
                 .id-card-header { background:linear-gradient(135deg,#064e3b,#065f46,#059669); }
