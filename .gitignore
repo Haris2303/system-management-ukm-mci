@@ -29,5 +29,5 @@ storage/debugbar/
 /storage/framework/cache
 /storage/framework/sessions
 /storage/framework/testing
-/storage/framework/views/*.php
+/storage/framework/views/*
 /public/sitemap.xml
