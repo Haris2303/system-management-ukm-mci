@@ -43,11 +43,7 @@
 
                 {{-- Stats — body-tabular with tnum --}}
                 <div class="flex items-center gap-8 pt-2" style="animation: fadeUp 0.8s 0.35s ease both;">
-                    @foreach ([
-                        [$jumlahAnggotaAktif > 0 ? $jumlahAnggotaAktif . '+' : '—', 'Anggota Aktif'],
-                        [$jumlahAlumni > 0 ? $jumlahAlumni . '+' : '—', 'Alumni'],
-                        [$jumlahDivisi, 'Divisi'],
-                    ] as [$n, $l])
+                    @foreach ([[$jumlahAnggotaAktif > 0 ? $jumlahAnggotaAktif . '+' : '—', 'Anggota Aktif'], [$jumlahAlumni > 0 ? $jumlahAlumni . '+' : '—', 'Alumni'], [$jumlahDivisi, 'Divisi']] as [$n, $l])
                         <div class="text-center">
                             <div class="font-display text-2xl text-brand-600"
                                 style="font-weight:300; font-feature-settings:'tnum'; letter-spacing:-0.42px;">
