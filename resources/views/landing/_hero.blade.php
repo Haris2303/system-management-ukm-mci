@@ -31,7 +31,7 @@
                     <h1 class="font-display text-5xl lg:text-6xl xl:text-7xl leading-[1.03] text-ink"
                         style="font-weight:300; letter-spacing:-1.4px; animation: fadeUp 0.8s 0.1s ease both;">
                         Wujudkan Ide
-                        <span class="block gradient-text">Teknologimu</span>
+                        <span class="block gradient-text" style="font-weight: 500">Creative</span>
                         Bersama Kami.
                     </h1>
                     <p class="text-lg lg:text-xl text-ink-mute leading-relaxed max-w-lg"

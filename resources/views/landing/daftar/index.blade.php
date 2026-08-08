@@ -1,7 +1,9 @@
 @extends('layouts.app')
 
 @section('title', 'Pendaftaran Anggota — UKM MCI')
-@section('description', 'Bergabung menjadi anggota UKM MCI (Media Creative Informations). Isi formulir pendaftaran dan mulai perjalanan teknologimu bersama kami.')
+@section('description',
+    'Bergabung menjadi anggota UKM MCI (Media Creative Informations). Isi formulir pendaftaran dan
+    mulai perjalanan teknologimu bersama kami.')
 
 @section('content')
 
@@ -31,7 +33,8 @@
                                 ? $openRecruitment->judul . ($openRecruitment->gelombang ? ' · ' . $openRecruitment->gelombang : '')
                                 : 'Close Recruitment' }}
                         </span>
-                        <h1 class="font-display text-4xl lg:text-5xl font-bold text-slate-900 leading-tight">
+                        <h1 class="font-display text-4xl lg:text-5xl font-bold text-slate-900 leading-tight"
+                            style="line-height: 60px">
                             Mulai Perjalanan
                             <span class="gradient-text"> Teknologimu</span>
                         </h1>
@@ -56,12 +59,7 @@
 
                     {{-- Keuntungan --}}
                     <div class="space-y-3">
-                        @foreach ([
-                        ['fa-solid fa-rocket',    'Akses Workshop Eksklusif', 'Pelatihan coding, design, dan tech leadership setiap bulan'],
-                        ['fa-solid fa-trophy',    'Ikut Kompetisi Bergengsi', 'Dukungan penuh untuk lomba nasional & internasional'],
-                        ['fa-solid fa-briefcase', 'Bangun Portofolio Nyata',  'Project kolaboratif yang siap masuk CV Anda'],
-                        ['fa-solid fa-globe',     'Jaringan Alumni Luas',     'Terhubung dengan alumni di perusahaan tech terkemuka'],
-                    ] as [$iconClass, $title, $desc])
+                        @foreach ([['fa-solid fa-rocket', 'Akses Workshop Eksklusif', 'Pelatihan coding, design, dan tech leadership setiap bulan'], ['fa-solid fa-trophy', 'Ikut Kompetisi Bergengsi', 'Dukungan penuh untuk lomba nasional & internasional'], ['fa-solid fa-briefcase', 'Bangun Portofolio Nyata', 'Project kolaboratif yang siap masuk CV Anda'], ['fa-solid fa-globe', 'Jaringan Alumni Luas', 'Terhubung dengan alumni di perusahaan tech terkemuka']] as [$iconClass, $title, $desc])
                             <div
                                 class="flex gap-4 items-start p-4 rounded-2xl hover:bg-brand-50/50 transition-colors group">
                                 <div
@@ -102,7 +100,8 @@
                 ══════════════════════════════════════════════════ --}}
                         <div
                             class="flex flex-col items-center justify-center text-center bg-slate-50 border-2 border-dashed border-slate-200 rounded-3xl p-12 gap-5 h-full min-h-[420px]">
-                            <div class="w-20 h-20 rounded-2xl bg-slate-100 flex items-center justify-center text-4xl text-slate-400">
+                            <div
+                                class="w-20 h-20 rounded-2xl bg-slate-100 flex items-center justify-center text-4xl text-slate-400">
                                 <i class="fa-solid fa-lock"></i>
                             </div>
                             <div>
@@ -131,7 +130,8 @@
                 ══════════════════════════════════════════════════ --}}
                         <div
                             class="flex flex-col items-center justify-center text-center bg-slate-50 border-2 border-dashed border-slate-200 rounded-3xl p-12 gap-5 h-full min-h-[420px]">
-                            <div class="w-20 h-20 rounded-2xl bg-amber-50 flex items-center justify-center text-4xl text-amber-400">
+                            <div
+                                class="w-20 h-20 rounded-2xl bg-amber-50 flex items-center justify-center text-4xl text-amber-400">
                                 <i class="fa-solid fa-triangle-exclamation"></i>
                             </div>
                             <div>
@@ -384,7 +384,8 @@
                                                     </svg>
                                                 </div>
 
-                                                <span class="text-xl mb-2 block text-brand-500"><i :class="div.icon"></i></span>
+                                                <span class="text-xl mb-2 block text-brand-500"><i
+                                                        :class="div.icon"></i></span>
                                                 <p class="font-bold text-slate-800 text-sm" x-text="div.nama"></p>
                                                 <p class="text-slate-400 text-xs mt-1 leading-relaxed line-clamp-2"
                                                     x-text="div.deskripsi || 'Klik untuk memilih divisi ini.'"></p>
@@ -406,7 +407,8 @@
 
                                     {{-- Info saat tidak ada divisi --}}
                                     <div x-show="divisis.length === 0" class="text-center py-10 text-slate-400 text-sm">
-                                        <i class="fa-regular fa-face-sad-tear mr-1"></i> Belum ada divisi yang membuka pendaftaran saat ini.
+                                        <i class="fa-regular fa-face-sad-tear mr-1"></i> Belum ada divisi yang membuka
+                                        pendaftaran saat ini.
                                     </div>
 
                                     {{-- Info: divisi terpilih tidak punya pertanyaan --}}
@@ -489,7 +491,8 @@
 
                                     {{-- Privacy note --}}
                                     <p class="text-xs text-slate-400 leading-relaxed mt-5">
-                                        <i class="fa-solid fa-lock mr-1 text-slate-400"></i> Data Anda disimpan secara aman. Jawaban akan dinilai oleh Ketua Divisi terkait.
+                                        <i class="fa-solid fa-lock mr-1 text-slate-400"></i> Data Anda disimpan secara
+                                        aman. Jawaban akan dinilai oleh Ketua Divisi terkait.
                                     </p>
 
                                     {{-- Navigasi --}}
@@ -500,7 +503,8 @@
                                         </button>
                                         <button type="submit" :disabled="isSubmitting"
                                             class="flex-1 flex items-center justify-center gap-2 px-6 py-4 rounded-2xl bg-brand-600 text-white font-bold text-sm hover:bg-brand-700 shadow-lg shadow-brand-200 hover:-translate-y-0.5 transition-all duration-200 disabled:opacity-70 disabled:cursor-not-allowed disabled:translate-y-0">
-                                            <span x-show="!isSubmitting">Kirim Pendaftaran <i class="fa-solid fa-paper-plane ml-0.5"></i></span>
+                                            <span x-show="!isSubmitting">Kirim Pendaftaran <i
+                                                    class="fa-solid fa-paper-plane ml-0.5"></i></span>
                                             <span x-show="isSubmitting" class="flex items-center gap-2">
                                                 <svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
                                                     <circle class="opacity-25" cx="12" cy="12" r="10"
