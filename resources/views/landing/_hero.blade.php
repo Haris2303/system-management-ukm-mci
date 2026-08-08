@@ -58,15 +58,17 @@
 
                 {{-- CTAs — button-primary-pill: rounded-full 8px 16px --}}
                 <div class="flex flex-wrap gap-4" style="animation: fadeUp 0.8s 0.45s ease both;">
-                    <a href="{{ route('daftar.form') }}"
-                        class="inline-flex items-center gap-2 px-7 py-3 rounded-full bg-brand-600 text-white hover:bg-brand-700 shadow-xl shadow-brand-200 hover:shadow-brand-300 hover:-translate-y-1 transition-all duration-200"
-                        style="font-weight:400; font-size:16px; line-height:1.0;">
-                        Yuk, Bergabung!
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                        </svg>
-                    </a>
+                    @if ($openRecruitment)
+                        <a href="{{ route('daftar.form') }}"
+                            class="inline-flex items-center gap-2 px-7 py-3 rounded-full bg-brand-600 text-white hover:bg-brand-700 shadow-xl shadow-brand-200 hover:shadow-brand-300 hover:-translate-y-1 transition-all duration-200"
+                            style="font-weight:400; font-size:16px; line-height:1.0;">
+                            Yuk, Bergabung!
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                            </svg>
+                        </a>
+                    @endif
                     {{-- button-secondary: canvas bg, primary text, 1px border --}}
                     <a href="#tentang"
                         class="inline-flex items-center gap-2 px-7 py-3 rounded-full bg-white text-brand-600 border border-brand-600 hover:bg-brand-50 hover:-translate-y-1 transition-all duration-200 shadow-sm"

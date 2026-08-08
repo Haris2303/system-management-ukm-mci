@@ -46,16 +46,7 @@
             </div>
         @else
             <div class="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-                @foreach ([
-                    ['fa-solid fa-laptop-code',    'Web Development',   'Membangun aplikasi web modern dengan framework terkini'],
-                    ['fa-solid fa-robot',           'AI & Machine Learning', 'Mengeksplorasi kecerdasan buatan dan data science'],
-                    ['fa-solid fa-mobile-screen',   'Mobile Development','Merancang aplikasi Android & iOS yang inovatif'],
-                    ['fa-solid fa-palette',         'UI/UX Design',      'Menciptakan pengalaman pengguna yang intuitif dan estetis'],
-                    ['fa-solid fa-shield-halved',   'Cyber Security',    'Mempelajari keamanan sistem dan ethical hacking'],
-                    ['fa-solid fa-cloud',           'Cloud & DevOps',    'Infrastruktur cloud, CI/CD, dan otomasi deployment'],
-                    ['fa-solid fa-trophy',          'Lomba & Hackathon', 'Mengikuti kompetisi teknologi tingkat nasional'],
-                    ['fa-solid fa-book-open',       'Workshop Bulanan',  'Pelatihan intensif dengan instruktur berpengalaman'],
-                ] as [$iconClass, $nama, $desc])
+                @foreach ([['fa-solid fa-laptop-code', 'Web Development', 'Membangun aplikasi web modern dengan framework terkini'], ['fa-solid fa-robot', 'AI & Machine Learning', 'Mengeksplorasi kecerdasan buatan dan data science'], ['fa-solid fa-mobile-screen', 'Mobile Development', 'Merancang aplikasi Android & iOS yang inovatif'], ['fa-solid fa-palette', 'UI/UX Design', 'Menciptakan pengalaman pengguna yang intuitif dan estetis'], ['fa-solid fa-shield-halved', 'Cyber Security', 'Mempelajari keamanan sistem dan ethical hacking'], ['fa-solid fa-cloud', 'Cloud & DevOps', 'Infrastruktur cloud, CI/CD, dan otomasi deployment'], ['fa-solid fa-trophy', 'Lomba & Hackathon', 'Mengikuti kompetisi teknologi tingkat nasional'], ['fa-solid fa-book-open', 'Workshop Bulanan', 'Pelatihan intensif dengan instruktur berpengalaman']] as [$iconClass, $nama, $desc])
                     <div
                         class="reveal reveal-delay-{{ min(($loop->index % 4) + 1, 4) }} bg-white rounded-xl p-6 border border-hairline tech-card shadow-sm group">
                         <div
@@ -66,7 +57,8 @@
                             style="font-weight:300; letter-spacing:-0.22px;">
                             {{ $nama }}
                         </h3>
-                        <p class="text-ink-mute text-sm leading-relaxed" style="font-weight:300;">{{ $desc }}</p>
+                        <p class="text-ink-mute text-sm leading-relaxed" style="font-weight:300;">{{ $desc }}
+                        </p>
                     </div>
                 @endforeach
             </div>
@@ -78,11 +70,12 @@
                 {{-- card-pricing-featured: brand-dark-900 --}}
                 <div
                     class="rounded-xl bg-brand-900 p-8 lg:p-10 flex flex-col lg:flex-row items-center justify-between gap-6 relative overflow-hidden">
-                    <div class="absolute top-0 right-0 w-72 h-72 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/3"></div>
+                    <div
+                        class="absolute top-0 right-0 w-72 h-72 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/3">
+                    </div>
                     <div class="absolute bottom-0 left-20 w-40 h-40 bg-brand-600/20 rounded-full translate-y-1/2"></div>
                     <div class="relative z-10 text-center lg:text-left">
-                        <h3 class="text-2xl lg:text-3xl text-white"
-                            style="font-weight:300; letter-spacing:-0.64px;">
+                        <h3 class="text-2xl lg:text-3xl text-white" style="font-weight:300; letter-spacing:-0.64px;">
                             Siap bergabung dengan divisi pilihan Anda?
                         </h3>
                         <p class="text-brand-200 mt-2" style="font-weight:300;">
@@ -90,7 +83,7 @@
                         </p>
                     </div>
                     {{-- button-on-dark: white bg on dark surface --}}
-                    <a href="#daftar"
+                    <a href="{{ route('daftar.form') }}"
                         class="relative z-10 shrink-0 inline-flex items-center gap-2 px-7 py-3 rounded-full bg-white text-brand-700 hover:bg-brand-50 shadow-lg hover:-translate-y-0.5 transition-all duration-200"
                         style="font-weight:400; font-size:16px; line-height:1.0;">
                         Daftar Sekarang
