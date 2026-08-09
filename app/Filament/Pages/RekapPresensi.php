@@ -33,10 +33,7 @@ class RekapPresensi extends Page implements HasTable
 
     public static function canAccess(): bool
     {
-        // Bendahara hanya boleh mengakses fitur keuangan (E-Kas Keuangan);
-        // ketua_ukm dibatasi hanya E-Voting, Open Recruitment, Divisi &
-        // Laporan Keuangan E-Kas.
-        return ! (auth()->user()?->hasAnyRole(['bendahara', 'ketua_ukm']) ?? false);
+        return (auth()->user()?->hasAnyRole(['sekretaris', 'ketua_ukm', 'super_admin']) ?? false);
     }
 
     public function table(Table $table): Table
@@ -49,19 +46,19 @@ class RekapPresensi extends Page implements HasTable
                 // yang sama, yang perilakunya tidak konsisten antar driver DB).
                 $agendaId = $this->getTableFilterState('agenda_id')['value'] ?? null;
 
-                return User::whereDoesntHave('roles', fn ($q) => $q->whereIn('name', ['super_admin', 'demisioner']))
+                return User::whereDoesntHave('roles', fn($q) => $q->whereIn('name', ['super_admin', 'demisioner']))
                     ->withCount([
-                        'presensis as hadir_count' => fn ($q) => $q
-                            ->when($agendaId, fn ($q) => $q->where('agenda_id', $agendaId))
+                        'presensis as hadir_count' => fn($q) => $q
+                            ->when($agendaId, fn($q) => $q->where('agenda_id', $agendaId))
                             ->where('status', 'Hadir'),
-                        'presensis as izin_count' => fn ($q) => $q
-                            ->when($agendaId, fn ($q) => $q->where('agenda_id', $agendaId))
+                        'presensis as izin_count' => fn($q) => $q
+                            ->when($agendaId, fn($q) => $q->where('agenda_id', $agendaId))
                             ->where('status', 'Izin'),
-                        'presensis as absen_count' => fn ($q) => $q
-                            ->when($agendaId, fn ($q) => $q->where('agenda_id', $agendaId))
+                        'presensis as absen_count' => fn($q) => $q
+                            ->when($agendaId, fn($q) => $q->where('agenda_id', $agendaId))
                             ->where('status', 'Absen'),
-                        'presensis as total_presensi' => fn ($q) => $q
-                            ->when($agendaId, fn ($q) => $q->where('agenda_id', $agendaId)),
+                        'presensis as total_presensi' => fn($q) => $q
+                            ->when($agendaId, fn($q) => $q->where('agenda_id', $agendaId)),
                     ]);
             })
             ->columns([
@@ -128,13 +125,13 @@ class RekapPresensi extends Page implements HasTable
                 SelectFilter::make('agenda_id')
                     ->label('Filter Agenda')
                     ->placeholder('Semua Agenda')
-                    ->options(fn () => Agenda::query()->pluck('nama_agenda', 'id')->toArray())
+                    ->options(fn() => Agenda::query()->pluck('nama_agenda', 'id')->toArray())
                     ->searchable()
                     // Query dasar sudah membaca state filter ini langsung
                     // (lihat ->query() di atas), jadi di sini cukup no-op
                     // supaya Filament tidak mencoba where('agenda_id', ...)
                     // pada tabel users (kolom itu tidak ada di sana).
-                    ->query(fn (Builder $query): Builder => $query),
+                    ->query(fn(Builder $query): Builder => $query),
             ])
             ->defaultSort('hadir_count', 'desc')
             ->poll('30s')

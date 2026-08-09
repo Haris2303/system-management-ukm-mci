@@ -57,7 +57,7 @@ class ElectionResource extends Resource
     {
         // Bendahara hanya boleh mengakses E-Kas Keuangan; sekretaris hanya
         // boleh mengakses Manajemen Presensi & User.
-        return ! (auth()->user()?->hasAnyRole(['bendahara', 'sekretaris']) ?? false);
+        return (auth()->user()?->hasAnyRole(['super_admin', 'ketua_ukm']) ?? false);
     }
 
     public static function getPages(): array

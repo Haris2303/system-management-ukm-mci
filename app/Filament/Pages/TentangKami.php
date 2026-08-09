@@ -34,10 +34,7 @@ class TentangKami extends Page
 
     public static function canAccess(): bool
     {
-        // Bendahara hanya boleh mengakses E-Kas Keuangan; sekretaris hanya
-        // boleh mengakses Manajemen Presensi & User; ketua_ukm dibatasi
-        // hanya E-Voting, Open Recruitment, Divisi & Laporan Keuangan E-Kas.
-        return ! (auth()->user()?->hasAnyRole(['bendahara', 'sekretaris', 'ketua_ukm']) ?? false);
+        return (auth()->user()?->hasAnyRole(['super_admin']) ?? false);
     }
 
     public function mount(): void
