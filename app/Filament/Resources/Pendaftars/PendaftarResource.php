@@ -90,6 +90,11 @@ class PendaftarResource extends Resource
         ]) ?? false;
     }
 
+    public static function canCreate(): bool
+    {
+        return false;
+    }
+
     // ═══════════════════════════════════════════════════════════════════════
     // QUERY SCOPING — Ketua Divisi hanya lihat pendaftar di divisinya
     // ═══════════════════════════════════════════════════════════════════════
