@@ -117,3 +117,17 @@ Route::prefix('chatbot')->name('chatbot.')->group(function () {
     Route::post('/upload',           [ChatbotController::class, 'upload'])->name('upload')->middleware('auth');
     Route::get('/status/{id}',       [ChatbotController::class, 'status'])->name('status');
 });
+
+use Illuminate\Support\Facades\Mail;
+
+Route::get('/tes-gmail', function () {
+    try {
+        Mail::raw('Halo! Ini adalah tes pengiriman email menggunakan Gmail SMTP dari aplikasi Laravel.', function ($message) {
+            $message->to('ahostweb13@gmail.com') // Ganti ke email pribadi Anda untuk ngetes
+                    ->subject('Tes Konfigurasi Gmail SMTP');
+        });
+        return "<h1>SUKSES!</h1> Email berhasil dikirim via Gmail.";
+    } catch (\Exception $e) {
+        return "<h1>GAGAL!</h1> Pesan Error Aslinya: <br><br> <b>" . $e->getMessage() . "</b>";
+    }
+});
