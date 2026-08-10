@@ -105,16 +105,22 @@
         transform-origin: bottom right;
         transform: scale(0.85) translateY(20px);
         opacity: 0;
+        visibility: hidden;
+        /* Tambahkan ini agar tidak menghalangi klik saat tertutup */
         pointer-events: none;
         transition: transform .35s cubic-bezier(.34, 1.56, .64, 1),
-            opacity .25s ease;
+            opacity .25s ease,
+            visibility .25s ease;
         border: 1px solid rgba(26, 79, 245, .1);
     }
 
     #chatbot-panel.open {
         transform: scale(1) translateY(0);
         opacity: 1;
-        pointer-events: all;
+        visibility: visible;
+        /* Tampilkan kembali saat terbuka */
+        pointer-events: auto;
+        /* Ubah dari 'all' menjadi 'auto' (standar CSS) */
     }
 
     /* Mobile: full screen */

@@ -4,9 +4,11 @@ namespace App\Filament\Resources\Pendaftars\Pages;
 
 use App\Filament\Resources\Pendaftars\PendaftarResource;
 use App\Models\Pendaftar;
+use App\Models\User;
 use App\Services\PendaftarService;
 use Filament\Actions\Action;
 use Filament\Actions\EditAction;
+use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
 
 class ViewPendaftar extends ViewRecord
@@ -16,14 +18,7 @@ class ViewPendaftar extends ViewRecord
     protected function getHeaderActions(): array
     {
         return [
-            EditAction::make(),
-
-            // ═══════════════════════════════════════════════
-            // ⭐ ACTION: LULUSKAN
-            // Ubah status → 'lulus' + insert ke tabel users
-            // ═══════════════════════════════════════════════
-            // Saat pendaftar diluluskan, user yang dibuat HARUS langsung diberi
-            // role 'anggota' agar bisa login ke mobile app.
+            EditAction::make()->visible(fn() => auth()->user()->hasRole(['super_admin', 'ketua_divisi'])),
             Action::make('luluskan')
                 ->label('Luluskan')
                 ->icon('heroicon-o-check-badge')
@@ -50,6 +45,27 @@ class ViewPendaftar extends ViewRecord
                             . " · Role: Anggota")
                         ->success()
                         ->duration(5000)
+                        ->send();
+                }),
+
+            Action::make('tolak')
+                ->label('Tolak')
+                ->icon('heroicon-o-x-circle')
+                ->color('danger')
+                ->visible(fn(Pendaftar $r): bool => $r->status === 'menunggu')
+                ->requiresConfirmation()
+                ->modalHeading('Tolak Pendaftar?')
+                ->modalDescription(
+                    fn(Pendaftar $r) =>
+                    "Pendaftar {$r->nama} ({$r->nim}) akan ditolak. Tindakan ini tidak dapat dibatalkan."
+                )
+                ->action(function (Pendaftar $record): void {
+                    // Panggil fungsi tolak dari PendaftarService di sini!
+                    app(PendaftarService::class)->tolak($record);
+
+                    Notification::make()
+                        ->title("❌ {$record->nama} ditolak.")
+                        ->danger()
                         ->send();
                 }),
         ];

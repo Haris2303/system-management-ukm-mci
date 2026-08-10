@@ -24,7 +24,7 @@ class ProgramKerjaResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::ClipboardDocumentCheck;
 
-    protected static ?string $recordTitleAttribute = 'id';
+    protected static ?string $recordTitleAttribute = 'nama_proker';
 
     protected static ?string $navigationLabel = 'Tracking Program Kerja';
 

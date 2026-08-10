@@ -13,6 +13,7 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Override;
 
 class PertanyaanSeleksiResource extends Resource
 {
@@ -60,7 +61,7 @@ class PertanyaanSeleksiResource extends Resource
 
     public static function canViewAny(): bool
     {
-        return auth()->user()?->can('kelola_pertanyaan_seleksi') ?? false;
+        return (auth()->user()?->hasAnyRole(['ketua_divisi', 'super_admin']) ?? false);
     }
 
     public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder

@@ -15,6 +15,8 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\TextInputColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
+use Override;
 
 class JawabanPendaftarsRelationManager extends RelationManager
 {
@@ -92,5 +94,11 @@ class JawabanPendaftarsRelationManager extends RelationManager
             ->toolbarActions([
                 BulkActionGroup::make([]),
             ]);
+    }
+
+    #[Override]
+    public static function canViewForRecord(Model $ownerRecord, string $pageClass): bool
+    {
+        return auth()->user()->hasAnyRole(['super_admin', 'ketua_divisi']);
     }
 }
