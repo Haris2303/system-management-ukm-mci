@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 class Materi extends Model
@@ -33,6 +34,30 @@ class Materi extends Model
     public function uploader(): BelongsTo
     {
         return $this->belongsTo(User::class, 'uploaded_by');
+    }
+
+    protected static function booted(): void
+    {
+        static::addGlobalScope('materi_divisi_baru', function (Builder $builder) {
+            if (Auth::check()) {
+                $user = Auth::user();
+                $divisiId = $user->divisi_id;
+                $userCreatedAt = $user->created_at;
+
+                $builder->where(function (Builder $sub) use ($divisiId, $userCreatedAt) {
+                    // 1. Materi umum selalu kelihatan kapan pun
+                    $sub->whereNull('divisi_id');
+
+                    // 2. Materi divisi hanya jika punya divisi DAN diunggah setelah user dibuat
+                    if ($divisiId !== null) {
+                        $sub->orWhere(function (Builder $divSub) use ($divisiId, $userCreatedAt) {
+                            $divSub->where('divisi_id', $divisiId)
+                                ->where('created_at', '>=', $userCreatedAt);
+                        });
+                    }
+                });
+            }
+        });
     }
 
     // ── Scopes ────────────────────────────────────────────────
