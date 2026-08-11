@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Pendaftars\Tables;
 
 use App\Models\Divisi;
 use App\Models\Pendaftar;
+use App\Models\User;
 use App\Services\PendaftarService;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
@@ -87,66 +88,10 @@ class PendaftarsTable
             ])
             ->recordActions([
                 ViewAction::make(),
-                // ═══════════════════════════════════════════════
-                // ⭐ ACTION: LULUSKAN
-                // Ubah status → 'lulus' + insert ke tabel users
-                // ═══════════════════════════════════════════════
-                // Saat pendaftar diluluskan, user yang dibuat HARUS langsung diberi
-                // role 'anggota' agar bisa login ke mobile app.
-                Action::make('luluskan')
-                    ->label('Luluskan')
-                    ->icon('heroicon-o-check-badge')
-                    ->color('success')
-                    ->visible(fn(Pendaftar $r): bool => $r->status === 'menunggu')
-                    ->requiresConfirmation()
-                    ->modalHeading('Luluskan Pendaftar?')
-                    ->modalDescription(function (Pendaftar $r): string {
-                        $email = $r->effectiveEmail();
-                        return "Pendaftar {$r->nama} ({$r->nim}) akan dinyatakan LULUS.\n\n"
-                            . "Akun anggota akan dibuat otomatis:\n"
-                            . "• Email: {$email}\n"
-                            . "• Password default: password123\n"
-                            . "• Role: 👥 Anggota (akses mobile app)\n"
-                            . "• Divisi: " . ($r->divisi?->nama ?? '(tidak ada)');
-                    })
-                    ->modalSubmitActionLabel('Ya, Luluskan & Buat Akun')
-                    ->action(function (Pendaftar $record): void {
-                        app(PendaftarService::class)->luluskan($record);
-
-                        \Filament\Notifications\Notification::make()
-                            ->title("🎉 {$record->nama} berhasil diluluskan!")
-                            ->body("Akun dibuat dengan email: " . $record->effectiveEmail()
-                                . " · Role: Anggota")
-                            ->success()
-                            ->duration(5000)
-                            ->send();
-                    }),
-
-                // ── Tolak ─────────────────────────────────────
-                Action::make('tolak')
-                    ->label('Tolak')
-                    ->icon('heroicon-o-x-circle')
-                    ->color('danger')
-                    ->visible(fn(Pendaftar $r): bool => $r->status === 'menunggu')
-                    ->requiresConfirmation()
-                    ->modalHeading('Tolak Pendaftar?')
-                    ->modalDescription(
-                        fn(Pendaftar $r) =>
-                        "Pendaftar {$r->nama} ({$r->nim}) akan ditolak. Tindakan ini tidak dapat dibatalkan."
-                    )
-                    ->action(function (Pendaftar $record): void {
-                        $record->update(['status' => 'ditolak']);
-                        Notification::make()
-                            ->title("❌ {$record->nama} ditolak.")
-                            ->danger()
-                            ->send();
-                    }),
-
-                EditAction::make(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make(),
+                    DeleteBulkAction::make()->visible(fn() => auth()->user()->hasRole('super_admin')),
                 ]),
             ])
             ->defaultSort('created_at', 'desc')

@@ -43,8 +43,7 @@
                                 {{ $openRecruitment->deskripsi }}
                             @else
                                 Bergabunglah bersama ratusan mahasiswa yang telah memilih MCI sebagai rumah berkembang di
-                                dunia
-                                teknologi.
+                                dunia teknologi.
                             @endif
                         </p>
                         @if ($openRecruitment)
@@ -95,9 +94,6 @@
                 <div class="reveal reveal-delay-1">
 
                     @if (!$openRecruitment)
-                        {{-- ══════════════════════════════════════════════════
-                    REKRUTMEN BELUM DIBUKA — tidak ada OpenRecruitment aktif
-                ══════════════════════════════════════════════════ --}}
                         <div
                             class="flex flex-col items-center justify-center text-center bg-slate-50 border-2 border-dashed border-slate-200 rounded-3xl p-12 gap-5 h-full min-h-[420px]">
                             <div
@@ -125,9 +121,6 @@
                             </div>
                         </div>
                     @elseif ($divisis->count() === 0)
-                        {{-- ══════════════════════════════════════════════════
-                    REKRUTMEN AKTIF — tapi tidak ada divisi aktif
-                ══════════════════════════════════════════════════ --}}
                         <div
                             class="flex flex-col items-center justify-center text-center bg-slate-50 border-2 border-dashed border-slate-200 rounded-3xl p-12 gap-5 h-full min-h-[420px]">
                             <div
@@ -140,16 +133,11 @@
                                 </h3>
                                 <p class="text-slate-400 text-sm leading-relaxed max-w-sm">
                                     Periode <strong class="text-slate-600">{{ $openRecruitment->judul }}</strong> sedang
-                                    disiapkan.
-                                    Divisi akan segera aktif, cek kembali dalam beberapa saat.
+                                    disiapkan. Divisi akan segera aktif, cek kembali dalam beberapa saat.
                                 </p>
                             </div>
                         </div>
                     @else
-                        {{-- ══════════════════════════════════════════════════
-                    REKRUTMEN DIBUKA — ada divisi aktif
-                ══════════════════════════════════════════════════ --}}
-
                         {{-- Notif Sukses --}}
                         @if (session('sukses'))
                             <div
@@ -162,7 +150,7 @@
                             </div>
                         @endif
 
-                        {{-- Notif Error Validasi --}}
+                        {{-- Notif Error Validasi Server --}}
                         @if ($errors->any())
                             <div class="mb-6 bg-red-50 border border-red-200 rounded-2xl p-5">
                                 <div class="font-semibold text-red-800 mb-2 flex items-center gap-2">
@@ -181,7 +169,6 @@
 
                         {{-- ── FORM dengan Alpine.js ──────────────────── --}}
                         @php
-                            // Siapkan data divisi ke JSON untuk Alpine.js
                             $divisiJson = $divisis
                                 ->map(
                                     fn($d) => [
@@ -246,24 +233,30 @@
                             <form action="{{ route('daftar') }}" method="POST" @submit="submitForm">
                                 @csrf
 
-                                {{-- ══════════════════════════════════════
-                            STEP 1: Data Diri
-                        ══════════════════════════════════════ --}}
+                                {{-- STEP 1: Data Diri --}}
                                 <div x-show="currentStep === 1" x-transition:enter="transition ease-out duration-200"
                                     x-transition:enter-start="opacity-0 translate-x-4"
                                     x-transition:enter-end="opacity-100 translate-x-0">
 
                                     <div class="space-y-4">
 
-                                        {{-- Nama --}}
+                                        {{-- Nama Lengkap --}}
                                         <div>
                                             <label class="block text-sm font-semibold text-slate-700 mb-2">
                                                 Nama Lengkap <span class="text-red-400">*</span>
                                             </label>
-                                            <input type="text" name="nama" x-model="form.nama"
-                                                placeholder="Sesuai KTM/KTP"
-                                                class="w-full px-4 py-3.5 rounded-xl border border-slate-200 bg-slate-50 text-slate-800 text-sm placeholder:text-slate-300 focus:border-brand-400 focus:bg-white transition-all duration-200 @error('nama') border-red-300 bg-red-50 @enderror"
+                                            <input type="text" name="nama" x-model="form.nama" @input="validateNama"
+                                                placeholder="Sesuai KTP"
+                                                :class="errors.nama ? 'border-red-400 bg-red-50' :
+                                                    'border-slate-200 bg-slate-50'"
+                                                class="w-full px-4 py-3.5 rounded-xl border text-slate-800 text-sm placeholder:text-slate-300 focus:border-brand-400 focus:bg-white transition-all duration-200"
                                                 value="{{ old('nama') }}">
+
+                                            {{-- Error Realtime Human Error (Alpine.js) --}}
+                                            <p x-show="errors.nama" x-text="errors.nama"
+                                                class="text-red-500 text-xs mt-1.5 font-medium flex items-center gap-1">
+                                                <i class="fa-solid fa-circle-exclamation"></i>
+                                            </p>
                                             @error('nama')
                                                 <p class="text-red-500 text-xs mt-1.5">{{ $message }}</p>
                                             @enderror
@@ -276,9 +269,17 @@
                                                     NIM <span class="text-red-400">*</span>
                                                 </label>
                                                 <input type="text" name="nim" x-model="form.nim"
-                                                    placeholder="Nomor Induk Mahasiswa"
-                                                    class="w-full px-4 py-3.5 rounded-xl border border-slate-200 bg-slate-50 text-slate-800 text-sm placeholder:text-slate-300 focus:border-brand-400 focus:bg-white transition-all duration-200 @error('nim') border-red-300 bg-red-50 @enderror"
+                                                    @input="validateNim" placeholder="Nomor Induk Mahasiswa (Angka)"
+                                                    :class="errors.nim ? 'border-red-400 bg-red-50' :
+                                                        'border-slate-200 bg-slate-50'"
+                                                    class="w-full px-4 py-3.5 rounded-xl border text-slate-800 text-sm placeholder:text-slate-300 focus:border-brand-400 focus:bg-white transition-all duration-200"
                                                     value="{{ old('nim') }}">
+
+                                                {{-- Error Realtime NIM --}}
+                                                <p x-show="errors.nim" x-text="errors.nim"
+                                                    class="text-red-500 text-xs mt-1.5 font-medium flex items-center gap-1">
+                                                    <i class="fa-solid fa-circle-exclamation"></i>
+                                                </p>
                                                 @error('nim')
                                                     <p class="text-red-500 text-xs mt-1.5">{{ $message }}</p>
                                                 @enderror
@@ -290,7 +291,7 @@
                                                 <select name="angkatan" x-model="form.angkatan"
                                                     class="w-full px-4 py-3.5 rounded-xl border border-slate-200 bg-slate-50 text-slate-800 text-sm focus:border-brand-400 focus:bg-white transition-all duration-200 @error('angkatan') border-red-300 bg-red-50 @enderror">
                                                     <option value="">Pilih angkatan</option>
-                                                    @foreach (['2025', '2024', '2023', '2022', '2021', '2020'] as $a)
+                                                    @foreach (['2026', '2025', '2024', '2023', '2022', '2021', '2020'] as $a)
                                                         <option value="{{ $a }}"
                                                             {{ old('angkatan') === $a ? 'selected' : '' }}>
                                                             {{ $a }}</option>
@@ -322,9 +323,17 @@
                                                 No. HP / WhatsApp <span class="text-red-400">*</span>
                                             </label>
                                             <input type="tel" name="no_hp" x-model="form.no_hp"
-                                                placeholder="08xxxxxxxxxx"
-                                                class="w-full px-4 py-3.5 rounded-xl border border-slate-200 bg-slate-50 text-slate-800 text-sm placeholder:text-slate-300 focus:border-brand-400 focus:bg-white transition-all duration-200 @error('no_hp') border-red-300 bg-red-50 @enderror"
+                                                @input="validateNoHp" placeholder="08xxxxxxxxxx (Angka)"
+                                                :class="errors.no_hp ? 'border-red-400 bg-red-50' :
+                                                    'border-slate-200 bg-slate-50'"
+                                                class="w-full px-4 py-3.5 rounded-xl border text-slate-800 text-sm placeholder:text-slate-300 focus:border-brand-400 focus:bg-white transition-all duration-200"
                                                 value="{{ old('no_hp') }}">
+
+                                            {{-- Error Realtime No HP --}}
+                                            <p x-show="errors.no_hp" x-text="errors.no_hp"
+                                                class="text-red-500 text-xs mt-1.5 font-medium flex items-center gap-1">
+                                                <i class="fa-solid fa-circle-exclamation"></i>
+                                            </p>
                                             @error('no_hp')
                                                 <p class="text-red-500 text-xs mt-1.5">{{ $message }}</p>
                                             @enderror
@@ -342,9 +351,7 @@
                                     </button>
                                 </div>
 
-                                {{-- ══════════════════════════════════════
-                            STEP 2: Pilih Divisi
-                        ══════════════════════════════════════ --}}
+                                {{-- STEP 2: Pilih Divisi --}}
                                 <div x-show="currentStep === 2" x-transition:enter="transition ease-out duration-200"
                                     x-transition:enter-start="opacity-0 translate-x-4"
                                     x-transition:enter-end="opacity-100 translate-x-0">
@@ -357,13 +364,11 @@
                                             berbeda.</p>
                                     </div>
 
-                                    {{-- Input hidden --}}
                                     <input type="hidden" name="divisi_id" :value="form.divisi_id">
                                     @error('divisi_id')
                                         <p class="text-red-500 text-xs mb-3">{{ $message }}</p>
                                     @enderror
 
-                                    {{-- Grid kartu divisi --}}
                                     <div class="grid sm:grid-cols-2 gap-3 mt-4">
                                         <template x-for="div in divisis" :key="div.id">
                                             <button type="button" @click="pilihDivisi(div)"
@@ -374,7 +379,6 @@
                                                     'border-slate-200 bg-white hover:border-brand-300 hover:bg-brand-50/30'
                                                 ]">
 
-                                                {{-- Checkmark saat dipilih --}}
                                                 <div x-show="form.divisi_id === div.id"
                                                     class="absolute top-3 right-3 w-5 h-5 rounded-full bg-brand-600 flex items-center justify-center">
                                                     <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor"
@@ -390,7 +394,6 @@
                                                 <p class="text-slate-400 text-xs mt-1 leading-relaxed line-clamp-2"
                                                     x-text="div.deskripsi || 'Klik untuk memilih divisi ini.'"></p>
 
-                                                {{-- Jumlah pertanyaan --}}
                                                 <div x-show="div.pertanyaan.length > 0"
                                                     class="mt-3 inline-flex items-center gap-1 text-[10px] font-bold text-brand-600 bg-brand-100 px-2 py-1 rounded-full">
                                                     <svg class="w-3 h-3" fill="none" stroke="currentColor"
@@ -405,24 +408,20 @@
                                         </template>
                                     </div>
 
-                                    {{-- Info saat tidak ada divisi --}}
                                     <div x-show="divisis.length === 0" class="text-center py-10 text-slate-400 text-sm">
                                         <i class="fa-regular fa-face-sad-tear mr-1"></i> Belum ada divisi yang membuka
                                         pendaftaran saat ini.
                                     </div>
 
-                                    {{-- Info: divisi terpilih tidak punya pertanyaan --}}
                                     <div x-show="form.divisi_id && selectedDivisi?.pertanyaan?.length === 0"
                                         class="mt-3 flex items-start gap-3 p-4 bg-blue-50 border border-blue-200 rounded-xl text-sm text-blue-700">
                                         <i class="fa-solid fa-circle-info text-lg flex-shrink-0 mt-0.5"></i>
                                         <span>
-                                            Divisi ini tidak memiliki pertanyaan seleksi.
-                                            Klik <strong>Kirim Pendaftaran</strong> untuk langsung mendaftar tanpa mengisi
-                                            jawaban.
+                                            Divisi ini tidak memiliki pertanyaan seleksi. Klik <strong>Kirim
+                                                Pendaftaran</strong> untuk langsung mendaftar tanpa mengisi jawaban.
                                         </span>
                                     </div>
 
-                                    {{-- Navigasi --}}
                                     <div class="flex gap-3 mt-6">
                                         <button type="button" @click="currentStep = 1"
                                             class="flex-1 px-6 py-4 rounded-2xl border-2 border-slate-200 text-slate-600 font-bold text-sm hover:border-slate-300 transition-all">
@@ -441,15 +440,11 @@
                                     </div>
                                 </div>
 
-                                {{-- ══════════════════════════════════════
-                            STEP 3: Pertanyaan Seleksi
-                            (Hanya muncul jika divisi punya pertanyaan)
-                        ══════════════════════════════════════ --}}
+                                {{-- STEP 3: Pertanyaan Seleksi --}}
                                 <div x-show="currentStep === 3" x-transition:enter="transition ease-out duration-200"
                                     x-transition:enter-start="opacity-0 translate-x-4"
                                     x-transition:enter-end="opacity-100 translate-x-0">
 
-                                    {{-- Info divisi yang dipilih --}}
                                     <div
                                         class="flex items-center gap-3 p-4 rounded-2xl bg-brand-50 border border-brand-100 mb-6">
                                         <span class="text-xl text-brand-500"><i :class="selectedDivisi?.icon"></i></span>
@@ -462,12 +457,10 @@
                                         </div>
                                     </div>
 
-                                    {{-- Daftar pertanyaan --}}
                                     <div class="space-y-6">
                                         <template x-for="(pertanyaan, i) in selectedDivisi?.pertanyaan"
                                             :key="pertanyaan.id">
                                             <div>
-                                                {{-- Label pertanyaan --}}
                                                 <label class="block text-sm font-semibold text-slate-700 mb-2">
                                                     <span
                                                         class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-brand-600 text-white text-xs font-bold mr-1.5"
@@ -476,26 +469,22 @@
                                                     <span class="text-red-400 ml-1">*</span>
                                                 </label>
 
-                                                {{-- Input hidden untuk pertanyaan_id --}}
-                                                {{-- Jawaban dikirim sebagai jawaban[pertanyaan_id] --}}
                                                 <textarea :name="'jawaban[' + pertanyaan.id + ']'" x-model="form.jawaban[pertanyaan.id]" rows="4"
                                                     placeholder="Tulis jawaban Anda di sini..."
                                                     class="w-full px-4 py-3.5 rounded-xl border border-slate-200 bg-slate-50 text-slate-800 text-sm placeholder:text-slate-300 focus:border-brand-400 focus:bg-white transition-all duration-200 resize-none leading-relaxed"></textarea>
 
-                                                {{-- Counter karakter --}}
                                                 <p class="text-xs text-slate-400 mt-1 text-right"
-                                                    x-text="(form.jawaban[pertanyaan.id] || '').length + ' karakter'"></p>
+                                                    x-text="(form.jawaban[pertanyaan.id] || '').length + ' karakter'">
+                                                </p>
                                             </div>
                                         </template>
                                     </div>
 
-                                    {{-- Privacy note --}}
                                     <p class="text-xs text-slate-400 leading-relaxed mt-5">
                                         <i class="fa-solid fa-lock mr-1 text-slate-400"></i> Data Anda disimpan secara
                                         aman. Jawaban akan dinilai oleh Ketua Divisi terkait.
                                     </p>
 
-                                    {{-- Navigasi --}}
                                     <div class="flex gap-3 mt-6">
                                         <button type="button" @click="currentStep = 2"
                                             class="flex-1 px-6 py-4 rounded-2xl border-2 border-slate-200 text-slate-600 font-bold text-sm hover:border-slate-300 transition-all">
@@ -519,18 +508,17 @@
                                 </div>
 
                             </form>
-                        </div>{{-- end x-data --}}
+                        </div>
 
                     @endif
-                    {{-- /end @if ($divisis->count() === 0) ... @else ... @endif --}}
 
-                </div>{{-- end right col --}}
+                </div>
 
             </div>
         </div>
     </section>
 
-    {{-- Alpine.js hanya diload jika ada divisi aktif --}}
+    {{-- Script Alpine.js --}}
     @if ($divisis->count() > 0)
         @push('scripts')
             <script>
@@ -540,7 +528,6 @@
                         currentStep: 1,
                         isSubmitting: false,
 
-                        // Definisi nama step
                         steps: ['Data Diri', 'Pilih Divisi', 'Pertanyaan'],
 
                         form: {
@@ -550,30 +537,82 @@
                             email: '{{ old('email') }}',
                             no_hp: '{{ old('no_hp') }}',
                             divisi_id: {{ old('divisi_id') ? old('divisi_id') : 'null' }},
-                            jawaban: {}, // { pertanyaan_id: 'teks jawaban' }
+                            jawaban: {},
                         },
 
-                        // Divisi yang sedang dipilih
+                        errors: {
+                            nama: '',
+                            nim: '',
+                            no_hp: ''
+                        },
+
                         get selectedDivisi() {
                             if (!this.form.divisi_id) return null;
                             return this.divisis.find(d => d.id === this.form.divisi_id) || null;
                         },
 
-                        // Pilih divisi & reset jawaban
-                        pilihDivisi(div) {
-                            this.form.divisi_id = div.id;
-                            this.form.jawaban = {}; // reset jawaban sebelumnya
+                        validateNama() {
+                            const original = this.form.nama;
+                            let cleaned = original.replace(/[^a-zA-Z\s\.\,\'\`]/g, '');
+                cleaned = cleaned.replace(/\b\w/g, char => char.toUpperCase());
+
+                if (original.replace(/[^a-zA-Z\s\.\,\'\`]/g, '') !== original) {
+                                this.errors.nama = 'Nama tidak dapat memuat angka atau simbol!';
+                                this.form.nama = cleaned;
+                            } else if (!cleaned.trim()) {
+                                this.errors.nama = 'Nama lengkap wajib diisi.';
+                                this.form.nama = cleaned;
+                            } else {
+                                this.errors.nama = '';
+                                this.form.nama = cleaned;
+                            }
                         },
 
-                        // Validasi sederhana per step
+                        validateNim() {
+                            const original = this.form.nim;
+                            const cleaned = original.replace(/[^0-9]/g, '');
+
+                            if (original !== cleaned) {
+                                this.errors.nim = 'NIM tidak dapat memuat huruf atau simbol!';
+                                this.form.nim = cleaned;
+                            } else if (!cleaned.trim()) {
+                                this.errors.nim = 'NIM wajib diisi.';
+                            } else {
+                                this.errors.nim = '';
+                            }
+                        },
+
+                        validateNoHp() {
+                            const original = this.form.no_hp;
+                            const cleaned = original.replace(/[^0-9]/g, '');
+
+                            if (original !== cleaned) {
+                                this.errors.no_hp = 'Nomor HP harus berupa angka!';
+                                this.form.no_hp = cleaned;
+                            } else if (!cleaned.trim()) {
+                                this.errors.no_hp = 'Nomor HP wajib diisi.';
+                            } else {
+                                this.errors.no_hp = '';
+                            }
+                        },
+
+                        pilihDivisi(div) {
+                            this.form.divisi_id = div.id;
+                            this.form.jawaban = {};
+                        },
+
                         validateStep(step) {
                             if (step === 1) {
-                                if (!this.form.nama.trim()) {
-                                    alert('Nama lengkap wajib diisi.');
+                                this.validateNama();
+                                this.validateNim();
+                                this.validateNoHp();
+
+                                if (this.errors.nama || !this.form.nama.trim()) {
+                                    alert('Mohon periksa kembali inputan Nama Lengkap.');
                                     return false;
                                 }
-                                if (!this.form.nim.trim()) {
-                                    alert('NIM wajib diisi.');
+                                if (this.errors.nim || !this.form.nim.trim()) {
+                                    alert('Mohon periksa kembali inputan NIM.');
                                     return false;
                                 }
                                 if (!this.form.angkatan) {
@@ -584,8 +623,8 @@
                                     alert('Email wajib diisi.');
                                     return false;
                                 }
-                                if (!this.form.no_hp.trim()) {
-                                    alert('No. HP wajib diisi.');
+                                if (this.errors.no_hp || !this.form.no_hp.trim()) {
+                                    alert('Mohon periksa kembali inputan Nomor HP.');
                                     return false;
                                 }
                             }
@@ -598,16 +637,12 @@
                             return true;
                         },
 
-                        // Pindah ke step berikutnya
                         goNext() {
                             if (!this.validateStep(this.currentStep)) return;
 
-                            // Dari step 2: skip step 3 jika divisi tidak punya pertanyaan
                             if (this.currentStep === 2) {
                                 const hasPertanyaan = this.selectedDivisi?.pertanyaan?.length > 0;
                                 if (!hasPertanyaan) {
-                                    // $el adalah div[x-data]. Form ada di dalamnya (child), bukan ancestor.
-                                    // Gunakan querySelector ke bawah, bukan closest ke atas.
                                     this.$nextTick(() => {
                                         const form = this.$el.querySelector('form');
                                         if (form) form.requestSubmit();
@@ -619,12 +654,10 @@
                             if (this.currentStep < 3) this.currentStep++;
                         },
 
-                        // Handle submit
                         submitForm() {
                             this.isSubmitting = true;
                         },
 
-                        // Jika ada error dari server, kembali ke step yang relevan
                         init() {
                             @if ($errors->has('divisi_id') || $errors->has('nim'))
                                 this.currentStep = 2;
@@ -632,7 +665,6 @@
                                 this.currentStep = 1;
                             @endif
 
-                            // Restore divisi_id dari old input jika ada
                             @if (old('divisi_id'))
                                 this.form.divisi_id = {{ old('divisi_id') }};
                             @endif

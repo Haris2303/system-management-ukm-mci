@@ -21,7 +21,7 @@ class PostResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::Newspaper;
 
-    protected static ?string $recordTitleAttribute = 'slug';
+    protected static ?string $recordTitleAttribute = 'judul';
 
     protected static ?string $navigationLabel = 'Berita & Kegiatan';
 
