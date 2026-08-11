@@ -246,7 +246,7 @@
                                                 Nama Lengkap <span class="text-red-400">*</span>
                                             </label>
                                             <input type="text" name="nama" x-model="form.nama" @input="validateNama"
-                                                placeholder="Sesuai KTP"
+                                                placeholder="Nama Lengkap"
                                                 :class="errors.nama ? 'border-red-400 bg-red-50' :
                                                     'border-slate-200 bg-slate-50'"
                                                 class="w-full px-4 py-3.5 rounded-xl border text-slate-800 text-sm placeholder:text-slate-300 focus:border-brand-400 focus:bg-white transition-all duration-200"
@@ -291,7 +291,7 @@
                                                 <select name="angkatan" x-model="form.angkatan"
                                                     class="w-full px-4 py-3.5 rounded-xl border border-slate-200 bg-slate-50 text-slate-800 text-sm focus:border-brand-400 focus:bg-white transition-all duration-200 @error('angkatan') border-red-300 bg-red-50 @enderror">
                                                     <option value="">Pilih angkatan</option>
-                                                    @foreach (['2026', '2025', '2024', '2023', '2022', '2021', '2020'] as $a)
+                                                    @foreach ($angkatanList as $a)
                                                         <option value="{{ $a }}"
                                                             {{ old('angkatan') === $a ? 'selected' : '' }}>
                                                             {{ $a }}</option>
@@ -309,9 +309,16 @@
                                                 Email Aktif <span class="text-red-400">*</span>
                                             </label>
                                             <input type="email" name="email" x-model="form.email"
-                                                placeholder="contoh@email.com"
-                                                class="w-full px-4 py-3.5 rounded-xl border border-slate-200 bg-slate-50 text-slate-800 text-sm placeholder:text-slate-300 focus:border-brand-400 focus:bg-white transition-all duration-200 @error('email') border-red-300 bg-red-50 @enderror"
+                                                @input="validateEmail" placeholder="contoh@gmail.com"
+                                                :class="errors.email ? 'border-red-400 bg-red-50' :
+                                                    'border-slate-200 bg-slate-50'"
+                                                class="w-full px-4 py-3.5 rounded-xl border text-slate-800 text-sm placeholder:text-slate-300 focus:border-brand-400 focus:bg-white transition-all duration-200"
                                                 value="{{ old('email') }}">
+                                            {{-- Error Realtime Email (Alpine.js) --}}
+                                            <p x-show="errors.email" x-text="errors.email"
+                                                class="text-red-500 text-xs mt-1.5 font-medium flex items-center gap-1">
+                                                <i class="fa-solid fa-circle-exclamation"></i>
+                                            </p>
                                             @error('email')
                                                 <p class="text-red-500 text-xs mt-1.5">{{ $message }}</p>
                                             @enderror
@@ -543,6 +550,7 @@
                         errors: {
                             nama: '',
                             nim: '',
+                            email: '',
                             no_hp: ''
                         },
 
@@ -577,8 +585,24 @@
                                 this.form.nim = cleaned;
                             } else if (!cleaned.trim()) {
                                 this.errors.nim = 'NIM wajib diisi.';
+                            } else if (cleaned.length !== 12) {
+                                this.errors.nim = 'NIM harus tepat 12 karakter.';
                             } else {
                                 this.errors.nim = '';
+                            }
+                        },
+
+                        validateEmail() {
+                            const email = this.form.email.trim();
+                            // RegEx standar untuk pengecekan format email yang sah
+                            const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+                            if (!email) {
+                                this.errors.email = 'Email wajib diisi.';
+                            } else if (!emailRegex.test(email)) {
+                                this.errors.email = 'Format email tidak valid (contoh: nama@gmail.com).';
+                            } else {
+                                this.errors.email = '';
                             }
                         },
 
@@ -591,6 +615,8 @@
                                 this.form.no_hp = cleaned;
                             } else if (!cleaned.trim()) {
                                 this.errors.no_hp = 'Nomor HP wajib diisi.';
+                            } else if (cleaned.length < 11 || cleaned.length > 13) {
+                                this.errors.no_hp = 'Nomor HP harus 11 hingga 13 digit';
                             } else {
                                 this.errors.no_hp = '';
                             }
@@ -605,13 +631,14 @@
                             if (step === 1) {
                                 this.validateNama();
                                 this.validateNim();
+                                this.validateEmail();
                                 this.validateNoHp();
 
                                 if (this.errors.nama || !this.form.nama.trim()) {
                                     alert('Mohon periksa kembali inputan Nama Lengkap.');
                                     return false;
                                 }
-                                if (this.errors.nim || !this.form.nim.trim()) {
+                                if (this.errors.nim || !this.form.nim.trim() || this.form.nim.length !== 12) {
                                     alert('Mohon periksa kembali inputan NIM.');
                                     return false;
                                 }
@@ -619,12 +646,13 @@
                                     alert('Angkatan wajib dipilih.');
                                     return false;
                                 }
-                                if (!this.form.email.trim()) {
-                                    alert('Email wajib diisi.');
+                                if (!this.form.email.trim() || !this.form.email.trim()) {
+                                    alert('Mohon masukkan alamat email yang valid.');
                                     return false;
                                 }
-                                if (this.errors.no_hp || !this.form.no_hp.trim()) {
-                                    alert('Mohon periksa kembali inputan Nomor HP.');
+                                if (this.errors.no_hp || !this.form.no_hp.trim() || this.form.no_hp.length < 11 || this.form.no_hp
+                                    .length > 13) {
+                                    alert('Mohon pastikan Nomor HP berupa 11 hingga 13 digit angka.');
                                     return false;
                                 }
                             }

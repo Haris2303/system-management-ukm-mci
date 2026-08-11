@@ -51,25 +51,31 @@ class LandingController extends Controller
     /** Proses formulir pendaftaran anggota */
     public function daftar(Request $request): RedirectResponse
     {
+        $tahunSekarang = (int) date('Y');
+        $tahunTerlama = $tahunSekarang - 3;
+
         // ── Validasi data utama ────────────────────────────────
         $validated = $request->validate([
             'nama'      => ['required', 'string', 'max:255'],
-            'nim'       => ['required', 'string', 'max:20'],
-            'email'     => ['required', 'email', 'max:255'],
-            'no_hp'     => ['required', 'string', 'max:20'],
-            'angkatan'  => ['required', 'string', 'max:10'],
+            'nim'       => ['required', 'string', 'max:20', 'numeric', 'digits:12'],
+            'email'     => ['required', 'email:rfc', 'dns|max:255', 'max:255'],
+            'no_hp'     => ['required', 'string', 'max:20', 'numeric', 'digits_between:11,13'],
+            'angkatan'  => ['required', 'string', 'max:10', 'integer', ${"between:$tahunTerlama,$tahunSekarang"}],
             'divisi_id' => ['required', 'exists:divisis,id'],
             'jawaban'   => ['nullable', 'array'],
             'jawaban.*' => ['nullable', 'string', 'max:2000'],
         ], [
-            'nama.required'      => 'Nama lengkap wajib diisi.',
-            'nim.required'       => 'NIM wajib diisi.',
-            'email.required'     => 'Email wajib diisi.',
-            'email.email'        => 'Format email tidak valid.',
-            'no_hp.required'     => 'Nomor HP wajib diisi.',
-            'angkatan.required'  => 'Angkatan wajib dipilih.',
-            'divisi_id.required' => 'Pilih divisi yang ingin Anda masuki.',
-            'divisi_id.exists'   => 'Divisi yang dipilih tidak valid.',
+            'nama.required'         => 'Nama lengkap wajib diisi.',
+            'nim.required'          => 'NIM wajib diisi.',
+            'nim.digits'            => 'NIM harus tepat 12 digit angka.',
+            'email.required'        => 'Email wajib diisi.',
+            'email.email'           => 'Domain email tidak terdaftar atau tidak valid.',
+            'no_hp.required'        => 'Nomor HP wajib diisi.',
+            'no_hp.digits_between'  => 'Nomor HP harus berdurasi antara 11 sampai 13 digit.',
+            'angkatan.required'     => 'Angkatan wajib dipilih.',
+            'angkatan.between'      => 'Angkatan yang dipilih tidak valid (harus antara ' . $tahunTerlama . ' - ' . $tahunSekarang . ').',
+            'divisi_id.required'    => 'Pilih divisi yang ingin Anda masuki.',
+            'divisi_id.exists'      => 'Divisi yang dipilih tidak valid.',
         ]);
 
         // ── Cek duplikasi NIM di divisi yang sama ──────────────
