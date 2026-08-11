@@ -117,7 +117,7 @@ class LandingController extends Controller
         }
 
         return redirect()
-            ->to('/#daftar')
-            ->with('sukses', "Pendaftaran berhasil dikirim, {$pendaftar->nama}! Kami akan segera menghubungi Anda. 🎉");
+            ->to(route('daftar.form'))
+            ->with('sukses', "Pendaftaran berhasil dikirim, {$pendaftar->nama}! Kami akan segera menghubungi Anda.");
     }
 }

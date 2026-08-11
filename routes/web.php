@@ -32,9 +32,8 @@ Route::get('/robots.txt', function () {
 
 // ── Landing Page ──────────────────────────────────────────────
 Route::get('/', [LandingController::class, 'index'])->name('landing');
-Route::post('/daftar', [LandingController::class, 'daftar'])->name('daftar');
 
-// POST /daftar — sekarang menangani Pendaftar + JawabanPendaftar
+// POST /daftar —  menangani Pendaftar + JawabanPendaftar
 Route::post('/daftar', [LandingController::class, 'daftar'])->name('daftar');
 
 // ── Berita & Kegiatan ─────────────────────────────────────────
@@ -84,7 +83,7 @@ Route::get('/elections/{election}/rekap', function (App\Models\Election $electio
 Route::get('/anggota/{publicId}', [IdCardController::class, 'publicProfile'])->name('anggota.show');
 
 // ── ID Card Template Guide — harus sebelum wildcard {userId} ──
-Route::get('/id-card/template', fn () => view('id-card.template-guide'))->name('id-card.template');
+Route::get('/id-card/template', fn() => view('id-card.template-guide'))->name('id-card.template');
 
 // ── ID Card (autentikasi: admin atau user sendiri) ────────────
 Route::middleware('auth')->group(function () {
@@ -124,7 +123,7 @@ Route::get('/tes-gmail', function () {
     try {
         Mail::raw('Halo! Ini adalah tes pengiriman email menggunakan Gmail SMTP dari aplikasi Laravel.', function ($message) {
             $message->to('ahostweb13@gmail.com') // Ganti ke email pribadi Anda untuk ngetes
-                    ->subject('Tes Konfigurasi Gmail SMTP');
+                ->subject('Tes Konfigurasi Gmail SMTP');
         });
         return "<h1>SUKSES!</h1> Email berhasil dikirim via Gmail.";
     } catch (\Exception $e) {
