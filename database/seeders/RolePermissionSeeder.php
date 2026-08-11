@@ -84,6 +84,7 @@ class RolePermissionSeeder extends Seeder
         $ketuaUkm->syncPermissions([
             'akses_panel_admin',
             'lihat_dashboard',
+            'kelola_materi',
             'kelola_voting',
             'kelola_divisi',
             'kelola_pendaftar',

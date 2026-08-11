@@ -58,11 +58,12 @@ class MaterisTable
                     ->options(Divisi::query()->orderBy('urut')->pluck('nama', 'id'))
                     ->searchable()
                     ->preload()
-                    ->query(fn (Builder $query, array $data) => $data['value']
-                        ? $query->where(fn (Builder $q) => $q
-                            ->where('divisi_id', $data['value'])
-                            ->orWhereNull('divisi_id'))
-                        : $query
+                    ->query(
+                        fn(Builder $query, array $data) => $data['value']
+                            ? $query->where(fn(Builder $q) => $q
+                                ->where('divisi_id', $data['value'])
+                                ->orWhereNull('divisi_id'))
+                            : $query
                     ),
 
                 TernaryFilter::make('is_umum')
@@ -85,13 +86,40 @@ class MaterisTable
                     ->visible(fn(Materi $r) => $r->hasLink())
                     ->url(fn(Materi $r) => $r->link_url, shouldOpenInNewTab: true),
 
-                DeleteAction::make(),
-                EditAction::make(),
+                DeleteAction::make()->visible(function (Materi $record): bool {
+                    $user = auth()->user();
+
+                    // Ketua divisi tidak bisa hapus materi umum
+                    if ($user?->hasRole('ketua_divisi') && $record->divisi_id === null) {
+                        return false;
+                    }
+
+                    // Ketua UKM tidak bisa hapus materi divisi
+                    if ($user?->hasRole('ketua_ukm') && $record->divisi_id !== null) {
+                        return false;
+                    }
+
+                    return true;
+                }),
+                EditAction::make()
+                    ->visible(function (Materi $record): bool {
+                        $user = auth()->user();
+
+                        // Ketua divisi tidak bisa edit materi umum
+                        if ($user?->hasRole('ketua_divisi') && $record->divisi_id === null) {
+                            return false;
+                        }
+
+                        // Ketua UKM tidak bisa edit materi divisi
+                        if ($user?->hasRole('ketua_ukm') && $record->divisi_id !== null) {
+                            return false;
+                        }
+
+                        return true;
+                    }),
             ])
             ->toolbarActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                ]),
+                BulkActionGroup::make([]),
             ])
             ->defaultSort('created_at', 'desc')
             ->striped();

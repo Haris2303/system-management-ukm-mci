@@ -35,25 +35,75 @@ class MateriForm
 
                         Select::make('divisi_id')
                             ->label('Divisi')
-                            ->options(fn () => auth()->user()->isKetuaDivisi()
-                                ? Divisi::where('id', auth()->user()->divisi_id)->pluck('nama', 'id')
-                                : Divisi::query()->orderBy('urut')->pluck('nama', 'id')
+                            ->options(
+                                fn() => auth()->user()->isKetuaDivisi()
+                                    ? Divisi::where('id', auth()->user()->divisi_id)->pluck('nama', 'id')
+                                    : Divisi::query()->orderBy('urut')->pluck('nama', 'id')
                             )
-                            ->default(fn () => auth()->user()->isKetuaDivisi()
-                                ? auth()->user()->divisi_id
-                                : null
+                            ->default(
+                                fn() => auth()->user()->isKetuaDivisi()
+                                    ? auth()->user()->divisi_id
+                                    : null
                             )
-                            ->disabled(fn () => auth()->user()->isKetuaDivisi())
+                            ->disabled(fn() => auth()->user()->isKetuaDivisi())
                             ->dehydrated(true)
                             ->searchable()
-                            ->placeholder(fn () => auth()->user()->isKetuaDivisi()
-                                ? null
-                                : '— Materi Umum (untuk semua divisi) —'
-                            )
-                            ->helperText(fn () => auth()->user()->isKetuaDivisi()
-                                ? 'Materi otomatis dikaitkan ke divisi Anda.'
-                                : 'Kosongkan jika materi ini untuk semua anggota.'
-                            )
+                            ->placeholder(
+                                fn() => auth()->user()->isKetuaDivisi()
+                                    ? null
+                                    : '— Materi Umum (untuk semua divisi) —'
+                            )->options(function () {
+                                $user = auth()->user();
+
+                                if ($user?->isKetuaDivisi()) {
+                                    return Divisi::where('id', $user->divisi_id)->pluck('nama', 'id');
+                                }
+
+                                if ($user?->hasRole('ketua_ukm')) {
+                                    return []; // Ketua UKM tidak punya opsi divisi
+                                }
+
+                                return Divisi::query()->orderBy('urut')->pluck('nama', 'id');
+                            })
+                            ->default(function () {
+                                $user = auth()->user();
+
+                                if ($user?->isKetuaDivisi()) {
+                                    return $user->divisi_id;
+                                }
+
+                                return null; // Default untuk Ketua UKM & Super Admin (Materi Umum)
+                            })
+                            ->disabled(function () {
+                                $user = auth()->user();
+
+                                // Kunci dropdown jika user adalah Ketua Divisi ATAU Ketua UKM
+                                return $user?->isKetuaDivisi() || $user?->hasRole('ketua_ukm');
+                            })
+                            ->dehydrated(true)
+                            ->searchable()
+                            ->placeholder(function () {
+                                $user = auth()->user();
+
+                                if ($user?->isKetuaDivisi()) {
+                                    return null;
+                                }
+
+                                return '— Materi Umum (untuk semua divisi) —';
+                            })
+                            ->helperText(function () {
+                                $user = auth()->user();
+
+                                if ($user?->isKetuaDivisi()) {
+                                    return 'Materi otomatis dikaitkan ke divisi Anda.';
+                                }
+
+                                if ($user?->hasRole('ketua_ukm')) {
+                                    return 'Sebagai Ketua UKM, Anda hanya diizinkan membuat Materi Umum.';
+                                }
+
+                                return 'Kosongkan jika materi ini untuk semua anggota.';
+                            })
                             ->columnSpanFull(),
 
                     ])->columns(2),

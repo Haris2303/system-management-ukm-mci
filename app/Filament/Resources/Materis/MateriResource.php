@@ -13,6 +13,8 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
+use Override;
 
 class MateriResource extends Resource
 {
@@ -61,13 +63,47 @@ class MateriResource extends Resource
         return auth()->user()?->can('kelola_materi') ?? false;
     }
 
+    public static function canEdit(Model $record): bool
+    {
+        $user = auth()->user();
+
+        // Jika ketua divisi mencoba mengedit materi umum (divisi_id null), tolak!
+        if ($user?->hasRole('ketua_divisi') && $record->divisi_id === null) {
+            return false;
+        }
+
+        // Ketua UKM tidak boleh edit materi khusus divisi
+        if ($user?->hasRole('ketua_ukm') && $record->divisi_id !== null) {
+            return false;
+        }
+
+        return parent::canEdit($record);
+    }
+
+    public static function canDelete(Model $record): bool
+    {
+        $user = auth()->user();
+
+        // Jika ketua divisi mencoba menghapus materi umum (divisi_id null), tolak!
+        if ($user?->hasRole('ketua_divisi') && $record->divisi_id === null) {
+            return false;
+        }
+
+        // Ketua UKM tidak boleh hapus materi khusus divisi
+        if ($user?->hasRole('ketua_ukm') && $record->divisi_id !== null) {
+            return false;
+        }
+
+        return parent::canDelete($record);
+    }
+
     public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
     {
         $query = parent::getEloquentQuery();
         $user  = auth()->user();
 
-        // Super admin / ketua UKM / sekretaris lihat semua
-        if ($user?->hasAnyRole(['super_admin', 'ketua_ukm', 'sekretaris'])) {
+        // Super admin dan ketua UKM lihat semua
+        if ($user?->hasAnyRole(['super_admin', 'ketua_ukm'])) {
             return $query;
         }
 

@@ -41,6 +41,11 @@ class Materi extends Model
         static::addGlobalScope('materi_divisi_baru', function (Builder $builder) {
             if (Auth::check()) {
                 $user = Auth::user();
+
+                if ($user->hasRole('super_admin')) {
+                    return;
+                }
+
                 $divisiId = $user->divisi_id;
                 $userCreatedAt = $user->created_at;
 
@@ -56,6 +61,30 @@ class Materi extends Model
                         });
                     }
                 });
+            }
+        });
+
+        // Proteksi: Ketua Divisi tidak boleh membuat Materi Umum (divisi_id harus diisi divisinya)
+        static::creating(function (Materi $materi) {
+            if (Auth::check()) {
+                $user = Auth::user();
+
+                // 1. Ketua Divisi tidak boleh membuat Materi Umum atau materi divisi lain
+                if ($user->hasRole('ketua_divisi')) {
+                    if ($materi->divisi_id === null) {
+                        throw new \Exception('Akses ditolak: Ketua Divisi hanya diizinkan membuat materi untuk divisinya sendiri, bukan materi umum.');
+                    }
+                    if ($materi->divisi_id !== $user->divisi_id) {
+                        throw new \Exception('Akses ditolak: Anda hanya dapat mengunggah materi untuk divisi Anda.');
+                    }
+                }
+
+                // 2. Ketua UKM hanya boleh membuat Materi Umum (divisi_id harus null)
+                if ($user->hasRole('ketua_ukm')) {
+                    if ($materi->divisi_id !== null) {
+                        throw new \Exception('Akses ditolak: Ketua UKM hanya diizinkan membuat Materi Umum, bukan materi khusus divisi.');
+                    }
+                }
             }
         });
     }
