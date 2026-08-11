@@ -73,6 +73,7 @@ class JawabanPendaftarsRelationManager extends RelationManager
                     ->label('Nilai Skor (0–100)')
                     ->type('number')
                     ->rules(['nullable', 'integer', 'min:0', 'max:100'])
+                    ->disabled(fn(): bool => $this->getOwnerRecord()->status !== 'menunggu')
                     ->afterStateUpdated(function (JawabanPendaftar $record, $state): void {
                         Notification::make()
                             ->title("Skor disimpan: {$state}")
@@ -85,12 +86,7 @@ class JawabanPendaftarsRelationManager extends RelationManager
                 //
             ])
             ->headerActions([])
-            ->recordActions([
-                EditAction::make()
-                    ->label('Beri Nilai')
-                    ->icon('heroicon-o-star')
-                    ->color('warning'),
-            ])
+            ->recordActions([])
             ->toolbarActions([
                 BulkActionGroup::make([]),
             ]);

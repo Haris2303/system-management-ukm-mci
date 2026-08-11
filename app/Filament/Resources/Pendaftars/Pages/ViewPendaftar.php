@@ -18,7 +18,6 @@ class ViewPendaftar extends ViewRecord
     protected function getHeaderActions(): array
     {
         return [
-            EditAction::make()->visible(fn() => auth()->user()->hasRole(['super_admin', 'ketua_divisi'])),
             Action::make('luluskan')
                 ->label('Luluskan')
                 ->icon('heroicon-o-check-badge')
