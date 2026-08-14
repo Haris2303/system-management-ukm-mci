@@ -41,7 +41,7 @@ class OpenRecruitmentPage extends Page
     public function mount(): void
     {
         $record = OpenRecruitment::firstOrNew(['id' => 1]);
-        $this->data = $record->toArray();
+        $this->form->fill($record->attributesToArray());
     }
 
     public function form(Schema $schema): Schema
