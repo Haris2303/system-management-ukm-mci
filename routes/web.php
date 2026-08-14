@@ -35,6 +35,7 @@ Route::get('/', [LandingController::class, 'index'])->name('landing');
 
 // POST /daftar —  menangani Pendaftar + JawabanPendaftar
 Route::post('/daftar', [LandingController::class, 'daftar'])->name('daftar');
+Route::post('/daftar/validate', [LandingController::class, 'validatePendaftar'])->name('daftar.validate');
 
 // ── Berita & Kegiatan ─────────────────────────────────────────
 Route::get('/berita',        [PostController::class, 'index'])->name('berita.index');

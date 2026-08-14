@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\PendaftarRequest;
 use App\Models\Divisi;
 use App\Models\Gallery;
 use App\Models\JawabanPendaftar;
@@ -10,6 +11,7 @@ use App\Models\Post;
 use App\Models\OpenRecruitment;
 use App\Models\ProfilUkm;
 use App\Models\User;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -49,34 +51,10 @@ class LandingController extends Controller
     }
 
     /** Proses formulir pendaftaran anggota */
-    public function daftar(Request $request): RedirectResponse
+    public function daftar(PendaftarRequest $request): RedirectResponse
     {
-        $tahunSekarang = (int) date('Y');
-        $tahunTerlama = $tahunSekarang - 3;
-
         // ── Validasi data utama ────────────────────────────────
-        $validated = $request->validate([
-            'nama'      => ['required', 'string', 'max:100'],
-            'nim'       => ['required', 'string', 'max:20', 'numeric', 'digits:12'],
-            'email'     => ['required', 'email:rfc,dns', 'max:255'],
-            'no_hp'     => ['required', 'string', 'max:20', 'numeric', 'digits_between:11,13'],
-            'angkatan'  => ['required', 'string', 'max:10', 'integer', "between:$tahunTerlama,$tahunSekarang"],
-            'divisi_id' => ['required', 'exists:divisis,id'],
-            'jawaban'   => ['nullable', 'array'],
-            'jawaban.*' => ['nullable', 'string', 'max:2000'],
-        ], [
-            'nama.required'         => 'Nama lengkap wajib diisi.',
-            'nim.required'          => 'NIM wajib diisi.',
-            'nim.digits'            => 'NIM harus tepat 12 digit angka.',
-            'email.required'        => 'Email wajib diisi.',
-            'email.email'           => 'Domain email tidak terdaftar atau tidak valid.',
-            'no_hp.required'        => 'Nomor HP wajib diisi.',
-            'no_hp.digits_between'  => 'Nomor HP harus berdurasi antara 11 sampai 13 digit.',
-            'angkatan.required'     => 'Angkatan wajib dipilih.',
-            'angkatan.between'      => 'Angkatan yang dipilih tidak valid (harus antara ' . $tahunTerlama . ' - ' . $tahunSekarang . ').',
-            'divisi_id.required'    => 'Pilih divisi yang ingin Anda masuki.',
-            'divisi_id.exists'      => 'Divisi yang dipilih tidak valid.',
-        ]);
+        $validated = $request->validated();
 
         // ── Cek duplikasi NIM di divisi yang sama ──────────────
         $sudahDaftar = Pendaftar::where('nim', $validated['nim'])
@@ -125,5 +103,33 @@ class LandingController extends Controller
         return redirect()
             ->to(route('daftar.form'))
             ->with('sukses', "Pendaftaran berhasil dikirim, {$pendaftar->nama}! Kami akan segera menghubungi Anda.");
+    }
+
+    /** Validasi asinkron data pendaftar sebelum lanjut step */
+    public function validatePendaftar(PendaftarRequest $request): JsonResponse
+    {
+        $validated = $request->validated();
+
+        // Jika pengecekan melibatkan divisi (Step 2 ke Step 3)
+        if (!empty($validated['divisi_id'])) {
+            $divisi = Divisi::find($validated['divisi_id']);
+            if (!$divisi || !$divisi->is_active) {
+                return response()->json([
+                    'errors' => ['divisi_id' => ['Divisi ini sedang tidak membuka pendaftaran.']]
+                ], 422);
+            }
+
+            $sudahDaftar = Pendaftar::where('nim', $validated['nim'])
+                ->where('divisi_id', $validated['divisi_id'])
+                ->exists();
+
+            if ($sudahDaftar) {
+                return response()->json([
+                    'errors' => ['nim' => ['NIM Anda sudah terdaftar di divisi ini.']]
+                ], 422);
+            }
+        }
+
+        return response()->json(['valid' => true]);
     }
 }

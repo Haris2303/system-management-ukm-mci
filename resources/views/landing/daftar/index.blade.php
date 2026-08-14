@@ -230,7 +230,7 @@
                                 </div>
                             </div>
 
-                            <form action="{{ route('daftar') }}" method="POST" @submit="submitForm">
+                            <form action="{{ route('daftar') }}" method="POST" @submit.prevent="submitForm($event)">
                                 @csrf
 
                                 {{-- STEP 1: Data Diri --}}
@@ -289,7 +289,10 @@
                                                     Angkatan <span class="text-red-400">*</span>
                                                 </label>
                                                 <select name="angkatan" x-model="form.angkatan"
-                                                    class="w-full px-4 py-3.5 rounded-xl border border-slate-200 bg-slate-50 text-slate-800 text-sm focus:border-brand-400 focus:bg-white transition-all duration-200 @error('angkatan') border-red-300 bg-red-50 @enderror">
+                                                    @change="validateAngkatan"
+                                                    :class="errors.angkatan ? 'border-red-400 bg-red-50' :
+                                                        'border-slate-200 bg-slate-50'"
+                                                    class="w-full px-4 py-3.5 rounded-xl border text-slate-800 text-sm focus:border-brand-400 focus:bg-white transition-all duration-200">
                                                     <option value="">Pilih angkatan</option>
                                                     @foreach ($angkatanList as $a)
                                                         <option value="{{ $a }}"
@@ -297,6 +300,13 @@
                                                             {{ $a }}</option>
                                                     @endforeach
                                                 </select>
+
+                                                {{-- Error Realtime Angkatan --}}
+                                                <p x-show="errors.angkatan" x-text="errors.angkatan" x-cloak
+                                                    class="text-red-500 text-xs mt-1.5 font-medium flex items-center gap-1">
+                                                    <i class="fa-solid fa-circle-exclamation"></i>
+                                                </p>
+
                                                 @error('angkatan')
                                                     <p class="text-red-500 text-xs mt-1.5">{{ $message }}</p>
                                                 @enderror
@@ -348,13 +358,31 @@
                                     </div>
 
                                     {{-- Tombol Lanjut --}}
-                                    <button type="button" @click="goNext()"
-                                        class="w-full mt-6 flex items-center justify-center gap-2 px-6 py-4 rounded-2xl bg-brand-600 text-white font-bold text-base hover:bg-brand-700 shadow-lg shadow-brand-200 hover:-translate-y-0.5 transition-all duration-200">
-                                        Lanjut: Pilih Divisi
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                                        </svg>
+                                    <button type="button" @click="goNext()" :disabled="isValidating"
+                                        :class="isValidating ? 'opacity-70 cursor-wait translate-y-0 shadow-none' :
+                                            'hover:-translate-y-0.5 hover:bg-brand-700 shadow-lg shadow-brand-200'"
+                                        class="w-full mt-6 flex items-center justify-center gap-2 px-6 py-4 rounded-2xl bg-brand-600 text-white font-bold text-base transition-all duration-200">
+                                        {{-- Tampilan Normal --}}
+                                        <span x-show="!isValidating" class="flex items-center gap-2">
+                                            Lanjut: Pilih Divisi
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                                            </svg>
+                                        </span>
+
+                                        {{-- Tampilan Loading --}}
+                                        <span x-show="isValidating" class="flex items-center gap-2" x-cloak>
+                                            <svg class="animate-spin w-5 h-5 text-white" fill="none"
+                                                viewBox="0 0 24 24">
+                                                <circle class="opacity-25" cx="12" cy="12" r="10"
+                                                    stroke="currentColor" stroke-width="4"></circle>
+                                                <path class="opacity-75" fill="currentColor"
+                                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                                            </svg>
+                                            Mengecek Inputan...
+                                        </span>
                                     </button>
                                 </div>
 
@@ -430,19 +458,32 @@
                                     </div>
 
                                     <div class="flex gap-3 mt-6">
-                                        <button type="button" @click="currentStep = 1"
-                                            class="flex-1 px-6 py-4 rounded-2xl border-2 border-slate-200 text-slate-600 font-bold text-sm hover:border-slate-300 transition-all">
+                                        <button type="button" @click="currentStep = 1" :disabled="isValidating"
+                                            class="flex-1 px-6 py-4 rounded-2xl border-2 border-slate-200 text-slate-600 font-bold text-sm hover:border-slate-300 transition-all disabled:opacity-50 disabled:cursor-not-allowed">
                                             ← Kembali
                                         </button>
-                                        <button type="button" @click="goNext()" :disabled="!form.divisi_id"
+                                        <button type="button" @click="goNext()"
+                                            :disabled="!form.divisi_id || isValidating"
                                             :class="[
-                                                'flex-1 px-6 py-4 rounded-2xl font-bold text-sm transition-all',
-                                                form.divisi_id ?
-                                                'bg-brand-600 text-white hover:bg-brand-700 shadow-lg shadow-brand-200 hover:-translate-y-0.5' :
-                                                'bg-slate-100 text-slate-400 cursor-not-allowed'
+                                                'flex-1 px-6 py-4 rounded-2xl font-bold text-sm transition-all flex items-center justify-center gap-2',
+                                                (!form.divisi_id || isValidating) ?
+                                                'bg-slate-100 text-slate-400 cursor-not-allowed shadow-none translate-y-0' :
+                                                'bg-brand-600 text-white hover:bg-brand-700 shadow-lg shadow-brand-200 hover:-translate-y-0.5'
                                             ]">
-                                            <span
+                                            {{-- Tampilan Normal --}}
+                                            <span x-show="!isValidating"
                                                 x-text="selectedDivisi?.pertanyaan?.length > 0 ? 'Lanjut: Pertanyaan Seleksi' : 'Kirim Pendaftaran →'"></span>
+
+                                            {{-- Tampilan Loading --}}
+                                            <span x-show="isValidating" class="flex items-center gap-2" x-cloak>
+                                                <svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+                                                    <circle class="opacity-25" cx="12" cy="12" r="10"
+                                                        stroke="currentColor" stroke-width="4"></circle>
+                                                    <path class="opacity-75" fill="currentColor"
+                                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                                                </svg>
+                                                Memproses...
+                                            </span>
                                         </button>
                                     </div>
                                 </div>
@@ -476,9 +517,18 @@
                                                     <span class="text-red-400 ml-1">*</span>
                                                 </label>
 
-                                                <textarea :name="'jawaban[' + pertanyaan.id + ']'" x-model="form.jawaban[pertanyaan.id]" rows="4"
-                                                    placeholder="Tulis jawaban Anda di sini..."
-                                                    class="w-full px-4 py-3.5 rounded-xl border border-slate-200 bg-slate-50 text-slate-800 text-sm placeholder:text-slate-300 focus:border-brand-400 focus:bg-white transition-all duration-200 resize-none leading-relaxed"></textarea>
+                                                <textarea :name="'jawaban[' + pertanyaan.id + ']'" x-model="form.jawaban[pertanyaan.id]"
+                                                    @input="validateJawaban(pertanyaan.id)" rows="4" placeholder="Tulis jawaban Anda di sini..."
+                                                    :class="(errors.jawaban && errors.jawaban[pertanyaan.id]) ?
+                                                    'border-red-400 bg-red-50' : 'border-slate-200 bg-slate-50'"
+                                                    class="w-full px-4 py-3.5 rounded-xl border text-slate-800 text-sm placeholder:text-slate-300 focus:border-brand-400 focus:bg-white transition-all duration-200 resize-none leading-relaxed"></textarea>
+
+                                                {{-- Error Realtime Jawaban --}}
+                                                <p x-show="errors.jawaban && errors.jawaban[pertanyaan.id]"
+                                                    x-text="errors.jawaban[pertanyaan.id]" x-cloak
+                                                    class="text-red-500 text-xs mt-1.5 font-medium flex items-center gap-1">
+                                                    <i class="fa-solid fa-circle-exclamation"></i>
+                                                </p>
 
                                                 <p class="text-xs text-slate-400 mt-1 text-right"
                                                     x-text="(form.jawaban[pertanyaan.id] || '').length + ' karakter'">
@@ -534,6 +584,7 @@
                         divisis: divisis,
                         currentStep: 1,
                         isSubmitting: false,
+                        isValidating: false,
 
                         steps: ['Data Diri', 'Pilih Divisi', 'Pertanyaan'],
 
@@ -551,7 +602,8 @@
                             nama: '',
                             nim: '',
                             email: '',
-                            no_hp: ''
+                            no_hp: '',
+                            'jawaban': {}
                         },
 
                         get selectedDivisi() {
@@ -622,68 +674,136 @@
                             }
                         },
 
+                        validateAngkatan() {
+                            if (!this.form.angkatan) {
+                                this.errors.angkatan = 'Angkatan wajib dipilih.';
+                            } else {
+                                this.errors.angkatan = '';
+                            }
+                        },
+
+                        validateJawaban(id) {
+                            if (!this.form.jawaban[id] || !this.form.jawaban[id].trim()) {
+                                this.errors.jawaban[id] = 'Jawaban tidak boleh kosong.';
+                            } else {
+                                this.errors.jawaban[id] = '';
+                            }
+                        },
+
                         pilihDivisi(div) {
                             this.form.divisi_id = div.id;
                             this.form.jawaban = {};
                         },
 
-                        validateStep(step) {
-                            if (step === 1) {
+                        async serverValidate() {
+                            this.isValidating = true;
+                            try {
+                                const response = await fetch('{{ route('daftar.validate') }}', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        'Accept': 'application/json',
+                                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                    },
+                                    body: JSON.stringify({
+                                        nama: this.form.nama,
+                                        nim: this.form.nim,
+                                        angkatan: this.form.angkatan,
+                                        email: this.form.email,
+                                        no_hp: this.form.no_hp,
+                                        divisi_id: this.form.divisi_id
+                                    })
+                                });
+
+                                const result = await response.json();
+
+                                if (!response.ok) {
+                                    if (result.errors) {
+                                        for (const key in result.errors) {
+                                            if (this.errors.hasOwnProperty(key)) {
+                                                this.errors[key] = result.errors[key][0];
+                                            }
+                                        }
+                                    }
+                                    return false;
+                                }
+
+                                return true;
+                            } catch (err) {
+                                console.error('Validation error:', err);
+                                return false;
+                            } finally {
+                                this.isValidating = false;
+                            }
+                        },
+
+                        async goNext() {
+                            // Jalankan validasi frontend terlebih dahulu
+                            if (this.currentStep === 1) {
                                 this.validateNama();
                                 this.validateNim();
                                 this.validateEmail();
                                 this.validateNoHp();
+                                this.validateAngkatan();
 
-                                if (this.errors.nama || !this.form.nama.trim()) {
-                                    alert('Mohon periksa kembali inputan Nama Lengkap.');
-                                    return false;
-                                }
-                                if (this.errors.nim || !this.form.nim.trim() || this.form.nim.length !== 12) {
-                                    alert('Mohon periksa kembali inputan NIM.');
-                                    return false;
-                                }
-                                if (!this.form.angkatan) {
-                                    alert('Angkatan wajib dipilih.');
-                                    return false;
-                                }
-                                if (!this.form.email.trim() || !this.form.email.trim()) {
-                                    alert('Mohon masukkan alamat email yang valid.');
-                                    return false;
-                                }
-                                if (this.errors.no_hp || !this.form.no_hp.trim() || this.form.no_hp.length < 11 || this.form.no_hp
-                                    .length > 13) {
-                                    alert('Mohon pastikan Nomor HP berupa 11 hingga 13 digit angka.');
-                                    return false;
-                                }
-                            }
-                            if (step === 2) {
-                                if (!this.form.divisi_id) {
-                                    alert('Pilih divisi terlebih dahulu.');
-                                    return false;
-                                }
-                            }
-                            return true;
-                        },
+                                // if (!this.form.angkatan) this.errors.angkatan = 'Angkatan wajib dipilih.';
+                                // else this.errors.angkatan = '';
 
-                        goNext() {
-                            if (!this.validateStep(this.currentStep)) return;
+                                if (this.errors.nama || this.errors.nim || this.errors.email || this.errors.no_hp || this.errors
+                                    .angkatan) {
+                                    return;
+                                }
+
+                                // Cek ke server untuk format email DNS / duplikasi NIM awal
+                                const isValid = await this.serverValidate();
+                                if (!isValid) return;
+                            }
 
                             if (this.currentStep === 2) {
+                                if (!this.form.divisi_id) {
+                                    this.errors.divisi_id = 'Pilih divisi terlebih dahulu.';
+                                    return;
+                                }
+
+                                // Cek ke server untuk duplikasi NIM pada divisi terpilih & keaktifan divisi
+                                const isValid = await this.serverValidate();
+                                if (!isValid) return;
+
                                 const hasPertanyaan = this.selectedDivisi?.pertanyaan?.length > 0;
                                 if (!hasPertanyaan) {
-                                    this.$nextTick(() => {
-                                        const form = this.$el.querySelector('form');
-                                        if (form) form.requestSubmit();
+                                    // Langsung submit jika tidak ada pertanyaan
+                                    this.submitForm({
+                                        target: this.$el.querySelector('form')
                                     });
                                     return;
                                 }
                             }
 
-                            if (this.currentStep < 3) this.currentStep++;
+                            if (this.currentStep < 3) {
+                                this.currentStep++;
+                            }
                         },
 
-                        submitForm() {
+                        submitForm(e) {
+                            let hasError = false;
+
+                            // Validasi semua jawaban di Step 3 sebelum benar-benar mengirim form
+                            if (this.selectedDivisi && this.selectedDivisi.pertanyaan) {
+                                this.selectedDivisi.pertanyaan.forEach(p => {
+                                    this.validateJawaban(p.id);
+                                    if (this.errors.jawaban[p.id]) {
+                                        hasError = true;
+                                    }
+                                });
+                            }
+
+                            // Jika ada jawaban yang kosong, jangan teruskan proses kirim form
+                            if (hasError) {
+                                return;
+                            }
+
                             this.isSubmitting = true;
+                            e.target.submit(); // Lanjutkan mengirim data ke server
                         },
 
                         init() {
