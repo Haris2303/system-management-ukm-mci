@@ -56,11 +56,11 @@ class LandingController extends Controller
 
         // ── Validasi data utama ────────────────────────────────
         $validated = $request->validate([
-            'nama'      => ['required', 'string', 'max:255'],
+            'nama'      => ['required', 'string', 'max:100'],
             'nim'       => ['required', 'string', 'max:20', 'numeric', 'digits:12'],
-            'email'     => ['required', 'email:rfc', 'dns|max:255', 'max:255'],
+            'email'     => ['required', 'email:rfc,dns', 'max:255'],
             'no_hp'     => ['required', 'string', 'max:20', 'numeric', 'digits_between:11,13'],
-            'angkatan'  => ['required', 'string', 'max:10', 'integer', ${"between:$tahunTerlama,$tahunSekarang"}],
+            'angkatan'  => ['required', 'string', 'max:10', 'integer', "between:$tahunTerlama,$tahunSekarang"],
             'divisi_id' => ['required', 'exists:divisis,id'],
             'jawaban'   => ['nullable', 'array'],
             'jawaban.*' => ['nullable', 'string', 'max:2000'],
