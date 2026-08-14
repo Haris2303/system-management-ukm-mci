@@ -65,9 +65,9 @@ class ViewPendaftar extends ViewRecord
                         ->required() // Wajib diisi agar admin tidak menolak tanpa alasan
                         ->rows(3),
                 ])
-                ->action(function (Pendaftar $record): void {
+                ->action(function (Pendaftar $record, array $data): void {
                     // Panggil fungsi tolak dari PendaftarService di sini!
-                    app(PendaftarService::class)->tolak($record);
+                    app(PendaftarService::class)->tolak($record, $data['alasan_penolakan']);
 
                     Notification::make()
                         ->title("❌ {$record->nama} ditolak.")
