@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Services\PendaftarService;
 use Filament\Actions\Action;
 use Filament\Actions\EditAction;
+use Filament\Forms\Components\Textarea;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
 
@@ -57,7 +58,13 @@ class ViewPendaftar extends ViewRecord
                 ->modalDescription(
                     fn(Pendaftar $r) =>
                     "Pendaftar {$r->nama} ({$r->nim}) akan ditolak. Tindakan ini tidak dapat dibatalkan."
-                )
+                )->schema([
+                    Textarea::make('alasan_penolakan')
+                        ->label('Alasan Penolakan')
+                        ->placeholder('Contoh: Nilai wawancara kurang, kuota penuh, dsb...')
+                        ->required() // Wajib diisi agar admin tidak menolak tanpa alasan
+                        ->rows(3),
+                ])
                 ->action(function (Pendaftar $record): void {
                     // Panggil fungsi tolak dari PendaftarService di sini!
                     app(PendaftarService::class)->tolak($record);

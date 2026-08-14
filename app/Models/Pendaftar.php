@@ -24,6 +24,7 @@ class Pendaftar extends Model
         'angkatan',
         'status',
         'user_id',
+        'alasan_penolakan',
     ];
 
     // ── Relationships ─────────────────────────────────────────

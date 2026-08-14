@@ -31,6 +31,7 @@ class PendaftarDitolak extends Mailable
             with: [
                 'nama'   => $this->pendaftar->nama,
                 'divisi' => $this->pendaftar->divisi?->nama ?? '-',
+                'alasan' => $this->pendaftar->alasan_penolakan,
             ],
         );
     }

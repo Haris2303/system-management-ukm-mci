@@ -20,7 +20,7 @@ class PendaftarService
         if (empty($pendaftar->email)) {
             throw new \RuntimeException(
                 "Pendaftar {$pendaftar->nama} tidak memiliki email. "
-                . 'Lengkapi email di formulir sebelum meluluskan.'
+                    . 'Lengkapi email di formulir sebelum meluluskan.'
             );
         }
 
@@ -62,9 +62,9 @@ class PendaftarService
         return $user;
     }
 
-    public function tolak(Pendaftar $pendaftar): void
+    public function tolak(Pendaftar $pendaftar, string $alasan): void
     {
-        $pendaftar->update(['status' => 'ditolak']);
+        $pendaftar->update(['status' => 'ditolak', 'alasan_penolakan' => $alasan]);
 
         // Kirim notifikasi email hanya jika pendaftar memiliki email asli
         if ($pendaftar->email) {
