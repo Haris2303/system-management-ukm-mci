@@ -40,7 +40,7 @@ class DivisiForm
                         TextInput::make('icon')
                             ->label('Ikon (Emoji)')
                             ->default('💻')
-                            ->helperText('Masukkan satu emoji. Contoh: 💻 🤖 🎨 🔒 ☁️'),
+                            ->helperText('Masukkan icon dari fontawesome. Contoh: fa-solid fa-palette'),
 
                         TextInput::make('urut')
                             ->label('Urutan Tampil')
