@@ -21,6 +21,9 @@ class DivisiForm
                         TextInput::make('nama')
                             ->label('Nama Divisi')
                             ->required()
+                            ->extraInputAttributes([
+                                'x-on:input' => "\$el.value = \$el.value.replace(/[^a-zA-Z\s]/g, '')",
+                            ])
                             ->maxLength(100)
                             ->live(debounce: 500)
                             ->afterStateUpdated(
@@ -46,6 +49,9 @@ class DivisiForm
 
                         TextInput::make('ketua')
                             ->label('Nama Ketua Divisi')
+                            ->extraInputAttributes([
+                                'x-on:input' => "\$el.value = \$el.value.replace(/[^a-zA-Z\s]/g, '')",
+                            ])
                             ->maxLength(255)
                             ->placeholder('Opsional'),
 
