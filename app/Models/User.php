@@ -5,6 +5,7 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Traits\HasAvatar;
 use Database\Factories\UserFactory;
+use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
 use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -15,19 +16,30 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 
-class User extends Authenticatable
+class User extends Authenticatable implements FilamentUser
 {
     /** @use HasFactory<UserFactory> */
     use HasAvatar, HasFactory, Notifiable, HasApiTokens, HasRoles;
 
     protected $fillable = [
-        'name', 'email', 'password', 'divisi_id', 'no_hp', 'avatar',
-        'last_photo_path', 'photo_uploaded_at', 'kicked_at', 'kicked_by',
-        'kicked_reason', 'public_id', 'periode',
+        'name',
+        'email',
+        'password',
+        'divisi_id',
+        'no_hp',
+        'avatar',
+        'last_photo_path',
+        'photo_uploaded_at',
+        'kicked_at',
+        'kicked_by',
+        'kicked_reason',
+        'public_id',
+        'periode',
     ];
 
     protected $hidden = [
-        'password', 'remember_token',
+        'password',
+        'remember_token',
     ];
 
     protected static function booted(): void
