@@ -41,7 +41,8 @@ return [
         'public' => [
             'driver' => 'local',
             'root' => storage_path('app/public'),
-            'url' => rtrim(env('APP_URL', 'http://localhost'), '/').'/storage',
+            // 'url' => rtrim(env('APP_URL', 'http://localhost'), '/').'/storage',
+            'url' => 'https://nms-lab-unamin.com/storage',
             'visibility' => 'public',
             'throw' => false,
             'report' => false,
