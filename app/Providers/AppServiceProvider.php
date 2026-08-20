@@ -36,5 +36,9 @@ class AppServiceProvider extends ServiceProvider
             config(['filesystems.disks.public.url' => $host . '/storage']);
             URL::forceRootUrl($host);
         }
+
+        if (app()->environment('production') || config('app.env') === 'production') {
+            URL::forceScheme('https');
+        }
     }
 }
