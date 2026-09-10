@@ -65,7 +65,6 @@ class JawabanPendaftarsRelationManager extends RelationManager
                 TextColumn::make('jawaban_teks')
                     ->label('Jawaban Pendaftar')
                     ->wrap()
-                    ->limit(200)
                     ->searchable(),
 
                 // Nilai skor yang bisa langsung diedit secara inline
