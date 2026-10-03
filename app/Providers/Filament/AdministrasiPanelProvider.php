@@ -63,6 +63,7 @@ class AdministrasiPanelProvider extends PanelProvider
                 'E-Kas Keuangan',
                 'Rekrutmen',
                 'Konten',
+                'Sistem',
             ])
             ->middleware([
                 EncryptCookies::class,
