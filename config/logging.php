@@ -50,7 +50,19 @@ return [
     |
     */
 
+    // Aktif/nonaktifkan pencatatan aktivitas (App\Support\ActivityLogger).
+    'activity_enabled' => env('ACTIVITY_LOG_ENABLED', true),
+
     'channels' => [
+
+        // Log aktivitas aplikasi: request, auth, perubahan data.
+        'activity' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/activity.log'),
+            'level' => env('ACTIVITY_LOG_LEVEL', 'info'),
+            'days' => env('ACTIVITY_LOG_DAYS', 30),
+            'replace_placeholders' => true,
+        ],
 
         'stack' => [
             'driver' => 'stack',

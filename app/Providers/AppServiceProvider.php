@@ -6,6 +6,7 @@ use App\Models\TugasProker;
 use App\Observers\TugasProkerObserver;
 use App\Services\ElectionService;
 use App\Services\PendaftarService;
+use App\Support\ActivityLogger;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 
@@ -25,6 +26,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Log aktivitas: login/logout & perubahan data model
+        ActivityLogger::register();
+
         // ⭐ Daftarkan observer untuk auto-update progress proker
         TugasProker::observe(TugasProkerObserver::class);
 
