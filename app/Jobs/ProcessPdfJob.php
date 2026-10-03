@@ -23,6 +23,10 @@ use Illuminate\Support\Facades\Storage;
  *   3. Generate embedding per chunk (Gemini embedding-001)
  *   4. Simpan ke tabel rag_chunks
  *   5. Update status di rag_documents
+ *
+ * CATATAN KONFIGURASI:
+ *   - config/queue.php → connections.database.retry_after harus > $timeout (mis. 1900)
+ *   - Worker: queue:work --timeout=1800 (atau lebih besar dari $timeout di bawah)
  */
 class ProcessPdfJob implements ShouldQueue
 {
@@ -31,7 +35,13 @@ class ProcessPdfJob implements ShouldQueue
     public const CHUNK_SIZE    = 500;
     public const CHUNK_OVERLAP = 50;
 
-    public int $timeout = 600;
+    /** Maksimal percobaan embedding per chunk (retry untuk error sesaat: 429/5xx). */
+    private const EMBED_MAX_ATTEMPTS = 3;
+
+    /** Job dianggap gagal bila >= persentase ini chunk gagal di-embed. */
+    private const FAIL_THRESHOLD = 0.10;
+
+    public int $timeout = 1800;
     public int $tries   = 2;
 
     public function __construct(
@@ -55,6 +65,11 @@ class ProcessPdfJob implements ShouldQueue
             // 1. Parse PDF jadi text
             //    Pakai disk 'local' karena upload ke storage/app/rag-docs/
             $absolutePath = Storage::disk('local')->path($document->path_file);
+
+            if (! is_file($absolutePath)) {
+                throw new \RuntimeException("File PDF tidak ditemukan di: {$absolutePath}");
+            }
+
             $text = $parser->extract($absolutePath);
 
             if (empty(trim($text))) {
@@ -66,14 +81,21 @@ class ProcessPdfJob implements ShouldQueue
             $document->update(['total_chunks' => 0]);
 
             // 3. Split text → chunks dengan overlap
-            $chunks = $this->splitIntoChunks($text);
+            $chunks      = $this->splitIntoChunks($text);
             $totalChunks = count($chunks);
-            Log::info("Document #{$document->id} dipecah jadi " . count($chunks) . " chunks.");
+
+            if ($totalChunks === 0) {
+                throw new \RuntimeException('Tidak ada chunk valid yang dihasilkan dari PDF.');
+            }
+
+            Log::info("Document #{$document->id} dipecah jadi {$totalChunks} chunks.");
 
             // 4. Embed & save tiap chunk ke tabel rag_chunks
+            $failed = 0;
+
             foreach ($chunks as $i => $chunkText) {
                 try {
-                    $vector = $embedding->embed($chunkText, 'RETRIEVAL_DOCUMENT');
+                    $vector = $this->embedWithRetry($embedding, $chunkText);
 
                     RagChunk::create([
                         'document_id' => $document->id,
@@ -90,18 +112,60 @@ class ProcessPdfJob implements ShouldQueue
                     usleep(150_000); // 150ms
 
                 } catch (\Throwable $e) {
+                    $failed++;
                     Log::error("Chunk #{$i} dari Document #{$document->id} gagal: " . $e->getMessage());
                 }
             }
 
-            // 5. Update status sukses
+            // 5. Tentukan status akhir
+            if ($failed >= $totalChunks * self::FAIL_THRESHOLD) {
+                throw new \RuntimeException("{$failed}/{$totalChunks} chunk gagal di-embed.");
+            }
+
             $document->update(['status' => 'ready']);
 
-            Log::info("✅ Document #{$document->id} berhasil diproses ({$totalChunks} chunks).");
+            if ($failed > 0) {
+                Log::warning("⚠️ Document #{$document->id} selesai dengan {$failed}/{$totalChunks} chunk gagal.");
+            }
+
+            Log::info("✅ Document #{$document->id} berhasil diproses (" . ($totalChunks - $failed) . "/{$totalChunks} chunks).");
         } catch (\Throwable $e) {
             $document->update(['status' => 'error']);
             Log::error("❌ Document #{$document->id} gagal diproses: " . $e->getMessage());
             throw $e;
+        }
+    }
+
+    /**
+     * Dipanggil Laravel saat job benar-benar gagal (exception habis retry,
+     * timeout, atau melebihi max attempts). Mencegah status tersangkut di "processing".
+     */
+    public function failed(?\Throwable $e): void
+    {
+        RagDocument::where('id', $this->documentId)->update(['status' => 'error']);
+
+        Log::error("❌ ProcessPdfJob #{$this->documentId} failed: " . ($e?->getMessage() ?? 'unknown'));
+    }
+
+    /**
+     * Embed satu chunk dengan retry + backoff (1s, 2s, ...) untuk error sesaat.
+     */
+    private function embedWithRetry(EmbeddingService $embedding, string $text): array
+    {
+        $attempt = 0;
+
+        while (true) {
+            $attempt++;
+
+            try {
+                return $embedding->embed($text, 'RETRIEVAL_DOCUMENT');
+            } catch (\Throwable $e) {
+                if ($attempt >= self::EMBED_MAX_ATTEMPTS) {
+                    throw $e;
+                }
+
+                sleep($attempt); // backoff: 1s, 2s
+            }
         }
     }
 
@@ -122,11 +186,13 @@ class ProcessPdfJob implements ShouldQueue
 
             // Coba potong di akhir kalimat terdekat
             if ($start + self::CHUNK_SIZE < $length) {
-                $lastPeriod = max(
+                $positions = array_filter([
                     mb_strrpos($chunk, '. '),
                     mb_strrpos($chunk, '? '),
-                    mb_strrpos($chunk, '! ')
-                );
+                    mb_strrpos($chunk, '! '),
+                ], fn($p) => $p !== false);
+
+                $lastPeriod = $positions ? max($positions) : false;
 
                 if ($lastPeriod !== false && $lastPeriod > self::CHUNK_SIZE * 0.5) {
                     $chunk = mb_substr($chunk, 0, $lastPeriod + 1);
@@ -141,6 +207,7 @@ class ProcessPdfJob implements ShouldQueue
             }
         }
 
-        return array_filter($chunks, fn($c) => mb_strlen(trim($c)) > 50);
+        // array_values: reset index agar chunk_index berurutan tanpa celah
+        return array_values(array_filter($chunks, fn($c) => mb_strlen(trim($c)) > 50));
     }
 }
