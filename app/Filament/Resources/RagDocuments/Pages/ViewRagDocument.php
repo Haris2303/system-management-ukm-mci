@@ -22,6 +22,12 @@ class ViewRagDocument extends ViewRecord implements HasTable
         return 'filament.resources.rag-documents.pages.view-rag-document';
     }
 
+    /** Dipanggil wire:poll agar status & jumlah chunk selalu terbaru saat diproses. */
+    public function refreshRecord(): void
+    {
+        $this->record->refresh();
+    }
+
     public function table(Table $table): Table
     {
         return $table

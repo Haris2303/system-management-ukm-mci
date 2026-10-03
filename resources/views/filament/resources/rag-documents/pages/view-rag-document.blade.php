@@ -1,5 +1,9 @@
 <x-filament-panels::page>
 
+    @if ($this->record->status === 'processing')
+        <div wire:poll.3s="refreshRecord"></div>
+    @endif
+
     {{-- Info dokumen --}}
     <x-filament::section>
         <x-slot name="heading">Informasi Dokumen</x-slot>
@@ -11,9 +15,16 @@
                 <p style="font-size:14px; font-weight:600; color:#111827; margin:0;">{{ $this->record->nama_file }}</p>
             </div>
 
-            <div style="background:#f0fdf4; border:1px solid #86efac; border-radius:10px; padding:14px 16px;">
+            @php
+                [$statusBg, $statusBorder, $statusColor, $statusLabel] = match ($this->record->status) {
+                    'processing' => ['#fffbeb', '#fcd34d', '#d97706', '⚙️ Sedang Diproses'],
+                    'error'      => ['#fef2f2', '#fca5a5', '#dc2626', '❌ Gagal Diproses'],
+                    default      => ['#f0fdf4', '#86efac', '#16a34a', '✅ Siap Digunakan'],
+                };
+            @endphp
+            <div style="background:{{ $statusBg }}; border:1px solid {{ $statusBorder }}; border-radius:10px; padding:14px 16px;">
                 <p style="font-size:11px; color:#9ca3af; text-transform:uppercase; letter-spacing:0.05em; margin:0 0 4px;">Status</p>
-                <p style="font-size:14px; font-weight:600; color:#16a34a; margin:0;">✅ Siap Digunakan</p>
+                <p style="font-size:14px; font-weight:600; color:{{ $statusColor }}; margin:0;">{{ $statusLabel }}</p>
             </div>
 
             <div style="background:#eff6ff; border:1px solid #bfdbfe; border-radius:10px; padding:14px 16px;">
