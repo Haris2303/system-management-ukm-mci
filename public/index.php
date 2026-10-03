@@ -1,8 +1,12 @@
 <?php
 
 // Paksa server mengenali HTTPS dari detik pertama request masuk
-$_SERVER['HTTPS'] = 'on';
-$_SERVER['SERVER_PORT'] = 443;
+// (dilewati untuk host lokal seperti *.test / localhost yang berjalan di HTTP)
+$host = preg_replace('/:\d+$/', '', $_SERVER['HTTP_HOST'] ?? '');
+if (! preg_match('/(^localhost$|^127\.0\.0\.1$|\.test$|\.localhost$)/', $host)) {
+    $_SERVER['HTTPS'] = 'on';
+    $_SERVER['SERVER_PORT'] = 443;
+}
 
 use Illuminate\Foundation\Application;
 use Illuminate\Http\Request;

@@ -41,10 +41,12 @@ class AppServiceProvider extends ServiceProvider
             URL::forceRootUrl($host);
         }
 
-        if (app()->environment('production') || config('app.env') === 'production') {
+        // Paksa HTTPS kecuali di host lokal (*.test / localhost) yang berjalan di HTTP
+        $isLocalHost = ! app()->runningInConsole()
+            && (bool) preg_match('/(^localhost$|^127\.0\.0\.1$|\.test$|\.localhost$)/', request()->getHost());
+
+        if (! $isLocalHost) {
             URL::forceScheme('https');
         }
-
-        URL::forceScheme('https');
     }
 }
